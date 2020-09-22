@@ -1,0 +1,115 @@
+diff -up a/config.h b/config.h
+--- a/config.h	2014-06-23 18:04:29.536917000 +0200
++++ b/config.h	2014-06-24 08:15:51.857173332 +0200
+@@ -74,6 +74,10 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++	{ MODKEY,                       XK_Left,   viewtoleft,     {0} },
++	{ MODKEY,                       XK_Right,  viewtoright,    {0} },
++	{ MODKEY|ShiftMask,             XK_Left,   tagtoleft,      {0} },
++	{ MODKEY|ShiftMask,             XK_Right,  tagtoright,     {0} },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff -up a/dwm.1 b/dwm.1
+--- a/dwm.1	2014-06-23 18:04:29.532917821 +0200
++++ b/dwm.1	2014-06-23 21:52:54.095867809 +0200
+@@ -71,6 +71,18 @@ Send focused window to previous screen,
+ .B Mod1\-Shift\-.
+ Send focused window to next screen, if any.
+ .TP
++.B Mod1\-Right
++Focus tag on the right, if any.
++.TP
++.B Mod1\-Left
++Focus tag on the left, if any.
++.TP
++.B Mod1\-Shift\-Right
++Send focused window to tag on the right, if any.
++.TP
++.B Mod1\-Shift\-Left
++Send focused window to tag on the left, if any.
++.TP
+ .B Mod1\-b
+ Toggles bar on and off.
+ .TP
+diff -up a/dwm.c b/dwm.c
+--- a/dwm.c	2014-06-23 18:04:29.532917821 +0200
++++ b/dwm.c	2014-06-24 08:17:40.921714154 +0200
+@@ -226,6 +226,8 @@ static void sigchld(int unused);
+ static void spawn(const Arg *arg);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
++static void tagtoleft(const Arg *arg);
++static void tagtoright(const Arg *arg);
+ static int textnw(const char *text, unsigned int len);
+ static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+@@ -245,6 +247,8 @@ static void updatewindowtype(Client *c);
+ static void updatetitle(Client *c);
+ static void updatewmhints(Client *c);
+ static void view(const Arg *arg);
++static void viewtoleft(const Arg *arg);
++static void viewtoright(const Arg *arg);
+ static Client *wintoclient(Window w);
+ static Monitor *wintomon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+@@ -1690,6 +1694,28 @@ tagmon(const Arg *arg) {
+ 	sendmon(selmon->sel, dirtomon(arg->i));
+ }
+ 
++void
++tagtoleft(const Arg *arg) {
++	if(selmon->sel != NULL
++	&& __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
++	&& selmon->tagset[selmon->seltags] > 1) {
++		selmon->sel->tags >>= 1;
++		focus(NULL);
++		arrange(selmon);
++	}
++}
++
++void
++tagtoright(const Arg *arg) {
++	if(selmon->sel != NULL
++	&& __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
++	&& selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
++		selmon->sel->tags <<= 1;
++		focus(NULL);
++		arrange(selmon);
++	}
++}
++
+ int
+ textnw(const char *text, unsigned int len) {
+ 	XRectangle r;
+@@ -2052,6 +2078,28 @@ view(const Arg *arg) {
+ 	arrange(selmon);
+ }
+ 
++void
++viewtoleft(const Arg *arg) {
++	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
++	&& selmon->tagset[selmon->seltags] > 1) {
++		selmon->seltags ^= 1; /* toggle sel tagset */
++		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
++		focus(NULL);
++		arrange(selmon);
++	}
++}
++
++void
++viewtoright(const Arg *arg) {
++	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
++	&& selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
++		selmon->seltags ^= 1; /* toggle sel tagset */
++		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
++		focus(NULL);
++		arrange(selmon);
++	}
++}
++
+ Client *
+ wintoclient(Window w) {
+ 	Client *c;

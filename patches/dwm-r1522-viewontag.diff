@@ -1,0 +1,23 @@
+diff -r 0d86faf4b05c config.h
+--- a/config.h	Sun Jul 25 09:58:25 2010 +0100
++++ b/config.h	Sun Jul 25 16:32:38 2010 +0200
+@@ -12,6 +12,7 @@
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const Bool showbar           = True;     /* False means no bar */
+ static const Bool topbar            = True;     /* False means bottom bar */
++static const Bool viewontag         = True;     /* Switch view on tag switch */
+ 
+ /* tagging */
+ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+diff -r 0d86faf4b05c dwm.c
+--- a/dwm.c	Sun Jul 25 09:58:25 2010 +0100
++++ b/dwm.c	Sun Jul 25 16:32:38 2010 +0200
+@@ -1613,6 +1613,8 @@
+ 	if(selmon->sel && arg->ui & TAGMASK) {
+ 		selmon->sel->tags = arg->ui & TAGMASK;
+ 		arrange(selmon);
++		if(viewontag)
++			view(arg);
+ 	}
+ }
+ 

@@ -1,0 +1,69 @@
+diff --git a/config.def.h b/config.def.h
+index 69a2430..e3c6118 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -103,6 +103,8 @@ static Key keys[] = {
+ 	{ MODKEY|ShiftMask,             XK_l,      incnmaster,     {.i = -1 } },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
++	{ MODKEY,                       XK_k,      hidewin,        {0} },
++	{ MODKEY|ShiftMask,             XK_k,      restorewin,     {0} },
+ 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
+ 	{ MODKEY,                       XK_Tab,    view,           {0} },
+ 	{ MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
+diff --git a/dwm.c b/dwm.c
+index 770a4bc..8dc728e 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -232,6 +232,8 @@ static void togglefloating(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void togglewin(const Arg *arg);
++static void hidewin(const Arg *arg);
++static void restorewin(const Arg *arg);
+ static void unfocus(Client *c, int setfocus);
+ static void unmanage(Client *c, int destroyed);
+ static void unmapnotify(XEvent *e);
+@@ -294,6 +296,10 @@ static Visual *visual;
+ static int depth;
+ static Colormap cmap;
+ 
++#define hiddenWinStackMax 100
++static int hiddenWinStackTop = -1;
++static Client* hiddenWinStack[hiddenWinStackMax];
++
+ /* configuration, allows nested code to access above variables */
+ #include "config.h"
+ 
+@@ -1993,6 +1999,31 @@ toggleview(const Arg *arg)
+ 	}
+ }
+ 
++void hidewin(const Arg *arg) {
++	if (!selmon->sel)
++		return;
++	Client *c = (Client*)selmon->sel;
++	hide(c);
++	hiddenWinStack[++hiddenWinStackTop] = c;
++}
++
++void restorewin(const Arg *arg) {
++	int i = hiddenWinStackTop;
++	while (i > -1) {
++		if (HIDDEN(hiddenWinStack[i]) && hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
++			show(hiddenWinStack[i]);
++			focus(hiddenWinStack[i]);
++			restack(selmon);
++			for (int j = i; j < hiddenWinStackTop; ++j) {
++				hiddenWinStack[j] = hiddenWinStack[j + 1];
++			}
++			--hiddenWinStackTop;
++			return;
++		}
++		--i;
++	}
++}
++
+ void
+ togglewin(const Arg *arg)
+ {
