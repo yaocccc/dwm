@@ -269,7 +269,6 @@ static void hidewin(const Arg *arg);
 static void restorewin(const Arg *arg);
 static void hideotherwins(const Arg *arg);
 static void restoreotherwins(const Arg *arg);
-static void focuswin(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
@@ -332,9 +331,6 @@ static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
 static Drw *drw;
-static Monitor *mons, *selmon;
-static Window root, wmcheckwin;
-
 static int useargb = 0;
 static Visual *visual;
 static int depth;
@@ -1064,11 +1060,8 @@ focusstack(const Arg *arg)
 {
 	Client *c = NULL, *i;
 
-	if (issinglewin(arg)) {
-		focuswin(arg);
+	if (issinglewin(arg))
 		return;
-	}
-
 	if (!selmon->sel)
 		return;
 	if (arg->i > 0) {
@@ -2330,51 +2323,6 @@ int issinglewin(const Arg *arg) {
 	}
 	return 1;
 }
-
-void focuswin(const Arg *arg) {
-	Client *c = NULL, *i;
-	int j;
-
-	if (arg->i > 0) {
-		for (c = selmon->sel->next;
-			 c && !(c->tags == selmon->tagset[selmon->seltags]); c = c->next)
-			;
-		if (!c)
-			for (c = selmon->clients;
-				 c && !(c->tags == selmon->tagset[selmon->seltags]);
-				 c = c->next)
-				;
-	} else {
-		for (i = selmon->clients; i != selmon->sel; i = i->next)
-			if (i->tags == selmon->tagset[selmon->seltags])
-				c = i;
-		if (!c)
-			for (; i; i = i->next)
-				if (i->tags == selmon->tagset[selmon->seltags])
-					c = i;
-	}
-
-	i = selmon->sel;
-
-	if (c && c != i) {
-		hide(i);
-		for (j = 0; j <= hiddenWinStackTop; ++j) {
-			if (HIDDEN(hiddenWinStack[j]) &&
-				hiddenWinStack[j]->tags == selmon->tagset[selmon->seltags] &&
-				hiddenWinStack[j] == c) {
-				show(c);
-				focus(c);
-				restack(selmon);
-				memcpy(hiddenWinStack + j, hiddenWinStack + j + 1,
-					   (hiddenWinStackTop - j) * sizeof(Client *));
-				hiddenWinStack[hiddenWinStackTop] = i;
-				return;
-			}
-		}
-	}
-}
-
-
 
 void
 togglewin(const Arg *arg)
