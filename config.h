@@ -42,6 +42,7 @@ static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "
 static const Rule rules[] = {
     /* class                    instance    title       tags mask     isfloating   monitor */
     { "netease-cloud-music",    NULL,       NULL,       0,            1,           -1 },
+    { NULL,                     NULL,       "TIM",      0,            1,           -1 },
 };
 
 static const float mfact       = 0.5;  /* factor of master area size [0.05..0.95] */
