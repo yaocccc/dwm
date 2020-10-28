@@ -1053,6 +1053,7 @@ focusmon(const Arg *arg)
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
+    XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
 }
 
 void
@@ -2119,9 +2120,12 @@ tag(const Arg *arg)
 void
 tagmon(const Arg *arg)
 {
+    const Arg a = {.i = +1};
+
 	if (!selmon->sel || !mons->next)
 		return;
 	sendmon(selmon->sel, dirtomon(arg->i));
+    focusmon(&a);
 }
 
 void
