@@ -1397,9 +1397,13 @@ monocle(Monitor *m)
 		if (ISVISIBLE(c))
 			n++;
 	if (n > 0) /* override layout symbol */
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx + gap, m->wy + gap, m->ww - 2 * c->bw - 2 * gap, m->wh - 2 * c->bw - 2 * gap, 0);
+        snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
+    if (selmon->showbar)
+        for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+            resize(c, m->wx + gap, m->wy + gap, m->ww - 2 * c->bw - 2 * gap, m->wh - 2 * c->bw - 2 * gap, 0);
+    else
+        for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+            resize(c, m->wx, m->wy, m->ww, m->wh, 0);
 }
 
 void
