@@ -1237,7 +1237,16 @@ hide(Client *c) {
 void
 incnmaster(const Arg *arg)
 {
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
+    int nmaster = selmon->nmaster + arg->i;
+
+    if (selmon->bt <= 1)
+        return;
+    else if(selmon->bt == 2)
+        nmaster %= 2;
+    else
+        nmaster %= 3;
+
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(nmaster, 0);
 	arrange(selmon);
 }
 

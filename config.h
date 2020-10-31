@@ -74,7 +74,6 @@ static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "120x40
 
 static Key keys[] = {
     /* modifier            key              function        argument */
-    { MODKEY,              XK_a,            spawn,            SHCMD("alacritty") },
     { MODKEY|ShiftMask,    XK_a,            spawn,            {.v = screenshotcmd } },
     { MODKEY,              XK_c,            spawn,            SHCMD("google-chrome-stable") },
     { MODKEY,              XK_d,            spawn,            SHCMD("rofi -show run") },
@@ -85,6 +84,7 @@ static Key keys[] = {
     { MODKEY,              XK_m,            spawn,            SHCMD("netease-cloud-music") },
     { MODKEY|ShiftMask,    XK_m,            spawn,            SHCMD("pavucontrol") },
     { MODKEY,              XK_p,            spawn,            SHCMD("~/scripts/set-privoxy.sh &") },
+    { MODKEY,              XK_w,            spawn,            SHCMD("feh --randomize --bg-fill ~/Pictures/* &") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("st") },
     { MODKEY,              XK_minus,        togglescratch,    {.v = scratchpadcmd } },
 
@@ -109,6 +109,7 @@ static Key keys[] = {
     { MODKEY,              XK_t,            togglefloating,   {0} },
 	{ MODKEY,              XK_f,            fullscreen,       {0} },
     { MODKEY,              XK_space,        setlayout,        {0} },
+    { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },
 
     { MODKEY,              XK_0,            view,             {.ui = ~0 } },
     { MODKEY|ShiftMask,    XK_0,            tag,              {.ui = ~0 } },
