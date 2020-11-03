@@ -1241,10 +1241,10 @@ incnmaster(const Arg *arg)
 
     if (selmon->bt <= 1)
         return;
-    else if(selmon->bt == 2)
+    if (selmon->bt == 2)
         nmaster %= 2;
-    else
-        nmaster %= 3;
+    if (selmon->bt >= 3)
+        nmaster = nmaster % 3 ? nmaster % 3 : 1;
 
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(nmaster, 0);
 	arrange(selmon);
