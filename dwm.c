@@ -260,6 +260,7 @@ static void tagtoleft(const Arg *arg);
 static void tagtoright(const Arg *arg);
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
+static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -653,6 +654,8 @@ clientmessage(XEvent *e)
 			XAddToSaveSet(dpy, c->win);
 			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
+            XClassHint ch = {"dwmsystray", "dwmsystray"};
+			XSetClassHint(dpy, c->win, &ch);
 			/* use parents background color */
 			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
@@ -1767,7 +1770,6 @@ run(void)
 
 void
 runAutostart(void) {
-	system("cd ~/scripts; ./autostart_blocking.sh");
 	system("cd ~/scripts; ./autostart.sh &");
 }
 
@@ -2167,6 +2169,19 @@ tile(Monitor *m)
 			resize(c, m->wx + mw + m->gappov*oe, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappov*oe, h - (2*c->bw), 0);
 			ty += HEIGHT(c) + m->gappih*ie;
 		}
+}
+
+void
+togglesystray()
+{
+    if (showsystray) {
+               showsystray = 0;
+               XUnmapWindow(dpy, systray->win);
+    } else {
+        showsystray = 1;
+    }
+    updatesystray();
+    updatestatus();
 }
 
 void
