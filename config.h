@@ -9,10 +9,10 @@ static const unsigned int systraypinning = 0;        /* 0: sloppy systray follow
 static const unsigned int systrayspacing = 2;        /* systray spacing */
 static const int systraypinningfailfirst = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static int showsystray                   = 1;        /* 0 means no systray */
-static const unsigned int gappih         = 7;       /* horiz inner gap between windows */
-static const unsigned int gappiv         = 7;       /* vert inner gap between windows */
-static const unsigned int gappoh         = 7;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov         = 7;       /* vert outer gap between windows and screen edge */
+static const unsigned int gappih         = 7;        /* horiz inner gap between windows */
+static const unsigned int gappiv         = 7;        /* vert inner gap between windows */
+static const unsigned int gappoh         = 7;        /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov         = 7;        /* vert outer gap between windows and screen edge */
 static const int smartgaps               = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar                 = 1;        /* 0 means no bar */
 static const int topbar                  = 1;        /* 0 means bottom bar */
@@ -38,12 +38,15 @@ static const unsigned int alphas[][3]    = {
 };
 
 /* tagging */
-static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q" };
 static const Rule rules[] = {
-    /* class                    instance    title       tags mask     isfloating   monitor */
-    { "netease-cloud-music",    NULL,       NULL,       0,            1,           -1 },
-    { NULL,                     NULL,       "TIM",      0,            1,           -1 },
-    { NULL,                     NULL,       "broken",   0,            1,           -1 },
+    /* class                    instance    title               tags mask     isfloating   monitor */
+    { "Google-chrome",          NULL,       NULL,               1 << 9,       0,           -1 },
+    { "netease-cloud-music",    NULL,       NULL,               1 << 10,      1,           -1 },
+    { "mysql-workbench-bin",    NULL,       NULL,               1 << 10,      0,           -1 },
+    { "Postman",                NULL,       NULL,               1 << 11,      0,           -1 },
+    { NULL,                     NULL,       "TIM",              1 << 12,      0,           -1 },
+    { NULL,                     NULL,       "broken",           0,            1,           -1 },
 };
 
 static const float mfact       = 0.5;  /* factor of master area size [0.05..0.95] */
@@ -76,15 +79,13 @@ static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "120x40
 static Key keys[] = {
     /* modifier            key              function        argument */
     { MODKEY|ShiftMask,    XK_a,            spawn,            {.v = screenshotcmd } },
-    { MODKEY,              XK_c,            spawn,            SHCMD("google-chrome-stable") },
     { MODKEY,              XK_d,            spawn,            SHCMD("rofi -show run") },
     { MODKEY|ShiftMask,    XK_d,            spawn,            {.v = dmenucmd } },
     { MODKEY,              XK_F1,           spawn,            SHCMD("pcmanfm") },
     { MODKEY,              XK_k,            spawn,            SHCMD("killall screenkey || screenkey &") },
     { MODKEY,              XK_l,            spawn,            SHCMD("blurlock") },
-    { MODKEY,              XK_m,            spawn,            SHCMD("source ~/.profile && netease-cloud-music") },
-    { MODKEY|ShiftMask,    XK_m,            spawn,            SHCMD("pavucontrol") },
-    { MODKEY,              XK_p,            spawn,            SHCMD("~/scripts/set-privoxy.sh &") },
+    { MODKEY,              XK_n,            spawn,            SHCMD("source ~/.profile && netease-cloud-music") },
+    { MODKEY|ShiftMask,    XK_n,            spawn,            SHCMD("pavucontrol") },
     { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("/opt/deepinwine/apps/Deepin-TIM/run.sh &") },
     { MODKEY,              XK_w,            spawn,            SHCMD("feh --randomize --bg-fill ~/Pictures/* &") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("st") },
@@ -114,8 +115,7 @@ static Key keys[] = {
     { MODKEY,              XK_space,        setlayout,        {0} },
     { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },
 
-    { MODKEY,              XK_0,            view,             {.ui = ~0 } },
-    { MODKEY|ShiftMask,    XK_0,            tag,              {.ui = ~0 } },
+    { MODKEY,              XK_a,            view,             {.ui = ~0 } },
 
     { MODKEY,              XK_b,            focusmon,         {.i = +1 } },
     { MODKEY|ShiftMask,    XK_b,            tagmon,           {.i = +1 } },
@@ -132,6 +132,9 @@ static Key keys[] = {
     TAGKEYS(               XK_7,                              6)
     TAGKEYS(               XK_8,                              7)
     TAGKEYS(               XK_9,                              8)
+    TAGKEYS(               XK_c,                              9)
+    TAGKEYS(               XK_m,                              10)
+    TAGKEYS(               XK_p,                              11)
 };
 
 /* button definitions */
