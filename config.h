@@ -43,7 +43,7 @@ static const Rule rules[] = {
     /* class                    instance    title               tags mask     isfloating   monitor */
     { "Google-chrome",          NULL,       NULL,               1 << 9,       0,           -1 },
     { "netease-cloud-music",    NULL,       NULL,               1 << 10,      1,           -1 },
-    { "mysql-workbench-bin",    NULL,       NULL,               1 << 10,      0,           -1 },
+    { NULL,                     NULL,       "MySQL Workbench",  1 << 10,      0,           -1 },
     { "Postman",                NULL,       NULL,               1 << 11,      0,           -1 },
     { NULL,                     NULL,       "TIM",              1 << 12,      0,           -1 },
     { NULL,                     NULL,       "broken",           0,            1,           -1 },
@@ -58,16 +58,16 @@ static const Layout layouts[] = {
     { "><>",       NULL },             /* no layout function means floating behavior */
 };
 
+/* helper for spawning shell commands in the pre dwm-5.0 fashion */
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+
 /* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY,TAG) \
-    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+#define TAGKEYS(KEY,TAG, cmd) \
+    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG, .v = cmd} }, \
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
     { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
     { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
-
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2]            = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -123,18 +123,19 @@ static Key keys[] = {
     { MODKEY,              XK_q,            killclient,       {0} },
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },
 
-    TAGKEYS(               XK_1,                              0)
-    TAGKEYS(               XK_2,                              1)
-    TAGKEYS(               XK_3,                              2)
-    TAGKEYS(               XK_4,                              3)
-    TAGKEYS(               XK_5,                              4)
-    TAGKEYS(               XK_6,                              5)
-    TAGKEYS(               XK_7,                              6)
-    TAGKEYS(               XK_8,                              7)
-    TAGKEYS(               XK_9,                              8)
-    TAGKEYS(               XK_c,                              9)
-    TAGKEYS(               XK_m,                              10)
-    TAGKEYS(               XK_p,                              11)
+    TAGKEYS(               XK_1,            0,                0)
+    TAGKEYS(               XK_2,            1,                0)
+    TAGKEYS(               XK_3,            2,                0)
+    TAGKEYS(               XK_4,            3,                0)
+    TAGKEYS(               XK_5,            4,                0)
+    TAGKEYS(               XK_6,            5,                0)
+    TAGKEYS(               XK_7,            6,                0)
+    TAGKEYS(               XK_8,            7,                0)
+    TAGKEYS(               XK_9,            8,                0)
+    TAGKEYS(               XK_c,            9,                "google-chrome-stable")
+    TAGKEYS(               XK_m,            10,               "source ~/.profile && netease-cloud-music")
+    TAGKEYS(               XK_p,            11,               "postman")
+    TAGKEYS(               XK_0,            12,               "/opt/deepinwine/apps/Deepin-TIM/run.sh")
 };
 
 /* button definitions */

@@ -88,7 +88,7 @@ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms *
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
-typedef union {
+typedef struct {
 	int i;
 	unsigned int ui;
 	float f;
@@ -2795,8 +2795,13 @@ view(const Arg *arg)
 	int i;
 	unsigned int tmptag;
 
-	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
+	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
+        if (arg->v && selmon->bt == 0) {
+            Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
+            spawn(&a);
+        }
 		return;
+    }
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAGMASK) {
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
@@ -2825,6 +2830,11 @@ view(const Arg *arg)
 
 	focus(NULL);
 	arrange(selmon);
+
+    if (arg->v && selmon->bt == 0) {
+        Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
+        spawn(&a);
+    }
 }
 
 void
