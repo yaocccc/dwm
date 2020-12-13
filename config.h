@@ -16,9 +16,7 @@ static const unsigned int gappov         = 7;        /* vert outer gap between w
 static const int smartgaps               = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar                 = 1;        /* 0 means no bar */
 static const int topbar                  = 1;        /* 0 means bottom bar */
-static const Bool viewontag              = True;     /* Switch view on tag switch */
 static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12" };
-static const char dmenufont[]            = "Liberation Mono:size=12";
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
@@ -63,15 +61,13 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY,TAG, cmd) \
-    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG, .v = cmd} }, \
+#define TAGKEYS(KEY, TAG, cmd1, cmd2) \
+    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG, .v = cmd1} }, \
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-    { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+    { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG, .v = cmd2} }, \
     { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* commands */
-static char dmenumon[2]            = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]      = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *screenshotcmd[] = { "flameshot", "gui", NULL };
 static const char scratchpadname[] = "scratchpad";
 static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "120x40", NULL };
@@ -80,15 +76,17 @@ static Key keys[] = {
     /* modifier            key              function        argument */
     { MODKEY|ShiftMask,    XK_a,            spawn,            {.v = screenshotcmd } },
     { MODKEY,              XK_d,            spawn,            SHCMD("rofi -show run") },
-    { MODKEY|ShiftMask,    XK_d,            spawn,            {.v = dmenucmd } },
     { MODKEY,              XK_F1,           spawn,            SHCMD("pcmanfm") },
-    { MODKEY,              XK_k,            spawn,            SHCMD("killall screenkey || screenkey &") },
+    { MODKEY,              XK_k,            spawn,            SHCMD("killall screenkey || screenkey -p fixed -g 50%x8%+100%-11% &") },
     { MODKEY,              XK_l,            spawn,            SHCMD("blurlock") },
-    { MODKEY,              XK_n,            spawn,            SHCMD("source ~/.profile && netease-cloud-music") },
-    { MODKEY|ShiftMask,    XK_n,            spawn,            SHCMD("pavucontrol") },
-    { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("/opt/deepinwine/apps/Deepin-TIM/run.sh &") },
-    { MODKEY,              XK_w,            spawn,            SHCMD("feh --randomize --bg-fill ~/Pictures/* &") },
+    { MODKEY,              XK_w,            spawn,            SHCMD("feh --randomize --bg-fill ~/Pictures/*.png &") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("st") },
+    { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/set-vol.sh up &") },
+    { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/set-vol.sh down &") },
+    { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/set-vol.sh toggle &") },
+    { MODKEY|ShiftMask,    XK_t,            spawn,            SHCMD("printf 'H%%vhm4KvTya#jdC6sYoSYCLeL^cZ' | xclip -selection c") },
+    { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
+
     { MODKEY,              XK_minus,        togglescratch,    {.v = scratchpadcmd } },
     { MODKEY,              XK_equal,        togglesystray,    {0} },
 
@@ -98,9 +96,7 @@ static Key keys[] = {
     { MODKEY,              XK_Right,        viewtoright,      {0} },
 	{ MODKEY|ShiftMask,    XK_Left,         tagtoleft,        {0} },
 	{ MODKEY|ShiftMask,    XK_Right,        tagtoright,       {0} },
-    { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/set-vol.sh up &") },
-    { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/set-vol.sh down &") },
-    { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/set-vol.sh toggle &") },
+
     { MODKEY,              XK_comma,        setmfact,         {.f = -0.05} },
     { MODKEY,              XK_period,       setmfact,         {.f = +0.05} },
 
@@ -123,29 +119,27 @@ static Key keys[] = {
     { MODKEY,              XK_q,            killclient,       {0} },
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },
 
-    TAGKEYS(               XK_1,            0,                0)
-    TAGKEYS(               XK_2,            1,                0)
-    TAGKEYS(               XK_3,            2,                0)
-    TAGKEYS(               XK_4,            3,                0)
-    TAGKEYS(               XK_5,            4,                0)
-    TAGKEYS(               XK_6,            5,                0)
-    TAGKEYS(               XK_7,            6,                0)
-    TAGKEYS(               XK_8,            7,                0)
-    TAGKEYS(               XK_9,            8,                0)
-    TAGKEYS(               XK_c,            9,                "google-chrome-stable")
-    TAGKEYS(               XK_m,            10,               "source ~/.profile && netease-cloud-music")
-    TAGKEYS(               XK_p,            11,               "postman")
-    TAGKEYS(               XK_0,            12,               "/opt/deepinwine/apps/Deepin-TIM/run.sh")
+    TAGKEYS(XK_1, 0,  0, 0)
+    TAGKEYS(XK_2, 1,  0, 0)
+    TAGKEYS(XK_3, 2,  0, 0)
+    TAGKEYS(XK_4, 3,  0, 0)
+    TAGKEYS(XK_5, 4,  0, 0)
+    TAGKEYS(XK_6, 5,  0, 0)
+    TAGKEYS(XK_7, 6,  0, 0)
+    TAGKEYS(XK_8, 7,  0, 0)
+    TAGKEYS(XK_9, 8,  0, 0)
+    TAGKEYS(XK_c, 9,  "google-chrome-stable", "google-chrome-stable")
+    TAGKEYS(XK_m, 10, "source ~/.profile && netease-cloud-music", "pavucontrol")
+    TAGKEYS(XK_p, 11, "postman", "postman")
+    TAGKEYS(XK_0, 12, "/opt/deepinwine/apps/Deepin-TIM/run.sh", "/opt/deepinwine/apps/Deepin-TIM/run.sh")
 };
 
 /* button definitions */
 static Button buttons[] = {
     /* click               event mask       button            function        argument  */
     { ClkWinTitle,         0,               Button1,          togglewin,      {0} },
-    { ClkWinTitle,         0,               Button2,          zoom,           {0} },
-    { ClkStatusText,       0,               Button2,          spawn,          SHCMD("st") },
+    { ClkStatusText,       0,               Button3,          spawn,          SHCMD("st") },
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },
-    { ClkClientWin,        MODKEY,          Button2,          togglefloating, {0} },
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },
     { ClkTagBar,           0,               Button1,          view,           {0} },
     { ClkTagBar,           0,               Button3,          toggleview,     {0} },

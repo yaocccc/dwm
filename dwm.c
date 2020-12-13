@@ -289,6 +289,7 @@ static void updatewmhints(Client *c);
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
+static void logtofile(const char *str);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static Client *wintosystrayicon(Window w);
@@ -360,6 +361,14 @@ static unsigned int scratchtag = 1 << LENGTH(tags);
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+
+void 
+logtofile(const char *str)
+{
+    char cmd [100];
+    sprintf(cmd, "echo '%s' >> ~/log", str);
+	system(cmd);
+}
 
 /* function implementations */
 void
@@ -2102,8 +2111,6 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
-	if (arg->v == dmenucmd)
-		dmenumon[0] = '0' + selmon->num;
 	selmon->tagset[selmon->seltags] &= ~scratchtag;
 	if (fork() == 0) {
 		if (dpy)
@@ -2123,9 +2130,10 @@ tag(const Arg *arg)
 		selmon->sel->tags = arg->ui & TAGMASK;
 		focus(NULL);
 		arrange(selmon);
-		if(viewontag)
-			view(arg);
-	}
+        const Arg a = {.ui = arg->ui};
+        view(&a);
+	} else
+        view(arg);
 }
 
 void
