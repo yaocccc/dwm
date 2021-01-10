@@ -36,7 +36,7 @@ static const unsigned int alphas[][3]    = {
 };
 
 /* tagging */
-static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q" };
+static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
 static const Rule rules[] = {
     /* class                    instance    title               tags mask     isfloating   monitor */
     { "Google-chrome",          NULL,       NULL,               1 << 9,       0,           -1 },
@@ -44,6 +44,11 @@ static const Rule rules[] = {
     { NULL,                     NULL,       "MySQL Workbench",  1 << 10,      0,           -1 },
     { "Postman",                NULL,       NULL,               1 << 11,      0,           -1 },
     { NULL,                     NULL,       "TIM",              1 << 12,      0,           -1 },
+    { NULL,                     NULL,       "qq",               1 << 12,      1,           -1 },
+    { NULL,                     NULL,       "QQ",               1 << 12,      1,           -1 },
+    { NULL,                     NULL,       "QQ聊天",           1 << 12,      1,           -1 },
+    { NULL,                     NULL,       "微信",             1 << 13,      0,           -1 },
+    { NULL,                     NULL,       "飞书",             1 << 14,      0,           -1 },
     { NULL,                     NULL,       "broken",           0,            1,           -1 },
 };
 
@@ -65,7 +70,6 @@ static const Layout layouts[] = {
     { MODKEY,                       KEY,      view,           {.ui = 1 << TAG, .v = cmd1} }, \
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
     { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG, .v = cmd2} }, \
-    { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* commands */
 static const char *screenshotcmd[] = { "flameshot", "gui", NULL };
@@ -77,9 +81,8 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_a,            spawn,            {.v = screenshotcmd } },
     { MODKEY,              XK_d,            spawn,            SHCMD("rofi -show run") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("pcmanfm") },
-    { MODKEY,              XK_k,            spawn,            SHCMD("killall screenkey || screenkey -p fixed -g 50%x8%+100%-11% &") },
-    { MODKEY,              XK_l,            spawn,            SHCMD("blurlock") },
-    { MODKEY,              XK_w,            spawn,            SHCMD("feh --randomize --bg-fill ~/Pictures/*.png &") },
+    { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("killall screenkey || screenkey -p fixed -g 50%x8%+100%-11% &") },
+    { MODKEY,              XK_k,            spawn,            SHCMD("blurlock") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("st") },
     { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/set-vol.sh up &") },
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/set-vol.sh down &") },
@@ -132,6 +135,8 @@ static Key keys[] = {
     TAGKEYS(XK_m, 10, "source ~/.profile && netease-cloud-music", "pavucontrol")
     TAGKEYS(XK_p, 11, "postman", "postman")
     TAGKEYS(XK_0, 12, "/opt/deepinwine/apps/Deepin-TIM/run.sh", "/opt/deepinwine/apps/Deepin-TIM/run.sh")
+    TAGKEYS(XK_w, 13, "source ~/.profile && wechat-uos", "source ~/.profile && wechat-uos")
+    TAGKEYS(XK_l, 14, "source ~/.profile && cd ~/workspace/electron-lark && electron .", "source ~/.profile && cd ~/workspace/electron-lark && electron .")
 };
 
 /* button definitions */

@@ -546,6 +546,8 @@ buttonpress(XEvent *e)
 			x += blw;
 			c = m->clients;
 
+            if (m->bt == 0) return;
+
 			do {
 				if (!ISVISIBLE(c))
 					continue;
