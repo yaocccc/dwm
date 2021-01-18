@@ -247,6 +247,9 @@ static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
+static void setgaps(const Arg *arg);
+static void sethgaps(const Arg *arg);
+static void setvgaps(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void show(Client *c);
@@ -1344,7 +1347,7 @@ manage(Window w, XWindowAttributes *wa)
 	c->bw = borderpx;
 
 	selmon->tagset[selmon->seltags] &= ~scratchtag;
-	if (!strcmp(c->name, scratchpadname)) {
+	if (!strcmp(c->name, "scratchpad")) {
 		c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;
 		c->isfloating = True;
 		c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
@@ -1964,7 +1967,6 @@ setlayout(const Arg *arg)
 		drawbar(selmon);
 }
 
-/* arg > 1.0 will set mfact absolutely */
 void
 setmfact(const Arg *arg)
 {
@@ -1976,6 +1978,35 @@ setmfact(const Arg *arg)
 	if (f < 0.05 || f > 0.95)
 		return;
 	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
+	arrange(selmon);
+}
+
+void
+setgaps(const Arg *arg)
+{
+	if (!arg) return;
+    selmon->gappih = arg->i + selmon->gappih > 0 ? arg->i + selmon->gappih : 0;
+    selmon->gappiv = arg->i + selmon->gappiv > 0 ? arg->i + selmon->gappiv : 0;
+    selmon->gappoh = arg->i + selmon->gappoh > 0 ? arg->i + selmon->gappoh : 0;
+    selmon->gappov = arg->i + selmon->gappov > 0 ? arg->i + selmon->gappov : 0;
+	arrange(selmon);
+}
+
+void
+sethgaps(const Arg *arg)
+{
+	if (!arg) return;
+    selmon->gappih = arg->i + selmon->gappih > 0 ? arg->i + selmon->gappih : 0;
+    selmon->gappoh = arg->i + selmon->gappoh > 0 ? arg->i + selmon->gappoh : 0;
+	arrange(selmon);
+}
+
+void
+setvgaps(const Arg *arg)
+{
+	if (!arg) return;
+    selmon->gappiv = arg->i + selmon->gappiv > 0 ? arg->i + selmon->gappiv : 0;
+    selmon->gappov = arg->i + selmon->gappov > 0 ? arg->i + selmon->gappov : 0;
 	arrange(selmon);
 }
 
