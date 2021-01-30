@@ -16,7 +16,7 @@ static const float mfact                 = 0.5;       /* 主工作区 大小比�
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
 static const unsigned int snap           = 32;        /* */
 static const int   resizehints           = 1;         /* */
-static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12" };
+static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "Symbola:size=12" };
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
@@ -34,6 +34,7 @@ static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "
 static const Rule rules[] = {
     /* class                    instance    title             tags mask     isfloating   monitor */
     { NULL,                     NULL,      "broken",          0,            1,           -1 },
+    { NULL,                     NULL,      "图片查看",        0,            1,           -1 },
     {"Google-chrome",           NULL,       NULL,             1 << 9,       0,           -1 },
     {"netease-cloud-music",     NULL,       NULL,             1 << 10,      1,           -1 },
     {"Postman",                 NULL,       NULL,             1 << 11,      0,           -1 },
@@ -107,7 +108,6 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/set-vol.sh up &") },
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/set-vol.sh down &") },
     { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/set-vol.sh toggle &") },
-    { MODKEY|ShiftMask,    XK_t,            spawn,            SHCMD("printf 'H%%vhm4KvTya#jdC6sYoSYCLeL^cZ' | xclip -selection c") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
 
     /* super key : 跳转到对应tag */
@@ -128,7 +128,7 @@ static Key keys[] = {
     TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh postman", "~/scripts/app-starter.sh postman")
     TAGKEYS(XK_0, 12, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
     TAGKEYS(XK_w, 13, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
-    TAGKEYS(XK_l, 14, "~/scripts/app-starter.sh wxwork",    "~/scripts/app-starter.sh wxwork")
+    TAGKEYS(XK_l, 14, "~/scripts/app-starter.sh wxwork",  "~/scripts/app-starter.sh wxwork")
 };
 static Button buttons[] = {
     /* click               event mask       button            function        argument  */
