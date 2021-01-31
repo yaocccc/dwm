@@ -5,14 +5,15 @@ static const unsigned int systraypinning = 0;         /* 托盘跟随的显示�
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
 static const unsigned int systrayspacing = 2;         /* 托盘间距 */
 static int showsystray                   = 1;         /* 是否显示托盘栏 */
-static const unsigned int gappih         = 7;         /* 垂直方向 窗口与窗口 缝隙大小 */
-static const unsigned int gappiv         = 7;         /* 水平方向 窗口与窗口 缝隙大小 */
-static const unsigned int gappoh         = 7;         /* 垂直方向 窗口与边缘 缝隙大小 */
-static const unsigned int gappov         = 7;         /* 水平方向 窗口与边缘 缝隙大小 */
+static const unsigned int gappih         = 14;        /* 垂直方向 窗口与窗口 缝隙大小 */
+static const unsigned int gappiv         = 14;        /* 水平方向 窗口与窗口 缝隙大小 */
+static const unsigned int gappoh         = 14;        /* 垂直方向 窗口与边缘 缝隙大小 */
+static const unsigned int gappov         = 14;        /* 水平方向 窗口与边缘 缝隙大小 */
 static const int smartgaps               = 0;         /* 设置为1时 单窗口无缝隙 */
 static const int showbar                 = 1;         /* 是否显示状态栏 */
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.5;       /* 主工作区 大小比例 */
+static const int   dynamicmfact          = 1;         /* 设置为1时 当栈窗口数量大于主窗口数量时 动态分配宽度 --= */
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
 static const unsigned int snap           = 32;        /* */
 static const int   resizehints           = 1;         /* */
@@ -105,9 +106,9 @@ static Key keys[] = {
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh pcmanfm") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
-    { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/set-vol.sh up &") },
-    { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/set-vol.sh down &") },
-    { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/set-vol.sh toggle &") },
+    { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/app-starter.sh set_vol up &") },
+    { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
+    { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/app-starter.sh set_vol toggle &") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
 
     /* super key : 跳转到对应tag */

@@ -1255,15 +1255,11 @@ void
 incnmaster(const Arg *arg)
 {
     int nmaster = selmon->nmaster + arg->i;
-
     if (selmon->bt <= 1)
-        return;
-    if (selmon->bt == 2)
-        nmaster %= 2;
-    if (selmon->bt >= 3)
-        nmaster = nmaster % 3 ? nmaster % 3 : 1;
-
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(nmaster, 0);
+        nmaster = 1;
+    else if (nmaster >= 3)
+        nmaster = 1;
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(nmaster, 1);
 	arrange(selmon);
 }
 
@@ -1308,6 +1304,8 @@ killclient(const Arg *arg)
 		XSync(dpy, False);
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
+        if (selmon->bt <= 2)
+            setlayout(&((Arg) { .v = &layouts[0] }));
 	}
 }
 
@@ -2194,7 +2192,9 @@ tile(Monitor *m)
 		oe = 0; // outer gaps disabled
 	}
 
-	if (n > m->nmaster)
+    if (dynamicmfact && n > 2 * MAX(m->nmaster, 1))
+        mw = m->nmaster ? (m->ww + m->gappiv*ie) * (m->mfact + 0.1) : 0;
+    else if (n > m->nmaster)
 		mw = m->nmaster ? (m->ww + m->gappiv*ie) * m->mfact : 0;
 	else
 		mw = m->ww - 2*m->gappov*oe + m->gappiv*ie;
