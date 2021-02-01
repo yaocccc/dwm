@@ -265,6 +265,7 @@ static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglesystray();
 static void togglefloating(const Arg *arg);
+static void toggleallfloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -1421,8 +1422,8 @@ monocle(Monitor *m)
 	for (c = m->clients; c; c = c->next)
 		if (ISVISIBLE(c))
 			n++;
-	if (n > 0) /* override layout symbol */
-        snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
+ // if (n > 0) /* override layout symbol */
+ //        snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
     if (selmon->showbar)
         for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
             resize(c, m->wx + gap, m->wy + gap, m->ww - 2 * c->bw - 2 * gap, m->wh - 2 * c->bw - 2 * gap, 0);
@@ -2256,6 +2257,29 @@ togglefloating(const Arg *arg)
 	if (selmon->sel->isfloating)
 		resize(selmon->sel, selmon->wx + selmon->ww / 6, selmon->wy + selmon->wh / 6,
 			selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
+	arrange(selmon);
+}
+
+void
+toggleallfloating(const Arg *arg)
+{
+    Client *c = NULL;
+    int allfloating = 1;
+
+	if (!selmon->bt)
+		return;
+	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
+		return;
+	for (c = selmon->clients; c; c = c->next) {
+        if (!c->isfloating) {
+            allfloating = 0;
+            c->isfloating = 1;
+            resize(c, c->x + snap, c->y + snap,
+                MAX(c->w - 2 * snap, snap) , MAX(c->h - 2 * snap, snap), 0);
+        }
+    };
+    if (allfloating)
+        for (c = selmon->clients; c; c->isfloating = 0, c = c->next);
 	arrange(selmon);
 }
 

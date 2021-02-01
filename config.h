@@ -44,9 +44,9 @@ static const Rule rules[] = {
 };
 /* 自定义布局 */
 static const Layout layouts[] = {
-    { "♥",   tile },    /* 平铺 */
-    { "[M]", monocle }, /* 单窗口 */
-    { "><>", NULL },
+    { "﬿",  tile },    /* 平铺 */
+    { "淋", monocle }, /* 单窗口 */
+    { "禎", NULL },    /* 全部窗口浮动 */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -89,7 +89,8 @@ static Key keys[] = {
     
     { MODKEY|ShiftMask,    XK_Return,       zoom,             {0} },                     /* super shift enter  |  将当前聚焦窗口置为主窗口 */
     { MODKEY,              XK_t,            togglefloating,   {0} },                     /* super t            |  开启/关闭 聚焦目标的float模式 */
-	{ MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
+    { MODKEY|ShiftMask,    XK_t,            toggleallfloating,{0} },                     /* super shift t      |  开启/关闭 全部目标的float模式 */
+    { MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
     { MODKEY,              XK_space,        setlayout,        {0} },                     /* super space        |  在 monocle(单窗口) tile(平铺) 模式中切换 */
     { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },              /* super e            |  改变主工作区窗口数量 (1 2中切换) */
     
