@@ -293,7 +293,7 @@ static void updatewmhints(Client *c);
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
-static void logtofile(const char *str);
+static void logtofile(const char *str, int num);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static Client *wintosystrayicon(Window w);
@@ -367,10 +367,10 @@ static unsigned int scratchtag = 1 << LENGTH(tags);
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 void 
-logtofile(const char *str)
+logtofile(const char *str, int num)
 {
     char cmd [100];
-    sprintf(cmd, "echo '%s' >> ~/log", str);
+    sprintf(cmd, "echo '%s %d' >> ~/log", str, num);
 	system(cmd);
 }
 
@@ -1305,9 +1305,9 @@ killclient(const Arg *arg)
 		XSync(dpy, False);
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
-        if (selmon->bt <= 2)
-            setlayout(&((Arg) { .v = &layouts[0] }));
 	}
+    if (selmon->bt <= 2)
+        setlayout(&((Arg) { .v = &layouts[0] }));
 }
 
 void
@@ -2268,18 +2268,20 @@ toggleallfloating(const Arg *arg)
 
 	if (!selmon->bt)
 		return;
-	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
+	if (selmon->sel->isfullscreen)
 		return;
-	for (c = selmon->clients; c; c = c->next) {
-        if (!c->isfloating) {
+	for (c = (Client *)selmon->sel; c; c = c->next) {
+		if (ISVISIBLE(c) && !c->isfloating) {
             allfloating = 0;
             c->isfloating = 1;
             resize(c, c->x + snap, c->y + snap,
                 MAX(c->w - 2 * snap, snap) , MAX(c->h - 2 * snap, snap), 0);
-        }
-    };
+		}
+	}
     if (allfloating)
-        for (c = selmon->clients; c; c->isfloating = 0, c = c->next);
+        for (c = (Client *)selmon->sel; c; c = c->next)
+            if (ISVISIBLE(c))
+                c->isfloating = 0;
 	arrange(selmon);
 }
 

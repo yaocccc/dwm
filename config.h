@@ -36,6 +36,7 @@ static const Rule rules[] = {
     /* class                    instance    title             tags mask     isfloating   monitor */
     { NULL,                     NULL,      "broken",          0,            1,           -1 },
     { NULL,                     NULL,      "图片查看",        0,            1,           -1 },
+    { NULL,                     NULL,      "图片预览",        0,            1,           -1 },
     {"Google-chrome",           NULL,       NULL,             1 << 9,       0,           -1 },
     {"netease-cloud-music",     NULL,       NULL,             1 << 10,      1,           -1 },
     {"Postman",                 NULL,       NULL,             1 << 11,      0,           -1 },
@@ -111,7 +112,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
     { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/app-starter.sh set_vol toggle &") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
-
+    
     /* super key : 跳转到对应tag */
     /* super shift key : 将聚焦窗口移动到对应tag */
     /* 若跳转后的tag无窗口且附加了cmd1或者cmd2就执行对应的cmd */
@@ -126,7 +127,11 @@ static Key keys[] = {
     TAGKEYS(XK_8, 7,  0,  0)
     TAGKEYS(XK_9, 8,  "~/scripts/app-starter.sh pcmanfm", "~/scripts/app-starter.sh pcmanfm")
     TAGKEYS(XK_c, 9,  "~/scripts/app-starter.sh chrome",  "~/scripts/app-starter.sh chrome")
-    TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
+    /* TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol") */
+    /* super(shift、ctrl) m 强制跳转到 m tag 并开启对应程序 (此处这么处理是为了用 super shift m 直接跳转到m 并打开pavucontrol) */
+    { MODKEY,              XK_m,            view,             {.ui = 1 << 10, .v = "~/scripts/app-starter.sh music"} },
+    { MODKEY|ShiftMask,    XK_m,            view,             {.ui = 1 << 10, .v = "~/scripts/app-starter.sh pavucontrol"} },
+    { MODKEY|ControlMask,  XK_m,            toggleview,       {.ui = 1 << 10} },
     TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh postman", "~/scripts/app-starter.sh postman")
     TAGKEYS(XK_0, 12, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
     TAGKEYS(XK_w, 13, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
