@@ -3,7 +3,7 @@
 static const unsigned int borderpx       = 2;         /* 窗口边框大小 */
 static const unsigned int systraypinning = 0;         /* 托盘跟随的显示器 0代表不指定显示器 */
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
-static const unsigned int systrayspacing = 2;         /* 托盘间距 */
+static const unsigned int systrayspacing = 1;         /* 托盘间距 */
 static int showsystray                   = 1;         /* 是否显示托盘栏 */
 static const unsigned int gappih         = 14;        /* 垂直方向 窗口与窗口 缝隙大小 */
 static const unsigned int gappiv         = 14;        /* 水平方向 窗口与窗口 缝隙大小 */
@@ -17,31 +17,27 @@ static const int   dynamicmfact          = 1;         /* 设置为1时 当栈窗
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
 static const unsigned int snap           = 32;        /* */
 static const int   resizehints           = 1;         /* */
-static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "Symbola:size=12" };
-static const char col_gray1[]            = "#222222";
-static const char col_gray2[]            = "#444444";
-static const char col_gray3[]            = "#bbbbbb";
-static const char col_gray4[]            = "#ffffff";
-static const char col_cyan[]             = "#37474F";
-static const char col_border[]           = "#42A5F5";
+static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
 static const unsigned int borderalpha    = 0xdd;      /* 边框透明度 */
-static const char *colors[][3]           = { [SchemeNorm] = { col_gray3, col_gray1, col_gray2  }, [SchemeSel]  = { col_gray4, col_cyan,  col_border }, [SchemeHid]  = { col_cyan,  col_gray1, col_border } };
-static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel]  = { OPAQUE, baralpha, borderalpha } };
+static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#37474F", "#333333", "#42A5F5" } };
+static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha }, [SchemeHid] = { OPAQUE, baralpha, borderalpha } };
 
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
 static const Rule rules[] = {
-    /* class                    instance    title             tags mask     isfloating   monitor */
-    { NULL,                     NULL,      "broken",          0,            1,           -1 },
-    { NULL,                     NULL,      "图片查看",        0,            1,           -1 },
-    { NULL,                     NULL,      "图片预览",        0,            1,           -1 },
-    {"Google-chrome",           NULL,       NULL,             1 << 9,       0,           -1 },
-    {"netease-cloud-music",     NULL,       NULL,             1 << 10,      1,           -1 },
-    {"Postman",                 NULL,       NULL,             1 << 11,      0,           -1 },
-    { NULL,                     NULL,      "TIM",             1 << 12,      0,           -1 },
-    { NULL,                     NULL,      "MySQL Workbench", 1 << 10,      0,           -1 },
+    /* class                 instance              title             tags mask     isfloating   monitor */
+    { NULL,                  NULL,                "broken",          0,            1,           -1 },
+    { NULL,                  NULL,                "图片查看",        0,            1,           -1 },
+    { NULL,                  NULL,                "图片预览",        0,            1,           -1 },
+    {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,           -1 },
+    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      0,           -1 },
+    { NULL,                 "mysql-workbench-bin", NULL,             1 << 10,      0,           -1 },
+    {"Postman",              NULL,                 NULL,             1 << 11,      0,           -1 },
+    { NULL,                 "tim.exe",             NULL,             1 << 12,      0,           -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,           -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,           -1 },
 };
 /* 自定义布局 */
 static const Layout layouts[] = {
@@ -63,14 +59,14 @@ static Key keys[] = {
     /* modifier            key              function          argument */
     { MODKEY,              XK_minus,        togglescratch,    {.v = scratchpadcmd } },   /* super -            |  打开临时小窗 st */
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
-    
+
     { MODKEY,              XK_Tab,          focusstack,       {.i = +1 } },              /* super tab          |  本tag内切换聚焦窗口 */
-	{ MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {.i = +1 } },              /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
-    
+    { MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {.i = +1 } },              /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
+
     { MODKEY,              XK_Left,         viewtoleft,       {0} },                     /* super left         |  聚焦到左边的tag */
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
-	{ MODKEY|ShiftMask,    XK_Left,         tagtoleft,        {0} },                     /* super shift left   |  将本窗口移动到左边tag */
-	{ MODKEY|ShiftMask,    XK_Right,        tagtoright,       {0} },                     /* super shift right  |  将本窗口移动到右边tag */
+    { MODKEY|ShiftMask,    XK_Left,         tagtoleft,        {0} },                     /* super shift left   |  将本窗口移动到左边tag */
+    { MODKEY|ShiftMask,    XK_Right,        tagtoright,       {0} },                     /* super shift right  |  将本窗口移动到右边tag */
 
     { MODKEY,              XK_comma,        setmfact,         {.f = -0.05} },            /* super ,            |  缩小主工作区 */
     { MODKEY,              XK_period,       setmfact,         {.f = +0.05} },            /* super .            |  放大主工作区 */
@@ -87,17 +83,17 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_h,            restorewin,       {0} },                     /* super shift h      |  取消隐藏 窗口 */
     { MODKEY,              XK_o,            hideotherwins,    {0} },                     /* super o            |  隐藏全部其他窗口(o: only) */
     { MODKEY|ShiftMask,    XK_o,            restoreotherwins, {0} },                     /* super shift o      |  取消隐藏 其他窗口 */
-    
+
     { MODKEY|ShiftMask,    XK_Return,       zoom,             {0} },                     /* super shift enter  |  将当前聚焦窗口置为主窗口 */
     { MODKEY,              XK_t,            togglefloating,   {0} },                     /* super t            |  开启/关闭 聚焦目标的float模式 */
     { MODKEY|ShiftMask,    XK_t,            toggleallfloating,{0} },                     /* super shift t      |  开启/关闭 全部目标的float模式 */
     { MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
     { MODKEY,              XK_space,        setlayout,        {0} },                     /* super space        |  在 monocle(单窗口) tile(平铺) 模式中切换 */
     { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },              /* super e            |  改变主工作区窗口数量 (1 2中切换) */
-    
+
     { MODKEY,              XK_b,            focusmon,         {.i = +1 } },              /* super b            |  光标移动到另一个显示器 */
     { MODKEY|ShiftMask,    XK_b,            tagmon,           {.i = +1 } },              /* super shift b      |  将聚焦窗口移动到另一个显示器 */
-    
+
     { MODKEY,              XK_q,            killclient,       {0} },                     /* super q            |  窗口 */
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
 
@@ -112,7 +108,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
     { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/app-starter.sh set_vol toggle &") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
-    
+
     /* super key : 跳转到对应tag */
     /* super shift key : 将聚焦窗口移动到对应tag */
     /* 若跳转后的tag无窗口且附加了cmd1或者cmd2就执行对应的cmd */

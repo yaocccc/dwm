@@ -2797,7 +2797,7 @@ updatesystray(void)
 		XMapRaised(dpy, i->win);
 		w += systrayspacing;
 		i->x = w;
-		XMoveResizeWindow(dpy, i->win, i->x, 0, i->w, i->h);
+		XMoveResizeWindow(dpy, i->win, i->x, i->h < bh ? 1 : 0, i->w, i->h);
 		w += i->w;
 		if (i->mon != m)
 			i->mon = m;
