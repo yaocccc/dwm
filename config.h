@@ -1,7 +1,7 @@
 #include <X11/XF86keysym.h>
 
 static const unsigned int borderpx       = 2;         /* 窗口边框大小 */
-static const unsigned int systraypinning = 0;         /* 托盘跟随的显示器 0代表不指定显示器 */
+static const unsigned int systraypinning = 1;         /* 托盘跟随的显示器 0代表不指定显示器 */
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
 static const unsigned int systrayspacing = 1;         /* 托盘间距 */
 static int showsystray                   = 1;         /* 是否显示托盘栏 */
@@ -20,8 +20,8 @@ static const int   resizehints           = 1;         /* */
 static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
 static const unsigned int borderalpha    = 0xdd;      /* 边框透明度 */
-static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#37474F", "#333333", "#42A5F5" } };
-static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha }, [SchemeHid] = { OPAQUE, baralpha, borderalpha } };
+static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", "#333333", "#42A5F5" } };
+static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha } };
 
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
@@ -106,7 +106,6 @@ static Key keys[] = {
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/app-starter.sh set_vol up &") },
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
-    { MODKEY|ShiftMask,    XK_s,            spawn,            SHCMD("~/scripts/app-starter.sh set_vol toggle &") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
 
     /* super key : 跳转到对应tag */
@@ -123,11 +122,7 @@ static Key keys[] = {
     TAGKEYS(XK_8, 7,  0,  0)
     TAGKEYS(XK_9, 8,  "~/scripts/app-starter.sh pcmanfm", "~/scripts/app-starter.sh pcmanfm")
     TAGKEYS(XK_c, 9,  "~/scripts/app-starter.sh chrome",  "~/scripts/app-starter.sh chrome")
-    /* TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol") */
-    /* super(shift、ctrl) m 强制跳转到 m tag 并开启对应程序 (此处这么处理是为了用 super shift m 直接跳转到m 并打开pavucontrol) */
-    { MODKEY,              XK_m,            view,             {.ui = 1 << 10, .v = "~/scripts/app-starter.sh music"} },
-    { MODKEY|ShiftMask,    XK_m,            view,             {.ui = 1 << 10, .v = "~/scripts/app-starter.sh pavucontrol"} },
-    { MODKEY|ControlMask,  XK_m,            toggleview,       {.ui = 1 << 10} },
+    TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
     TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh postman", "~/scripts/app-starter.sh postman")
     TAGKEYS(XK_0, 12, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
     TAGKEYS(XK_w, 13, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
