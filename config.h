@@ -9,7 +9,6 @@ static const unsigned int gappih         = 14;        /* 垂直方向 窗口与�
 static const unsigned int gappiv         = 14;        /* 水平方向 窗口与窗口 缝隙大小 */
 static const unsigned int gappoh         = 14;        /* 垂直方向 窗口与边缘 缝隙大小 */
 static const unsigned int gappov         = 14;        /* 水平方向 窗口与边缘 缝隙大小 */
-static const int smartgaps               = 0;         /* 设置为1时 单窗口无缝隙 */
 static const int showbar                 = 1;         /* 是否显示状态栏 */
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.5;       /* 主工作区 大小比例 */
