@@ -1309,7 +1309,7 @@ killclient(const Arg *arg)
     for (c = selmon->clients; c; c = c->next)
         if (ISVISIBLE(c) && !HIDDEN(c))
             n++;
-    if (n <= 1)
+    if (n <= 2)
         setlayout(&((Arg) { .v = &layouts[0] }));
 }
 
