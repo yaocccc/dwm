@@ -1961,6 +1961,7 @@ fullscreen(const Arg *arg)
         setlayout(&((Arg) { .v = last_layout }));
     }
     togglebar(arg);
+    updatesystray();
 }
 
 void
