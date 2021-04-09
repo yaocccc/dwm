@@ -1,6 +1,6 @@
 #include <X11/XF86keysym.h>
 
-static const unsigned int borderpx       = 2;         /* 窗口边框大小 */
+static const unsigned int borderpx       = 1;         /* 窗口边框大小 */
 static const unsigned int systraypinning = 1;         /* 托盘跟随的显示器 0代表不指定显示器 */
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
 static const unsigned int systrayspacing = 1;         /* 托盘间距 */
@@ -58,6 +58,7 @@ static Key keys[] = {
     /* modifier            key              function          argument */
     { MODKEY,              XK_minus,        togglescratch,    {.v = scratchpadcmd } },   /* super -            |  打开临时小窗 st */
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
+    { MODKEY|ShiftMask,    XK_space,        togglebar,        {0} },                     /* super shift space  |  切换 状态栏显示状态 */
 
     { MODKEY,              XK_Tab,          focusstack,       {.i = +1 } },              /* super tab          |  本tag内切换聚焦窗口 */
     { MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {.i = +1 } },              /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
