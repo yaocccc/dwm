@@ -42,7 +42,6 @@ static const Rule rules[] = {
 static const Layout layouts[] = {
     { "﬿",  tile },    /* 平铺 */
     { "淋", monocle }, /* 单窗口 */
-    { "禎", NULL },    /* 全部窗口浮动 */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }

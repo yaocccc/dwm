@@ -2272,25 +2272,34 @@ void
 toggleallfloating(const Arg *arg)
 {
     Client *c = NULL;
-    int allfloating = 1;
+    int somefloating = 0;
 
     if (!selmon->bt)
         return;
     if (selmon->sel->isfullscreen)
         return;
-    for (c = (Client *)selmon->sel; c; c = c->next) {
-        if (ISVISIBLE(c) && !c->isfloating) {
-            allfloating = 0;
-            c->isfloating = 1;
-            resize(c, c->x + snap, c->y + snap,
-                    MAX(c->w - 2 * snap, snap) , MAX(c->h - 2 * snap, snap), 0);
+
+    setlayout(&((Arg) { .v = &layouts[0] }));
+
+    for (c = (Client *)selmon->sel; c; c = c->next)
+        if (ISVISIBLE(c) && !HIDDEN(c) && c->isfloating) {
+            somefloating = 1;
+            break;
         }
-    }
-    if (allfloating)
+
+    if (somefloating) {
         for (c = (Client *)selmon->sel; c; c = c->next)
-            if (ISVISIBLE(c))
+            if (ISVISIBLE(c) && !HIDDEN(c))
                 c->isfloating = 0;
-    arrange(selmon);
+        setlayout(&((Arg) { .v = &layouts[0] }));
+    } else {
+        for (c = (Client *)selmon->sel; c; c = c->next)
+            if (ISVISIBLE(c) && !HIDDEN(c)) {
+                c->isfloating = 1;
+                resize(c, c->x + snap, c->y + snap,
+                        MAX(c->w - 2 * snap, snap) , MAX(c->h - 2 * snap, snap), 0);
+            }
+    }
 }
 
 void
