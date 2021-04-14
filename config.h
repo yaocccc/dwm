@@ -1,20 +1,18 @@
 #include <X11/XF86keysym.h>
 
+static int showsystray                   = 1;         /* 是否显示托盘栏 */
+static const int newismaster             = 0;         /* 定义新窗口在栈顶还是栈底 */
 static const unsigned int borderpx       = 1;         /* 窗口边框大小 */
 static const unsigned int systraypinning = 1;         /* 托盘跟随的显示器 0代表不指定显示器 */
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
 static const unsigned int systrayspacing = 1;         /* 托盘间距 */
-static int showsystray                   = 1;         /* 是否显示托盘栏 */
-static const unsigned int gappih         = 14;        /* 垂直方向 窗口与窗口 缝隙大小 */
-static const unsigned int gappiv         = 14;        /* 水平方向 窗口与窗口 缝隙大小 */
-static const unsigned int gappoh         = 14;        /* 垂直方向 窗口与边缘 缝隙大小 */
-static const unsigned int gappov         = 14;        /* 水平方向 窗口与边缘 缝隙大小 */
+static const unsigned int gappi          = 12;        /* 窗口与窗口 缝隙大小 */
+static const unsigned int gappo          = 10;        /* 窗口与边缘 缝隙大小 */
 static const int showbar                 = 1;         /* 是否显示状态栏 */
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
-static const float mfact                 = 0.5;       /* 主工作区 大小比例 */
-static const int   dynamicmfact          = 1;         /* 设置为1时 当栈窗口数量大于主窗口数量时 动态分配宽度 --= */
+static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
-static const unsigned int snap           = 32;        /* */
+static const unsigned int snap           = 10;        /* */
 static const int   resizehints           = 1;         /* */
 static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
@@ -26,22 +24,23 @@ static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, 
 /* 自定义特定实例的显示状态 */
 static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
 static const Rule rules[] = {
-    /* class                 instance              title             tags mask     isfloating   monitor */
-    { NULL,                  NULL,                "broken",          0,            1,           -1 },
-    { NULL,                  NULL,                "图片查看",        0,            1,           -1 },
-    { NULL,                  NULL,                "图片预览",        0,            1,           -1 },
-    {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,           -1 },
-    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      0,           -1 },
-    { NULL,                 "mysql-workbench-bin", NULL,             1 << 10,      0,           -1 },
-    {"Postman",              NULL,                 NULL,             1 << 11,      0,           -1 },
-    { NULL,                 "tim.exe",             NULL,             1 << 12,      0,           -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,           -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,           -1 },
+    /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
+    {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },
+    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          0,            -1 },
+    {"Postman",              NULL,                 NULL,             1 << 11,      0,          0,            -1 },
+    { NULL,                 "tim.exe",             NULL,             1 << 12,      0,          0,            -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,          0,            -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,          0,            -1 },
+    { NULL,                  NULL,                "tty-clock",       0,            0,          1,            -1 },
+    { NULL,                 "broken",              NULL,             0,            1,          0,            -1 },
+    { NULL,                  NULL,                "图片查看",        0,            1,          0,            -1 },
+    { NULL,                  NULL,                "图片预览",        0,            1,          0,            -1 },
 };
+
 /* 自定义布局 */
 static const Layout layouts[] = {
-    { "﬿",  tile },    /* 平铺 */
-    { "淋", monocle }, /* 单窗口 */
+    { "﬿",  tile },    /* 主次栈 */
+    { "",  grid },    /* 网格 */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -57,10 +56,9 @@ static Key keys[] = {
     /* modifier            key              function          argument */
     { MODKEY,              XK_minus,        togglescratch,    {.v = scratchpadcmd } },   /* super -            |  打开临时小窗 st */
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
-    { MODKEY|ShiftMask,    XK_space,        togglebar,        {0} },                     /* super shift space  |  切换 状态栏显示状态 */
 
-    { MODKEY,              XK_Tab,          focusstack,       {.i = +1 } },              /* super tab          |  本tag内切换聚焦窗口 */
-    { MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {.i = +1 } },              /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
+    { MODKEY,              XK_Tab,          focusstack,       {0} },                     /* super tab          |  本tag内切换聚焦窗口 */
+    { MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {0} },                     /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
 
     { MODKEY,              XK_Left,         viewtoleft,       {0} },                     /* super left         |  聚焦到左边的tag */
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
@@ -71,23 +69,15 @@ static Key keys[] = {
     { MODKEY,              XK_period,       setmfact,         {.f = +0.05} },            /* super .            |  放大主工作区 */
     { MODKEY|ControlMask,  XK_comma,        setmfact,         {.f = -0.05} },            /* super ctrl ,       |  缩小主工作区 */
     { MODKEY|ControlMask,  XK_period,       setmfact,         {.f = +0.05} },            /* super ctrl .       |  放大主工作区 */
-    { MODKEY|ControlMask,  XK_minus,        setgaps,          {.i = +7} },               /* super ctrl -       |  放大间隙 */
-    { MODKEY|ControlMask,  XK_equal,        setgaps,          {.i = -7} },               /* super ctrl +       |  缩小间隙 */
-    { MODKEY|ControlMask,  XK_Left,         setvgaps,         {.i = +7} },               /* super ctrl left    |  放大水平间隙 */
-    { MODKEY|ControlMask,  XK_Right,        setvgaps,         {.i = -7} },               /* super ctrl right   |  缩小水平间隙 */
-    { MODKEY|ControlMask,  XK_Down,         sethgaps,         {.i = +7} },               /* super ctrl down    |  放大垂直间隙 */
-    { MODKEY|ControlMask,  XK_Up,           sethgaps,         {.i = -7} },               /* super ctrl up      |  缩小垂直间隙 */
 
     { MODKEY,              XK_h,            hidewin,          {0} },                     /* super h            |  隐藏 窗口 */
     { MODKEY|ShiftMask,    XK_h,            restorewin,       {0} },                     /* super shift h      |  取消隐藏 窗口 */
-    { MODKEY,              XK_o,            hideotherwins,    {0} },                     /* super o            |  隐藏全部其他窗口(o: only) */
-    { MODKEY|ShiftMask,    XK_o,            restoreotherwins, {0} },                     /* super shift o      |  取消隐藏 其他窗口 */
 
     { MODKEY|ShiftMask,    XK_Return,       zoom,             {0} },                     /* super shift enter  |  将当前聚焦窗口置为主窗口 */
     { MODKEY,              XK_t,            togglefloating,   {0} },                     /* super t            |  开启/关闭 聚焦目标的float模式 */
     { MODKEY|ShiftMask,    XK_t,            toggleallfloating,{0} },                     /* super shift t      |  开启/关闭 全部目标的float模式 */
     { MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
-    { MODKEY,              XK_space,        setlayout,        {0} },                     /* super space        |  在 monocle(单窗口) tile(平铺) 模式中切换 */
+    { MODKEY|ShiftMask,    XK_f,            togglebar,        {0} },                     /* super shift f      |  开启/关闭 状态栏 */
     { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },              /* super e            |  改变主工作区窗口数量 (1 2中切换) */
 
     { MODKEY,              XK_b,            focusmon,         {.i = +1 } },              /* super b            |  光标移动到另一个显示器 */
@@ -95,6 +85,9 @@ static Key keys[] = {
 
     { MODKEY,              XK_q,            killclient,       {0} },                     /* super q            |  窗口 */
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
+
+    { MODKEY,              XK_space,        togglehideotherwins,{0} },                   /* super space        |  隐藏全部其他窗口 | 显示全部窗口 */
+	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.i = +1} },               /* super shift space  |  在主次栈模式和网格模式中切换 */
 
     /* spawn + SHCMD 执行对应命令 */
     { MODKEY|ShiftMask,    XK_a,            spawn,            SHCMD("~/scripts/app-starter.sh flameshot") },
@@ -109,6 +102,7 @@ static Key keys[] = {
 
     /* super key : 跳转到对应tag */
     /* super shift key : 将聚焦窗口移动到对应tag */
+    /* super ctrl  key : 切换同时显示对应tag */
     /* 若跳转后的tag无窗口且附加了cmd1或者cmd2就执行对应的cmd */
     /* key tag cmd1 cmd2 */
     TAGKEYS(XK_1, 0,  0,  0)
@@ -130,7 +124,7 @@ static Key keys[] = {
 static Button buttons[] = {
     /* click               event mask       button            function        argument  */
     { ClkWinTitle,         0,               Button1,          togglewin,      {0} },    // 左键        |  点击标题  |  切换窗口隐藏状态
-    { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag 
+    { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
     { ClkTagBar,           0,               Button3,          toggleview,     {0} },    // 右键        |  点击tag   |  显示tag
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },    // super+右键  |  拖拽窗口  |  改变窗口大小

@@ -1,3 +1,5 @@
 dwm
 *.o
 .ccls-cache/
+compile_commands.json
+.cache
