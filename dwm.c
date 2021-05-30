@@ -199,8 +199,6 @@ static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
-static void enqueue(Client *c);
-static void enqueuestack(Client *c);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
@@ -266,7 +264,6 @@ static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
-static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void togglewin(const Arg *arg);
 static void togglehideotherwins(const Arg *arg);
@@ -976,28 +973,6 @@ drawbars(void)
 
     for (m = mons; m; m = m->next)
         drawbar(m);
-}
-
-void
-enqueue(Client *c)
-{
-    Client *l;
-    for (l = c->mon->clients; l && l->next; l = l->next);
-    if (l) {
-        l->next = c;
-        c->next = NULL;
-    }
-}
-
-void
-enqueuestack(Client *c)
-{
-    Client *l;
-    for (l = c->mon->stack; l && l->snext; l = l->snext);
-    if (l) {
-        l->snext = c;
-        c->snext = NULL;
-    }
 }
 
 void
@@ -2273,21 +2248,6 @@ togglescratch(const Arg *arg)
         arrange(selmon);
     } else
         spawn(arg);
-}
-
-void
-toggletag(const Arg *arg)
-{
-    unsigned int newtags;
-
-    if (!selmon->sel)
-        return;
-    newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
-    if (newtags) {
-        selmon->sel->tags = newtags;
-        focus(NULL);
-        arrange(selmon);
-    }
 }
 
 void
