@@ -234,7 +234,6 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
-static void rotatestack(const Arg *arg);
 static void run(void);
 static void runAutostart(void);
 static void scan(void);
@@ -290,7 +289,7 @@ static void updatewmhints(Client *c);
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
-static void logtofile(const char *str, int num);
+static void logtofile(const char *str, int num, int num2);
 static void tile(Monitor *m);
 static void grid(Monitor *m);
 static Client *wintoclient(Window w);
@@ -364,10 +363,10 @@ Client *scratchclient;
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 void
-logtofile(const char *str, int num)
+logtofile(const char *str, int num, int num2)
 {
     char cmd [100];
-    sprintf(cmd, "echo '%s %d' >> ~/log", str, num);
+    sprintf(cmd, "echo '%s %d %d' >> ~/log", str, num, num2);
     system(cmd);
 }
 
@@ -1062,7 +1061,9 @@ focusstack(const Arg *arg)
 {
     Client *c = NULL, *tc = selmon->sel;
     int n = 0;
-    for (c = selmon->clients; c && ISVISIBLE(c); c = c->next, n++);
+
+    for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
+    for (; c && ISVISIBLE(c); c = c->next, n++);
 
     if (!tc)
         tc = selmon->clients;
@@ -1729,28 +1730,6 @@ restack(Monitor *m)
     }
     XSync(dpy, False);
     while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
-}
-
-void
-rotatestack(const Arg *arg)
-{
-    Client *c = NULL, *f;
-
-    if (!selmon->sel)
-        return;
-    f = selmon->sel;
-    for (c = nexttiled(selmon->clients); c && nexttiled(c->next); c = nexttiled(c->next));
-    if (c){
-        detach(c);
-        attach(c);
-        detachstack(c);
-        attachstack(c);
-    }
-    if (c){
-        arrange(selmon);
-        focus(f);
-        restack(selmon);
-    }
 }
 
 void
@@ -2938,7 +2917,7 @@ grid(Monitor *m) {
     unsigned int cols, rows;
 	Client *c;
 
-	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
     if (n == 0) return;
     if (n == 2) rows = 1, cols = 2;
     else {

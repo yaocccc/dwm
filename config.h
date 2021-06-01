@@ -58,7 +58,6 @@ static Key keys[] = {
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
 
     { MODKEY,              XK_Tab,          focusstack,       {0} },                     /* super tab          |  本tag内切换聚焦窗口 */
-    { MODKEY|ShiftMask,    XK_Tab,          rotatestack,      {0} },                     /* super shift tab    |  同上 并将新聚焦的窗口置为主窗口 */
 
     { MODKEY,              XK_Left,         viewtoleft,       {0} },                     /* super left         |  聚焦到左边的tag */
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
