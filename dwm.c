@@ -265,6 +265,7 @@ static void toggleallfloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void togglewin(const Arg *arg);
+static void focusonewin(const Arg *arg);
 static void togglehideotherwins(const Arg *arg);
 static void hidewin(const Arg *arg);
 static void restorewin(const Arg *arg);
@@ -1060,26 +1061,21 @@ void
 focusstack(const Arg *arg)
 {
     Client *c = NULL, *tc = selmon->sel;
-    int n = 0;
 
     for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
-    for (; c && ISVISIBLE(c); c = c->next, n++);
 
     if (!tc)
         tc = selmon->clients;
     if (!tc)
         return;
 
-    if (issinglewin(NULL) && n > 1) {
+    if (issinglewin(NULL)) {
         for (c = tc->next; c && !ISVISIBLE(c); c = c->next);
         if (!c)
             for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
         if (c) {
-            _show(c);
-            _hide(tc);
-
-            focus(c);
-            arrangemon(selmon);
+            const Arg a = { .v = c };
+            focusonewin(&a);
         }
     } else {
         for (c = tc->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
@@ -2351,23 +2347,32 @@ void
 togglewin(const Arg *arg)
 {
     Client *c = (Client*)arg->v;
-    Client *tc = selmon->sel;
-
-    if (issinglewin(NULL)) {
-            _show(c);
-            _hide(tc);
-            focus(NULL);
-            arrangemon(selmon);
-    } else {
-        if (c == selmon->sel)
-            hide(c);
-        else {
-            if (HIDDEN(c))
-                show(c);
-            focus(c);
-            restack(selmon);
-        }
+    if (c == selmon->sel)
+        hide(c);
+    else {
+        if (HIDDEN(c))
+            show(c);
+        focus(c);
+        restack(selmon);
     }
+}
+
+void
+focusonewin(const Arg *arg)
+{
+    Client *c = (Client*)arg->v;
+    Client *tc = NULL;
+
+    for (tc = selmon->clients; tc && !ISVISIBLE(tc); tc = tc->next) ;
+    for(; tc && ISVISIBLE(tc); tc = tc->next)
+        if (tc != c)
+            _hide(tc);
+    if (c) {
+        if (HIDDEN(c))
+            _show(c);
+        focus(c);
+    }
+    arrangemon(selmon);
 }
 
 void
