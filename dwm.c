@@ -178,6 +178,11 @@ struct Systray {
 };
 
 /* function declarations */
+static void logtofile(const char *str, int num, int num2);
+
+static void tile(Monitor *m);
+static void grid(Monitor *m);
+
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
 static void arrange(Monitor *m);
@@ -197,25 +202,32 @@ static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+
 static void drawbar(Monitor *m);
 static void drawbars(void);
+
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
-static void focus(Client *c);
+
 static void focusin(XEvent *e);
+static void focus(Client *c);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static unsigned int getsystraywidth();
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
+
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void hide(Client *c);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
+
 static void killclient(const Arg *arg);
+
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -225,6 +237,12 @@ static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
+static void setup(void);
+static void seturgent(Client *c, int urg);
+static void sigchld(int unused);
+static void spawn(const Arg *arg);
+static Monitor *systraytomon(Monitor *m);
+
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
@@ -233,6 +251,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
+
 static void run(void);
 static void runAutostart(void);
 static void scan(void);
@@ -240,36 +259,40 @@ static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, lon
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
-static void setfullscreen(Client *c, int fullscreen);
-static void fullscreen(const Arg *arg);
+
 static void selectlayout(const Arg *arg);
 static void setlayout(const Arg *arg);
+
+static void fullscreen(const Arg *arg);
+static void setfullscreen(Client *c, int fullscreen);
 static void setmfact(const Arg *arg);
-static void setup(void);
-static void seturgent(Client *c, int urg);
-static void show(Client *c);
-static void showhide(Client *c);
-static void sigchld(int unused);
-static void spawn(const Arg *arg);
-static Monitor *systraytomon(Monitor *m);
+
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tagtoleft(const Arg *arg);
 static void tagtoright(const Arg *arg);
+
 static void togglebar(const Arg *arg);
 static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
-static void toggleview(const Arg *arg);
+
+static void show(Client *c);
+static void showhide(Client *c);
+
+static int issinglewin(const Arg *arg);
 static void togglewin(const Arg *arg);
 static void toggleallhidewins(const Arg *arg);
 static void hidewin(const Arg *arg);
-static void restorewin(const Arg *arg);
 static void hideotherwins(const Arg *arg);
+static void showallwins(const Arg *arg);
+
+static void restorewin(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
+
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
@@ -283,12 +306,11 @@ static void updatesystrayiconstate(Client *i, XPropertyEvent *ev);
 static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
+
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
-static void logtofile(const char *str, int num, int num2);
-static void tile(Monitor *m);
-static void grid(Monitor *m);
+
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static Client *wintosystrayicon(Window w);
@@ -1068,7 +1090,7 @@ focusstack(const Arg *arg)
             for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
         if (c) {
             const Arg carg = { .v = c };
-            focusonewin(&carg);
+            hideotherwins(&carg);
         }
     } else {
         for (c = tc->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
@@ -2203,47 +2225,10 @@ togglescratch(const Arg *arg)
 }
 
 void
-toggleview(const Arg *arg)
-{
-    unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
-    int i;
-
-    if (newtagset) {
-        selmon->tagset[selmon->seltags] = newtagset;
-
-        if (newtagset == ~0) {
-            selmon->pertag->prevtag = selmon->pertag->curtag;
-            selmon->pertag->curtag = 0;
-        }
-
-        /* test if the user did not select the same tag */
-        if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
-            selmon->pertag->prevtag = selmon->pertag->curtag;
-            for (i = 0; !(newtagset & 1 << i); i++) ;
-            selmon->pertag->curtag = i + 1;
-        }
-
-        /* apply settings for this view */
-        selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
-        selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-        selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
-        selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-        selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
-
-        if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
-            togglebar(NULL);
-
-        focus(NULL);
-        arrange(selmon);
-    }
-}
-
-void
 restorewin(const Arg *arg) {
     int i = hiddenWinStackTop;
     while (i > -1) {
-        if (HIDDEN(hiddenWinStack[i]) &&
-                hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
+        if (HIDDEN(hiddenWinStack[i]) && ISVISIBLE(hiddenWinStack[i])) {
             show(hiddenWinStack[i]);
             focus(hiddenWinStack[i]);
             restack(selmon);
@@ -2263,23 +2248,26 @@ hidewin(const Arg *arg) {
 
 void
 toggleallhidewins(const Arg *arg) {
-    if (issinglewin(NULL) || (selmon && !selmon->sel)) {
-        int i;
-        for (i = 0; i <= hiddenWinStackTop; ++i) {
-            if (HIDDEN(hiddenWinStack[i]) &&
-                    hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
-                show(hiddenWinStack[i]);
-                restack(selmon);
-                memcpy(hiddenWinStack + i, hiddenWinStack + i + 1, (hiddenWinStackTop - i) * sizeof(Client *));
-                --i;
-            }
-        }
+    if (issinglewin(NULL) || !selmon->sel) {
+        showallwins(NULL);
     } else {
-        const Arg carg = { .v = selmon->sel };
-        hideotherwins(&carg);
+        const Arg cArg = { .v = selmon->sel };
+        hideotherwins(&cArg);
     }
 }
 
+void
+showallwins(const Arg *arg) {
+    int i;
+    for (i = 0; i <= hiddenWinStackTop; ++i) {
+        if (HIDDEN(hiddenWinStack[i]) && ISVISIBLE(hiddenWinStack[i])) {
+            show(hiddenWinStack[i]);
+            restack(selmon);
+            memcpy(hiddenWinStack + i, hiddenWinStack + i + 1, (hiddenWinStackTop - i) * sizeof(Client *));
+            --i;
+        }
+    }
+}
 
 void
 hideotherwins(const Arg *arg) {
@@ -2288,6 +2276,7 @@ hideotherwins(const Arg *arg) {
         if (tc != c && ISVISIBLE(tc))
             hide(tc);
     show(c);
+    focus(c);
 }
 
 int
