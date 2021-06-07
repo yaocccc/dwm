@@ -85,7 +85,7 @@ static Key keys[] = {
     { MODKEY,              XK_q,            killclient,       {0} },                     /* super q            |  窗口 */
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
 
-    { MODKEY,              XK_space,        togglehideotherwins,{0} },                   /* super space        |  隐藏全部其他窗口 | 显示全部窗口 */
+    { MODKEY,              XK_space,        toggleallhidewins,{0} },                     /* super space        |  隐藏全部其他窗口 | 显示全部窗口 */
 	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.i = +1} },               /* super shift space  |  在主次栈模式和网格模式中切换 */
 
     /* spawn + SHCMD 执行对应命令 */
@@ -122,8 +122,8 @@ static Key keys[] = {
 };
 static Button buttons[] = {
     /* click               event mask       button            function        argument  */
-    { ClkWinTitle,         0,               Button1,          focusonewin,    {0} },    // 左键        |  点击标题  |
-    { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 左键        |  点击标题  |
+    { ClkWinTitle,         0,               Button1,          hideotherwins,  {0} },    // 左键        |  点击标题  |  隐藏其他窗口仅保留该窗口
+    { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 右键        |  点击标题  |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
     { ClkTagBar,           0,               Button3,          toggleview,     {0} },    // 右键        |  点击tag   |  显示tag
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
