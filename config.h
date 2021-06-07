@@ -48,7 +48,6 @@ static const Layout layouts[] = {
 #define TAGKEYS(KEY, TAG, cmd1, cmd2) \
     { MODKEY,              KEY, view,       {.ui = 1 << TAG, .v = cmd1} }, \
     { MODKEY|ShiftMask,    KEY, tag,        {.ui = 1 << TAG, .v = cmd2} }, \
-    { MODKEY|ControlMask,  KEY, toggleview, {.ui = 1 << TAG} }, \
 
 static const char *scratchpadcmd[] = { "st", "-t", "scratchpad", "-g", "120x40", NULL }; // 临时小窗口的启动命令
 
@@ -125,7 +124,6 @@ static Button buttons[] = {
     { ClkWinTitle,         0,               Button1,          hideotherwins,  {0} },    // 左键        |  点击标题  |  隐藏其他窗口仅保留该窗口
     { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 右键        |  点击标题  |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
-    { ClkTagBar,           0,               Button3,          toggleview,     {0} },    // 右键        |  点击tag   |  显示tag
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },    // super+右键  |  拖拽窗口  |  改变窗口大小
     { ClkTagBar,           MODKEY,          Button1,          tag,            {0} },    // super+左键  |  点击tag   |  将窗口移动到对应tag
