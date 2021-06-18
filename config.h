@@ -27,6 +27,7 @@ static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
     {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },
     {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          0,            -1 },
+    {"qqmusic",              NULL,                 NULL,             1 << 10,      1,          0,            -1 },
     {"Postman",              NULL,                 NULL,             1 << 11,      0,          0,            -1 },
     { NULL,                 "tim.exe",             NULL,             1 << 12,      0,          0,            -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,          0,            -1 },
