@@ -125,6 +125,7 @@ static Button buttons[] = {
     { ClkWinTitle,         0,               Button1,          hideotherwins,  {0} },    // 左键        |  点击标题  |  隐藏其他窗口仅保留该窗口
     { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 右键        |  点击标题  |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
+    // { ClkClientWin,        0,               Button1,          focus,          {0} },    // 左键        |  点击窗口  |  选中窗口
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },    // super+右键  |  拖拽窗口  |  改变窗口大小
     { ClkTagBar,           MODKEY,          Button1,          tag,            {0} },    // super+左键  |  点击tag   |  将窗口移动到对应tag
