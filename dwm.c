@@ -2732,9 +2732,14 @@ view(const Arg *arg)
 {
     int i;
     unsigned int tmptag;
+    Client *c;
+    int n = 0;
+    for (c = selmon->clients; c; c = c->next)
+        if (c->tags & arg->ui && !HIDDEN(c) && c->isfloating == 0)
+            n++;
 
     if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
-        if (arg->v && selmon->bt == 0) {
+        if (arg->v && n == 0) {
             Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
             spawn(&a);
         }
@@ -2769,7 +2774,7 @@ view(const Arg *arg)
     focus(NULL);
     arrange(selmon);
 
-    if (arg->v && selmon->bt == 0) {
+    if (arg->v && n == 0) {
         Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
         spawn(&a);
     }
