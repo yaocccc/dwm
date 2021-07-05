@@ -12,17 +12,18 @@ static const int showbar                 = 1;         /* 是否显示状态栏 *
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
-static const unsigned int snap           = 10;        /* */
-static const int   resizehints           = 1;         /* */
-static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=12", "JoyPixels:pixelsize=12:antialias=true:autohint=true" };
+static const unsigned int snap           = 10;        /* 边缘依附宽度 */
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
 static const unsigned int borderalpha    = 0xdd;      /* 边框透明度 */
+static const int   resizehints           = 1;         /* */
+static const char *fonts[]               = { "JetBrainsMono Nerd Font Mono:size=14", "JoyPixels:pixelsize=14:antialias=true:autohint=true" };
 static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", "#333333", "#42A5F5" } };
 static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha } };
 
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
-static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
+// static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
+static const char *tags[] = { "", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "", "", "", "", "", "", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
     {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },

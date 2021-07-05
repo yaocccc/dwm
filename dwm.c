@@ -1162,7 +1162,7 @@ getsystraywidth()
     unsigned int w = 0;
     Client *i;
     if(showsystray)
-        for(i = systray->icons; i; w += i->w + systrayspacing, i = i->next) ;
+        for(i = systray->icons; i; w += MAX(i->w, bh) + systrayspacing, i = i->next) ;
     return w ? w + systrayspacing : 1;
 }
 
@@ -2668,8 +2668,8 @@ updatesystray(void)
         XMapRaised(dpy, i->win);
         w += systrayspacing;
         i->x = w;
-        XMoveResizeWindow(dpy, i->win, i->x, i->h < bh ? 1 : 0, i->w, i->h);
-        w += i->w;
+        XMoveResizeWindow(dpy, i->win, i->x, 0, MAX(i->w, bh), bh);
+        w += MAX(i->w, bh);
         if (i->mon != m)
             i->mon = m;
     }
@@ -2789,7 +2789,8 @@ viewtoleft(const Arg *arg) {
             selmon->seltags ^= 1; /* toggle sel tagset */
             selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
             focus(NULL);
-            arrange(selmon);
+            if (selmon->bt)
+                arrange(selmon);
         } else
             break;
     } while (selmon->bt == 0);
@@ -2806,7 +2807,8 @@ viewtoright(const Arg *arg) {
             selmon->seltags ^= 1; /* toggle sel tagset */
             selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
             focus(NULL);
-            arrange(selmon);
+            if (selmon->bt)
+                arrange(selmon);
         } else
             break;
     } while (selmon->bt == 0);
