@@ -7,7 +7,7 @@ static const unsigned int systraypinning = 1;         /* 托盘跟随的显示�
 static const int systraypinningfailfirst = 1;         /* 托盘跟随的显示器 0代表上个聚焦的显示器 1代表当前聚焦的显示器 */
 static const unsigned int systrayspacing = 1;         /* 托盘间距 */
 static const unsigned int gappi          = 12;        /* 窗口与窗口 缝隙大小 */
-static const unsigned int gappo          = 10;        /* 窗口与边缘 缝隙大小 */
+static const unsigned int gappo          = 12;        /* 窗口与边缘 缝隙大小 */
 static const int showbar                 = 1;         /* 是否显示状态栏 */
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
@@ -28,13 +28,13 @@ static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
     {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },
     {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          0,            -1 },
-    {"qqmusic",              NULL,                 NULL,             1 << 10,      1,          0,            -1 },
+    {"qqmusic",              NULL,                 NULL,             1 << 10,      0,          0,            -1 },
     {"Postman",              NULL,                 NULL,             1 << 11,      0,          0,            -1 },
     { NULL,                 "tim.exe",             NULL,             1 << 12,      0,          0,            -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,          0,            -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,          0,            -1 },
     { NULL,                  NULL,                "tty-clock",       0,            0,          1,            -1 },
-    { NULL,                 "broken",              NULL,             0,            1,          0,            -1 },
+    { NULL,                  NULL,                "broken",          0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片查看",        0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,            -1 },
 };
@@ -88,6 +88,10 @@ static Key keys[] = {
 
     { MODKEY,              XK_space,        toggleallhidewins,{0} },                     /* super space        |  隐藏全部其他窗口 | 显示全部窗口 */
 	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.i = +1} },               /* super shift space  |  在主次栈模式和网格模式中切换 */
+
+    { MODKEY|ControlMask,  XK_Up,           setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
+    { MODKEY|ControlMask,  XK_Down,         setgap,           {.i = +6} },               /* super ctrl down    |  窗口减小 */
+    { MODKEY|ControlMask,  XK_space,        setgap,           {.i = 0} },                /* super ctrl space   |  窗口重置 */
 
     /* spawn + SHCMD 执行对应命令 */
     { MODKEY|ShiftMask,    XK_a,            spawn,            SHCMD("~/scripts/app-starter.sh flameshot") },

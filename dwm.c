@@ -307,6 +307,8 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 
+static void setgap(const Arg *arg);
+
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
@@ -2725,6 +2727,14 @@ updatewmhints(Client *c)
             c->neverfocus = 0;
         XFree(wmh);
     }
+}
+
+void
+setgap(const Arg *arg)
+{
+    selmon->gappih = selmon->gappiv = arg->i ? MAX(selmon->gappiv + arg->i, 0) : gappi;
+    selmon->gappoh = selmon->gappov = arg->i ? MAX(selmon->gappov + arg->i, 0) : gappo;
+    arrange(selmon);
 }
 
 void
