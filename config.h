@@ -33,10 +33,10 @@ static const Rule rules[] = {
     { NULL,                 "tim.exe",             NULL,             1 << 12,      0,          0,            -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,          0,            -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,          0,            -1 },
-    { NULL,                  NULL,                "tty-clock",       0,            0,          1,            -1 },
     { NULL,                  NULL,                "broken",          0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片查看",        0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,            -1 },
+    {"rdesktop",             NULL,                 NULL,             1 << 8,       1,          0,            -1 },
 };
 
 /* 自定义布局 */
@@ -100,6 +100,7 @@ static Key keys[] = {
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh pcmanfm") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
+    { MODKEY|ControlMask,  XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh ast") },
     { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/app-starter.sh set_vol up &") },
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
