@@ -1076,30 +1076,41 @@ focusmon(const Arg *arg)
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
 }
 
+Client *tempClients[100];
 void
 focusstack(const Arg *arg)
 {
     Client *c = NULL, *tc = selmon->sel;
+    int last = -1, cur = 0, issingle = issinglewin(NULL);
 
     if (!tc)
         tc = selmon->clients;
     if (!tc)
         return;
 
-    if (issinglewin(NULL)) {
-        for (c = tc->next; c && !ISVISIBLE(c); c = c->next);
-        if (!c)
-            for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
+    for (c = selmon->clients; c; c = c->next) {
+        if (ISVISIBLE(c) && (issingle || !HIDDEN(c))) {
+            last ++;
+            tempClients[last] = c;
+            if (c == tc) cur = last;
+        }
+    }
+    if (last < 0) return;
+
+    if (arg && arg->i == -1) {
+        if (cur - 1 >= 0) c = tempClients[cur - 1];
+        else c = tempClients[last];
+    } else {
+        if (cur + 1 <= last) c = tempClients[cur + 1];
+        else c = tempClients[0];
+    }
+
+    if (issingle) {
         if (c) {
             const Arg carg = { .v = c };
             hideotherwins(&carg);
         }
     } else {
-        for (c = tc->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
-        if (!c)
-            for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
-        if (!c)
-            c = tc;
         if (c) {
             focus(c);
             restack(selmon);

@@ -59,6 +59,8 @@ static Key keys[] = {
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
 
     { MODKEY,              XK_Tab,          focusstack,       {0} },                     /* super tab          |  本tag内切换聚焦窗口 */
+    { MODKEY,              XK_Up,           focusstack,       {.i = -1} },               /* super up           |  本tag内切换聚焦窗口 */
+    { MODKEY,              XK_Down,         focusstack,       {0} },                     /* super down         |  本tag内切换聚焦窗口 */
 
     { MODKEY,              XK_Left,         viewtoleft,       {0} },                     /* super left         |  聚焦到左边的tag */
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
@@ -131,7 +133,6 @@ static Button buttons[] = {
     { ClkWinTitle,         0,               Button1,          hideotherwins,  {0} },    // 左键        |  点击标题  |  隐藏其他窗口仅保留该窗口
     { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 右键        |  点击标题  |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
-    // { ClkClientWin,        0,               Button1,          focus,          {0} },    // 左键        |  点击窗口  |  选中窗口
     { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },    // super+右键  |  拖拽窗口  |  改变窗口大小
     { ClkTagBar,           MODKEY,          Button1,          tag,            {0} },    // super+左键  |  点击tag   |  将窗口移动到对应tag
