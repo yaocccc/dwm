@@ -2751,6 +2751,12 @@ setgap(const Arg *arg)
 void
 view(const Arg *arg)
 {
+    // 如果是副屏 则跳回大屏再开启对应的应用
+    if (arg->ui >= 1 << 8 && selmon->num == 1) {
+        Arg a = { .i = +1 };
+        focusmon(&a);
+    }
+
     int i;
     unsigned int tmptag;
     Client *c;
