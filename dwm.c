@@ -1497,8 +1497,12 @@ movemouse(const Arg *arg)
                 else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
                     ny = selmon->wy + selmon->wh - HEIGHT(c);
                 if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
-                        && (abs(nx - c->x) > snap || abs(ny - c->y) > snap))
-                    togglefloating(NULL);
+                        && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
+                    Arg a = { .ui = 1 };
+                    togglefloating(&a);
+                    if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2)
+                        resize(c, nx, ny, c->w / 2, c->h / 2, 0);
+                }
                 if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
                     resize(c, nx, ny, c->w, c->h, 1);
                 break;
@@ -1613,8 +1617,37 @@ removesystrayicon(Client *i)
 void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
-    if (applysizehints(c, &x, &y, &w, &h, interact))
-        resizeclient(c, x, y, w, h);
+    if (applysizehints(c, &x, &y, &w, &h, interact)) {
+        int n = 0;
+        int i = -1;
+        Client *tc;
+        for (tc = selmon->clients; tc; tc = tc->next) {
+            if (ISVISIBLE(tc) && !HIDDEN(tc))
+                n++;
+            if (tc == c)
+                i = n;
+        }
+
+        if (interact == 0 && (n - i <= 1 || i <= 1)) {
+            int ox = c->x, oy = c->y, ow = c->w, oh = c->h;
+            int nx, ny, nw, nh;
+            int f = 20;
+            int t = 100000 / f;
+            float xs = 0, d = 0;
+            for (int i = 1; i <= f; i++) {
+                d = i * 1.0 / f;
+                xs = i < 0.6 * f ? 1.625 * d : -1.5 * d + 2.5;
+                nx = ox + xs * (x - ox) * d;
+                ny = oy + xs * (y - oy) * d;
+                nw = ow + xs * (w - ow) * d;
+                nh = oh + xs * (h - oh) * d;
+                resizeclient(c, nx, ny, nw, nh);
+                usleep(t);
+            };
+        } else {
+            resizeclient(c, x, y, w, h);
+        }
+    }
 }
 
 void
@@ -1689,11 +1722,12 @@ resizemouse(const Arg *arg)
                 nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
                 nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
                 if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
-                        && c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
-                {
+                        && c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh) {
                     if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
-                            && (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
-                        togglefloating(NULL);
+                            && (abs(nw - c->w) > snap || abs(nh - c->h) > snap)) {
+                        Arg a = { .ui = 1 };
+                        togglefloating(&a);
+                    }
                 }
                 if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
                     resize(c, c->x, c->y, nw, nh, 1);
@@ -2178,9 +2212,11 @@ togglefloating(const Arg *arg)
     if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
         return;
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-    if (selmon->sel->isfloating)
-        resize(selmon->sel, selmon->wx + selmon->ww / 6, selmon->wy + selmon->wh / 6,
-                selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
+    if (!(arg && arg->ui == 1)) {
+        if (selmon->sel->isfloating)
+            resize(selmon->sel, selmon->wx + selmon->ww / 6, selmon->wy + selmon->wh / 6,
+                    selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
+    }
     arrange(selmon);
 }
 
@@ -2212,8 +2248,8 @@ toggleallfloating(const Arg *arg)
         for (c = (Client *)selmon->clients; c; c = c->next)
             if (ISVISIBLE(c) && !HIDDEN(c)) {
                 c->isfloating = 1;
-                resize(c, c->x + snap, c->y + snap,
-                        MAX(c->w - 2 * snap, snap) , MAX(c->h - 2 * snap, snap), 0);
+                resize(c, c->x + 2 * snap, c->y + 2 * snap,
+                        MAX(c->w - 4 * snap, snap) , MAX(c->h - 4 * snap, snap), 0);
             }
     }
 }
