@@ -1628,7 +1628,14 @@ resize(Client *c, int x, int y, int w, int h, int interact)
                 i = n;
         }
 
-        if (interact == 0 && (n - i <= 1 || i <= 1)) {
+        const char *class;
+        XClassHint ch = { NULL, NULL };
+        XGetClassHint(dpy, c->win, &ch);
+        class    = ch.res_class ? ch.res_class : broken;
+
+        // n - i <= 1 最后两个窗口, i <= 1 第一个窗口才有动画效果 (避免窗口数量太多时动画卡顿)
+        // !strstr(class, "Wine") 表示Wine相关的窗口无动画效果 (Wine动画效果不佳)
+        if (interact == 0 && (n - i <= 1 || i <= 1) && !strstr(class, "Wine")) {
             int ox = c->x, oy = c->y, ow = c->w, oh = c->h;
             int nx, ny, nw, nh;
             int f = 20;
@@ -2788,7 +2795,7 @@ void
 view(const Arg *arg)
 {
     // 如果是副屏 则跳回大屏再开启对应的应用
-    if (arg->ui >= 1 << 8 && selmon->num == 1) {
+    if (arg->ui >= 1 << 9 && selmon->num == 1) {
         Arg a = { .i = +1 };
         focusmon(&a);
     }
