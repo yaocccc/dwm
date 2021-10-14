@@ -22,8 +22,9 @@ static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, 
 
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
-// static const char *tags[] = { "一", "二", "三", "四", "五", "六", "七", "八", "九", "C", "M", "P", "Q", "W", "L" };
-static const char *tags[] = { "", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "", "", "", "", "", "", "" };
+//            ﮸
+// static const char *tags[] = { "﮸", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "﮸", "﮸₂", "﮸₃", "﮸₄", "﮸₅", "﮸₆", "﮸₇", "﮸₈", "", "", "", "", "", "", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
     {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },
@@ -42,7 +43,7 @@ static const Rule rules[] = {
 /* 自定义布局 */
 static const Layout layouts[] = {
     { "﬿",  tile },    /* 主次栈 */
-    { "",  grid },    /* 网格 */
+    { "",  grid },    /* 网格   */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
