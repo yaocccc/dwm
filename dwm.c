@@ -78,7 +78,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeHid }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeHid, SchemeSystray }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -112,6 +112,7 @@ struct Client {
 	int oldx, oldy, oldw, oldh;
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
+    int taskw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
@@ -139,7 +140,6 @@ struct Monitor {
 	int nmaster;
 	int num;
 	int by;               /* bar geometry */
-	int btw;              /* width of tasks portion of bar */
 	int bt;               /* number of tasks */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
@@ -205,6 +205,7 @@ static Monitor *dirtomon(int dir);
 
 static void drawbar(Monitor *m);
 static void drawbars(void);
+static int drawstatusbar(Monitor *m, int bh, char* text);
 
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
@@ -325,7 +326,7 @@ static void zoom(const Arg *arg);
 /* variables */
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
-static char stext[256];
+static char stext[1024];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
@@ -583,7 +584,7 @@ buttonpress(XEvent *e)
                 if (!ISVISIBLE(c))
                     continue;
                 else
-                    x += (1.0 / (double)m->bt) * m->btw;
+                    x += c->taskw;
             } while (ev->x > x && (c = c->next));
 
             if (c) {
@@ -637,7 +638,7 @@ cleanup(void)
     }
     for (i = 0; i < CurLast; i++)
         drw_cur_free(drw, cursor[i]);
-    for (i = 0; i < LENGTH(colors); i++)
+    for (i = 0; i < LENGTH(colors) + 1; i++)
         free(scheme[i]);
     XDestroyWindow(dpy, wmcheckwin);
     drw_free(drw);
@@ -917,18 +918,19 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
-    int x, w, tw = 0, stw = 0, n = 0, scm;
-    unsigned int i, occ = 0, urg = 0;
+    int x, w, empty_w;
+    int tags_w = 0, system_w = 0, tasks_w = 0, status_w, lts_w;
+    unsigned int i, occ = 0, n = 0, urg = 0, scm;
     Client *c;
 
+    // 获取系统托盘的宽度
     if(showsystray && m == systraytomon(m))
-        stw = getsystraywidth();
+        system_w = getsystraywidth();
 
-    drw_setscheme(drw, scheme[SchemeNorm]);
-    tw = TEXTW(stext) - lrpad / 2 + 2;
-    drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+    // 绘制STATUSBAR
+    status_w = drawstatusbar(m, bh, stext);
 
-    resizebarwin(m);
+    // 未知
     for (c = m->clients; c; c = c->next) {
         if (ISVISIBLE(c))
             n++;
@@ -936,6 +938,8 @@ drawbar(Monitor *m)
         if (c->isurgent)
             urg |= c->tags;
     }
+
+    // 绘制TAGS
     x = 0;
     for (i = 0; i < LENGTH(tags); i++) {
         /* do not draw vacant tags */
@@ -947,42 +951,50 @@ drawbar(Monitor *m)
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
         x += w;
     }
-    w = blw = TEXTW(m->ltsymbol);
+
+    // 绘制模式图标
+    lts_w = w = blw = TEXTW(m->ltsymbol);
     drw_setscheme(drw, scheme[SchemeNorm]);
     x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
-    if ((w = m->ww - tw - stw - x) > bh) {
-        if (n > 0) {
-            int remainder = w % n;
-            int tabw = (1.0 / (double)n) * w + 1;
-            for (c = m->clients; c; c = c->next) {
-                if (!ISVISIBLE(c))
-                    continue;
-                if (m->sel == c)
-                    scm = SchemeSel;
-                else if (HIDDEN(c))
-                    scm = SchemeHid;
-                else
-                    scm = SchemeNorm;
-                drw_setscheme(drw, scheme[scm]);
+    // 绘制TASKS
+    for (c = m->clients; c; c = c->next) {
+        // 判断是否需要绘制 && 判断颜色设置
+        if (!ISVISIBLE(c))
+            continue;
+        if (m->sel == c)
+            scm = SchemeSel;
+        else if (HIDDEN(c))
+            scm = SchemeHid;
+        else
+            scm = SchemeNorm;
+        drw_setscheme(drw, scheme[scm]);
 
-                if (remainder >= 0) {
-                    if (remainder == 0) {
-                        tabw--;
-                    }
-                    remainder--;
-                }
-                drw_text(drw, x, 0, tabw, bh, lrpad / 2, c->name, 0);
-                x += tabw;
-            }
+        // 绘制TASK
+        w = MIN(TEXTW(c->name), TEXTW("          "));
+        empty_w = m->ww - x - status_w - system_w;
+        if (w > empty_w) { // 如果当前TASK绘制后长度超过最大宽度
+            w = empty_w;
+            x = drw_text(drw, x, 0, w, bh, lrpad / 2, "...", 0);
+            c->taskw = w;
+            tasks_w += w;
+            break;
         } else {
-            drw_setscheme(drw, scheme[SchemeNorm]);
-            drw_rect(drw, x, 0, w, bh, 1, 1);
+            x = drw_text(drw, x, 0, w, bh, lrpad / 2, c->name, 0);
+            c->taskw = w;
+            tasks_w += w;
         }
     }
+    empty_w = m->ww - x - status_w - system_w; // 最后多加了一个w
+    if (empty_w > 0) {
+        drw_setscheme(drw, scheme[SchemeHid]);
+        drw_rect(drw, x, 0, empty_w, bh, 1, 1);
+    }
+
     m->bt = n;
-    m->btw = w;
-    drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
+    drw_map(drw, m->barwin, 0, 0, m->ww - system_w, bh);
+
+    resizebarwin(m);
 }
 
 void
@@ -992,6 +1004,119 @@ drawbars(void)
 
     for (m = mons; m; m = m->next)
         drawbar(m);
+}
+
+int
+drawstatusbar(Monitor *m, int bh, char* stext) {
+    int status_w = 0, i, w, x, len, system_w = 0;
+    short isCode = 0;
+    char *text;
+    char *p;
+
+    if(showsystray && m == systraytomon(m))
+        system_w = getsystraywidth();
+
+    len = strlen(stext) + 1 ;
+    if (!(text = (char*) malloc(sizeof(char)*len)))
+        die("malloc");
+    p = text;
+    memcpy(text, stext, len);
+
+    /* compute width of the status text */
+    w = 0;
+    i = -1;
+    while (text[++i]) {
+        if (text[i] == '^') {
+            if (!isCode) {
+                isCode = 1;
+                text[i] = '\0';
+                w += TEXTW(text) - lrpad;
+                text[i] = '^';
+                if (text[++i] == 'f')
+                    w += atoi(text + ++i);
+            } else {
+                isCode = 0;
+                text = text + i + 1;
+                i = -1;
+            }
+        }
+    }
+    if (!isCode)
+        w += TEXTW(text) - lrpad;
+    else
+        isCode = 0;
+    text = p;
+
+    // w += 2; /* 1px padding on both sides */
+    x = m->ww - w - system_w;
+
+    drw_setscheme(drw, scheme[LENGTH(colors)]);
+    drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
+    drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
+    drw_rect(drw, x, 0, w, bh, 1, 1);
+    x++;
+
+    /* process status text */
+    i = -1;
+    while (text[++i]) {
+        if (text[i] == '^' && !isCode) {
+            isCode = 1;
+
+            text[i] = '\0';
+            w = TEXTW(text) - lrpad;
+            drw_text(drw, x, 0, w, bh, 0, text, 0);
+            status_w += w;
+
+            x += w;
+
+            /* process code */
+            while (text[++i] != '^') {
+                if (text[i] == 'c') {
+                    char buf[8];
+                    memcpy(buf, (char*)text+i+1, 7);
+                    buf[7] = '\0';
+                    drw_clr_create(drw, &drw->scheme[ColFg], buf, 0xee);
+                    i += 7;
+                } else if (text[i] == 'b') {
+                    char buf[8];
+                    memcpy(buf, (char*)text+i+1, 7);
+                    buf[7] = '\0';
+                    drw_clr_create(drw, &drw->scheme[ColBg], buf, 0x88);
+                    i += 7;
+                } else if (text[i] == 'd') {
+                    drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
+                    drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
+                } else if (text[i] == 'r') {
+                    int rx = atoi(text + ++i);
+                    while (text[++i] != ',');
+                    int ry = atoi(text + ++i);
+                    while (text[++i] != ',');
+                    int rw = atoi(text + ++i);
+                    while (text[++i] != ',');
+                    int rh = atoi(text + ++i);
+
+                    drw_rect(drw, rx + x, ry, rw, rh, 1, 0);
+                } else if (text[i] == 'f') {
+                    x += atoi(text + ++i);
+                }
+            }
+
+            text = text + i + 1;
+            i=-1;
+            isCode = 0;
+        }
+    }
+
+    if (!isCode) {
+        w = TEXTW(text) - lrpad;
+        drw_text(drw, x, 0, w, bh, 0, text, 0);
+        status_w += w;
+    }
+
+    drw_setscheme(drw, scheme[SchemeNorm]);
+    free(p);
+
+    return status_w - 2;
 }
 
 void
@@ -1638,8 +1763,8 @@ resize(Client *c, int x, int y, int w, int h, int interact)
         if (interact == 0 && (n - i <= 1 || i <= 1) && !strstr(class, "Wine")) {
             int ox = c->x, oy = c->y, ow = c->w, oh = c->h;
             int nx, ny, nw, nh;
-            int f = 20;
-            int t = 100000 / f;
+            int f = resizef;
+            int t = resizet / f;
             float xs = 0, d = 0;
             for (int i = 1; i <= f; i++) {
                 d = i * 1.0 / f;
@@ -2053,7 +2178,8 @@ setup(void)
     cursor[CurResize] = drw_cur_create(drw, XC_sizing);
     cursor[CurMove] = drw_cur_create(drw, XC_fleur);
     /* init appearance */
-    scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
+    scheme = ecalloc(LENGTH(colors) + 1, sizeof(Clr *));
+	scheme[LENGTH(colors)] = drw_scm_create(drw, colors[0], alphas[0], 3);
     for (i = 0; i < LENGTH(colors); i++)
         scheme[i] = drw_scm_create(drw, colors[i], alphas[i], 3);
     /* init system tray */
@@ -2696,10 +2822,10 @@ updatesystray(void)
         /* init systray */
         if (!(systray = (Systray *)calloc(1, sizeof(Systray))))
             die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
-        systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
+        systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSystray][ColBg].pixel);
         wa.event_mask        = ButtonPressMask | ExposureMask;
         wa.override_redirect = True;
-        wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+        wa.background_pixel  = scheme[SchemeSystray][ColBg].pixel;
         XSelectInput(dpy, systray->win, SubstructureNotifyMask);
         XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
                 PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
@@ -2719,7 +2845,7 @@ updatesystray(void)
     }
     for (w = 0, i = systray->icons; i; i = i->next) {
         /* make sure the background color stays the same */
-        wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+        wa.background_pixel  = scheme[SchemeSystray][ColBg].pixel;
         XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
         XMapRaised(dpy, i->win);
         w += systrayspacing;
@@ -2737,9 +2863,6 @@ updatesystray(void)
     XConfigureWindow(dpy, systray->win, CWX|CWY|CWWidth|CWHeight|CWSibling|CWStackMode, &wc);
     XMapWindow(dpy, systray->win);
     XMapSubwindows(dpy, systray->win);
-    /* redraw background */
-    XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
-    XFillRectangle(dpy, systray->win, XCreateGC(dpy, root, 0 , NULL), 0, 0, w, bh);
     XSync(dpy, False);
 }
 
