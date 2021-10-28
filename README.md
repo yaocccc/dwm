@@ -33,3 +33,7 @@ do
 done &
 exec dwm
 ```
+
+## 展示
+
+![show](./show.gif)
