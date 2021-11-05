@@ -2975,38 +2975,46 @@ view(const Arg *arg)
 
 void
 viewtoleft(const Arg *arg) {
-    Arg a = {.ui = selmon->tagset[selmon->seltags]};
-    do {
-        if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
-                && selmon->tagset[selmon->seltags] > 1) {
-            selmon->seltags ^= 1; /* toggle sel tagset */
-            selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
-            focus(NULL);
-            if (selmon->bt)
+    unsigned int target = selmon->tagset[selmon->seltags], pre;
+    Client *c;
+    while (1) {
+        pre = target;
+        target >>= 1;
+        if (target == pre) return;
+
+        for (c = selmon->clients; c; c = c->next) {
+            if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+                    && selmon->tagset[selmon->seltags] > 1) {
+                selmon->seltags ^= 1;
+                selmon->tagset[selmon->seltags] = target;
+                focus(NULL);
                 arrange(selmon);
-        } else
-            break;
-    } while (selmon->bt == 0);
-    if (selmon->bt == 0)
-        view(&a);
+                return;
+            }
+        }
+    }
 }
 
 void
 viewtoright(const Arg *arg) {
-    Arg a = {.ui = selmon->tagset[selmon->seltags]};
-    do {
-        if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
-                && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-            selmon->seltags ^= 1; /* toggle sel tagset */
-            selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
-            focus(NULL);
-            if (selmon->bt)
+    unsigned int target = selmon->tagset[selmon->seltags];
+    Client *c;
+    while (1) {
+        target = target == 0 ? 1 : target << 1;
+        logtofile("target bool", target, target & TAGMASK);
+        if (!(target & TAGMASK)) return;
+
+        for (c = selmon->clients; c; c = c->next) {
+            if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+                    && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
+                selmon->seltags ^= 1;
+                selmon->tagset[selmon->seltags] = target;
+                focus(NULL);
                 arrange(selmon);
-        } else
-            break;
-    } while (selmon->bt == 0);
-    if (selmon->bt == 0)
-        view(&a);
+                return;
+            }
+        }
+    }
 }
 
 void
