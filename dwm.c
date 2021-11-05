@@ -2340,15 +2340,35 @@ togglebar(const Arg *arg)
 void
 togglefloating(const Arg *arg)
 {
+    Client *c;
+    int existed = 0;
+    int x = selmon->wx + selmon->ww / 6,
+        y = selmon->wy + selmon->wh / 6,
+        w = selmon->ww / 3 * 2,
+        h = selmon->wh / 3 * 2;
+
     if (!selmon->sel)
         return;
-    if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
+    if (selmon->sel->isfullscreen)
         return;
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
+
     if (!(arg && arg->ui == 1)) {
-        if (selmon->sel->isfloating)
-            resize(selmon->sel, selmon->wx + selmon->ww / 6, selmon->wy + selmon->wh / 6,
-                    selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
+        if (selmon->sel->isfloating) {
+            for (c=selmon->clients; c; c = c->next) {
+                if (ISVISIBLE(c) && !HIDDEN(c) && c->x == x && c->y == y) {
+                    existed = 1;
+                    break;
+                }
+            }
+            if (existed) {
+                int d1 = 0, d2 = 0;
+                while (d1 == 0) d1 = rand()%5 - 2;
+                while (d2 == 0) d2 = rand()%5 - 2;
+                resize(selmon->sel, x + (selmon->ww / 20) * d1, y + selmon->wh / 20 * d2, w, h, 0);
+            } else
+                resize(selmon->sel, x, y, w, h, 0);
+        }
     }
     arrange(selmon);
 }
@@ -3001,7 +3021,6 @@ viewtoright(const Arg *arg) {
     Client *c;
     while (1) {
         target = target == 0 ? 1 : target << 1;
-        logtofile("target bool", target, target & TAGMASK);
         if (!(target & TAGMASK)) return;
 
         for (c = selmon->clients; c; c = c->next) {
