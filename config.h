@@ -40,6 +40,7 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "图片查看",        0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,            -1 },
     {"rdesktop",             NULL,                 NULL,             1 << 8,       1,          0,            -1 },
+    {"float",                NULL,                 NULL,             0,            1,          0,            -1 },
 };
 
 /* 自定义布局 */
