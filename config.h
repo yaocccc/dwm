@@ -12,8 +12,8 @@ static const int showbar                 = 1;         /* 是否显示状态栏 *
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
-static const int   resizef               = 20;         /* 动画帧数 */
-static const int   resizet               = 50000;         /* 动画时长 */
+static const int   resizef               = 20;        /* 动画帧数 */
+static const int   resizet               = 50000;     /* 动画时长 */
 static const unsigned int snap           = 10;        /* 边缘依附宽度 */
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
 static const unsigned int borderalpha    = 0xdd;      /* 边框透明度 */
@@ -104,6 +104,7 @@ static Key keys[] = {
     { MODKEY,              XK_d,            spawn,            SHCMD("~/scripts/app-starter.sh rofi") },
     { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh screenkey") },
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
+    { MODKEY,              XK_m,            spawn,            SHCMD("~/scripts/app-starter.sh music") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh pcmanfm") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ControlMask,  XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh ast") },
@@ -126,7 +127,7 @@ static Key keys[] = {
     TAGKEYS(XK_8, 7,  0,  0)
     TAGKEYS(XK_9, 8,  "~/scripts/app-starter.sh pcmanfm", "~/scripts/app-starter.sh pcmanfm")
     TAGKEYS(XK_c, 9,  "~/scripts/app-starter.sh chrome",  "~/scripts/app-starter.sh chrome")
-    TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
+    // TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
     TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh postman", "~/scripts/app-starter.sh postman")
     TAGKEYS(XK_0, 12, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
     TAGKEYS(XK_w, 13, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
