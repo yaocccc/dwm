@@ -178,7 +178,7 @@ struct Systray {
 };
 
 /* function declarations */
-static void logtofile(const char *str, int num, int num2);
+static void logtofile(const char *format, ...);
 
 static void tile(Monitor *m);
 static void grid(Monitor *m);
@@ -384,10 +384,18 @@ Client *scratchclient;
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 void
-logtofile(const char *str, int num, int num2)
+logtofile(const char *format, ...)
 {
+    va_list args;
+    const char *args1;
+    va_start(args, format);
+    args1 = va_arg(args,const char *);
+    va_end(args);
+
+    char log [100];
     char cmd [100];
-    sprintf(cmd, "echo '%s %d %d' >> ~/log", str, num, num2);
+    sprintf(log, format, args1);
+    sprintf(cmd, "echo '%s' >> ~/log", log);
     system(cmd);
 }
 
@@ -422,6 +430,12 @@ applyrules(Client *c)
             if (r->isfullscreen) {
                 setfullscreen(c, 1);
                 togglebar(NULL);
+            }
+            if (c->isfloating) {
+                c->x = selmon->wx + selmon->ww / 6,
+                c->y = selmon->wy + selmon->wh / 6,
+                c->w = selmon->ww / 3 * 2,
+                c->h = selmon->wh / 3 * 2;
             }
         }
     }
@@ -1499,6 +1513,18 @@ manage(Window w, XWindowAttributes *wa)
         c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
         c->bw = 0;
         scratchclient = c;
+    } else if (c->isfloating) {
+        int x = selmon->wx + selmon->ww / 6,
+            y = selmon->wy + selmon->wh / 6,
+            w = selmon->ww / 3 * 2,
+            h = selmon->wh / 3 * 2;
+        Client *tc;
+        int n = 0;
+        for (tc = selmon->clients; tc; tc = tc->next)
+            if (ISVISIBLE(tc) && !HIDDEN(tc))
+                n++;
+        if (n <= 1)
+            c->bw = 0;
     }
 
     wc.border_width = c->bw;
@@ -1753,14 +1779,19 @@ resize(Client *c, int x, int y, int w, int h, int interact)
                 i = n;
         }
 
-        const char *class;
+        const char *class, *instance;
         XClassHint ch = { NULL, NULL };
         XGetClassHint(dpy, c->win, &ch);
         class    = ch.res_class ? ch.res_class : broken;
+        instance = ch.res_name  ? ch.res_name  : broken;
 
+        // strstr(class, "Wine") 表示Wine相关的窗口无动画效果 (Wine动画效果不佳)
+        if (strstr(class, "Wine")) {
+            resizeclient(c, x, y, w, h);
+            return;
+        }
         // n - i <= 1 最后两个窗口, i <= 1 第一个窗口才有动画效果 (避免窗口数量太多时动画卡顿)
-        // !strstr(class, "Wine") 表示Wine相关的窗口无动画效果 (Wine动画效果不佳)
-        if (interact == 0 && (n - i <= 1 || i <= 1) && !strstr(class, "Wine")) {
+        if (interact == 0 && (n - i <= 1 || i <= 1)) {
             int ox = c->x, oy = c->y, ow = c->w, oh = c->h;
             int nx, ny, nw, nh;
             int f = resizef;
@@ -1806,13 +1837,13 @@ resizeclient(Client *c, int x, int y, int w, int h)
             && !c->isfullscreen && !c->isfloating) {
         c->w = wc.width += c->bw * 2;
         c->h = wc.height += c->bw * 2;
-        wc.border_width = 0;
+        wc.border_width = c->bw = 0;
     }
     for (tc = selmon->clients; tc; tc = tc->next)
         if (ISVISIBLE(tc) && !HIDDEN(tc))
             n++;
     if (n <= 1)
-        wc.border_width = 0;
+        wc.border_width = c->bw = 0;
     XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
     configure(c);
     XSync(dpy, False);
@@ -2947,17 +2978,7 @@ view(const Arg *arg)
     unsigned int tmptag;
     Client *c;
     int n = 0;
-    for (c = selmon->clients; c; c = c->next)
-        if (c->tags & arg->ui && !HIDDEN(c) && c->isfloating == 0)
-            n++;
 
-    if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
-        if (arg->v && n == 0) {
-            Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
-            spawn(&a);
-        }
-        return;
-    }
     selmon->seltags ^= 1; /* toggle sel tagset */
     if (arg->ui & TAGMASK) {
         selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
@@ -2987,6 +3008,10 @@ view(const Arg *arg)
     focus(NULL);
     arrange(selmon);
 
+    // 若当前tag无窗口 且附加了v参数 则执行
+    for (c = selmon->clients; c; c = c->next)
+        if (c->tags & arg->ui && !HIDDEN(c))
+            n++;
     if (arg->v && n == 0) {
         Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
         spawn(&a);

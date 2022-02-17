@@ -12,7 +12,7 @@ static const int showbar                 = 1;         /* 是否显示状态栏 *
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
 static const int   nmaster               = 1;         /* 主工作区 窗口数量 */
-static const int   resizef               = 20;        /* 动画帧数 */
+static const int   resizef               = 30;        /* 动画帧数 */
 static const int   resizet               = 50000;     /* 动画时长 */
 static const unsigned int snap           = 10;        /* 边缘依附宽度 */
 static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
@@ -25,22 +25,21 @@ static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, 
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸ 
-static const char *tags[] = { "﮸", "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 // static const char *tags[] = { "﮸ ", "﮸ ₂", "﮸ ₃", "﮸ ₄", "﮸ ₅", "﮸ ₆", "﮸ ₇", "﮸ ₈", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isfullscreen  monitor */
     {"Google-chrome",        NULL,                 NULL,             1 << 9,       0,          0,            -1 },
     {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          0,            -1 },
-    {"qqmusic",              NULL,                 NULL,             1 << 10,      0,          0,            -1 },
-    {"Postman",              NULL,                 NULL,             1 << 11,      0,          0,            -1 },
+    {"music",                NULL,                 NULL,             1 << 10,      1,          0,            -1 },
+    {"telegram-desktop",     NULL,                 NULL,             1 << 11,      0,          0,            -1 },
     { NULL,                 "tim.exe",             NULL,             1 << 12,      0,          0,            -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 13,      0,          0,            -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 14,      0,          0,            -1 },
     { NULL,                  NULL,                "broken",          0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片查看",        0,            1,          0,            -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,            -1 },
-    {"rdesktop",             NULL,                 NULL,             1 << 8,       1,          0,            -1 },
-    {"float",                NULL,                 NULL,             0,            1,          0,            -1 },
+    { NULL,                  NULL,                "crx_",            0,            1,          0,            -1 },
 };
 
 /* 自定义布局 */
@@ -104,7 +103,6 @@ static Key keys[] = {
     { MODKEY,              XK_d,            spawn,            SHCMD("~/scripts/app-starter.sh rofi") },
     { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh screenkey") },
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
-    { MODKEY,              XK_m,            spawn,            SHCMD("~/scripts/app-starter.sh music") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh pcmanfm") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ControlMask,  XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh ast") },
@@ -125,10 +123,10 @@ static Key keys[] = {
     TAGKEYS(XK_6, 5,  0,  0)
     TAGKEYS(XK_7, 6,  0,  0)
     TAGKEYS(XK_8, 7,  0,  0)
-    TAGKEYS(XK_9, 8,  "~/scripts/app-starter.sh pcmanfm", "~/scripts/app-starter.sh pcmanfm")
+    TAGKEYS(XK_9, 8,  0,  0)
     TAGKEYS(XK_c, 9,  "~/scripts/app-starter.sh chrome",  "~/scripts/app-starter.sh chrome")
-    // TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
-    TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh postman", "~/scripts/app-starter.sh postman")
+    TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
+    TAGKEYS(XK_p, 11, "~/scripts/app-starter.sh telegram", "~/scripts/app-starter.sh telegram")
     TAGKEYS(XK_0, 12, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
     TAGKEYS(XK_w, 13, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
     TAGKEYS(XK_l, 14, "~/scripts/app-starter.sh wxwork",  "~/scripts/app-starter.sh wxwork")
