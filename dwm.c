@@ -167,7 +167,6 @@ typedef struct {
 	const char *title;
 	unsigned int tags;
 	int isfloating;
-	int isfullscreen;
 	int monitor;
 } Rule;
 
@@ -277,7 +276,6 @@ static void togglebar(const Arg *arg);
 static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
-static void togglescratch(const Arg *arg);
 
 static void show(Client *c);
 static void showhide(Client *c);
@@ -378,8 +376,6 @@ struct Pertag {
 	int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */
 };
 
-Client *scratchclient;
-
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
@@ -427,16 +423,6 @@ applyrules(Client *c)
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
-            if (r->isfullscreen) {
-                setfullscreen(c, 1);
-                togglebar(NULL);
-            }
-            if (c->isfloating) {
-                c->x = selmon->wx + selmon->ww / 6,
-                c->y = selmon->wy + selmon->wh / 6,
-                c->w = selmon->ww / 3 * 2,
-                c->h = selmon->wh / 3 * 2;
-            }
         }
     }
     if (ch.res_class)
@@ -1473,6 +1459,33 @@ killclient(const Arg *arg)
 }
 
 void
+randomxy(Client *c)
+{
+    Client *tc;
+    int d1 = 0, d2 = 0, tx, ty;
+    int tryed = 0;
+    while (tryed++ < 10) {
+        int dw, dh, existed = 0;
+        dw = (selmon->ww / 20) * d1, dh = (selmon->wh / 20) * d2;
+        tx = c->x + dw, ty = c->y + dh;
+        for (tc = selmon->clients; tc; tc = tc->next) {
+            if (ISVISIBLE(tc) && !HIDDEN(tc) && tc->x == tx && tc->y == ty) {
+                existed = 1;
+                break;
+            }
+        }
+        if (!existed) {
+            c->x = tx;
+            c->y = ty;
+            break;
+        } else {
+            while (d1 == 0) d1 = rand()%5 - 2;
+            while (d2 == 0) d2 = rand()%5 - 2;
+        }
+    }
+}
+
+void
 manage(Window w, XWindowAttributes *wa)
 {
     Client *c, *t = NULL;
@@ -1506,28 +1519,12 @@ manage(Window w, XWindowAttributes *wa)
     c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
                 && (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
     c->bw = borderpx;
+    wc.border_width = c->bw;
 
-    if (!strcmp(c->name, "scratchpad")) {
-        c->isfloating = True;
-        c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-        c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
-        c->bw = 0;
-        scratchclient = c;
-    } else if (c->isfloating) {
-        int x = selmon->wx + selmon->ww / 6,
-            y = selmon->wy + selmon->wh / 6,
-            w = selmon->ww / 3 * 2,
-            h = selmon->wh / 3 * 2;
-        Client *tc;
-        int n = 0;
-        for (tc = selmon->clients; tc; tc = tc->next)
-            if (ISVISIBLE(tc) && !HIDDEN(tc))
-                n++;
-        if (n <= 1)
-            c->bw = 0;
+    if (c->isfloating) {
+        randomxy(c);
     }
 
-    wc.border_width = c->bw;
     XConfigureWindow(dpy, w, CWBorderWidth, &wc);
     XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
     configure(c); /* propagates border_width, if size doesn't change */
@@ -1633,7 +1630,7 @@ movemouse(const Arg *arg)
                 handler[ev.type](&ev);
                 break;
             case MotionNotify:
-                if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+                if ((ev.xmotion.time - lasttime) <= (1000 / 120))
                     continue;
                 lasttime = ev.xmotion.time;
 
@@ -1769,47 +1766,12 @@ void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
     if (applysizehints(c, &x, &y, &w, &h, interact)) {
-        int n = 0;
-        int i = -1;
-        Client *tc;
-        for (tc = selmon->clients; tc; tc = tc->next) {
-            if (ISVISIBLE(tc) && !HIDDEN(tc))
-                n++;
-            if (tc == c)
-                i = n;
-        }
-
         const char *class, *instance;
         XClassHint ch = { NULL, NULL };
         XGetClassHint(dpy, c->win, &ch);
         class    = ch.res_class ? ch.res_class : broken;
         instance = ch.res_name  ? ch.res_name  : broken;
-
-        // strstr(class, "Wine") 表示Wine相关的窗口无动画效果 (Wine动画效果不佳)
-        if (strstr(class, "Wine")) {
-            resizeclient(c, x, y, w, h);
-            return;
-        }
-        // n - i <= 1 最后两个窗口, i <= 1 第一个窗口才有动画效果 (避免窗口数量太多时动画卡顿)
-        if (interact == 0 && (n - i <= 1 || i <= 1)) {
-            int ox = c->x, oy = c->y, ow = c->w, oh = c->h;
-            int nx, ny, nw, nh;
-            int f = resizef;
-            int t = resizet / f;
-            float xs = 0, d = 0;
-            for (int i = 1; i <= f; i++) {
-                d = i * 1.0 / f;
-                xs = i < 0.6 * f ? 1.625 * d : -1.5 * d + 2.5;
-                nx = ox + xs * (x - ox) * d;
-                ny = oy + xs * (y - oy) * d;
-                nw = ow + xs * (w - ow) * d;
-                nh = oh + xs * (h - oh) * d;
-                resizeclient(c, nx, ny, nw, nh);
-                usleep(t);
-            };
-        } else {
-            resizeclient(c, x, y, w, h);
-        }
+        resizeclient(c, x, y, w, h);
     }
 }
 
@@ -1826,7 +1788,6 @@ resizeclient(Client *c, int x, int y, int w, int h)
 {
     XWindowChanges wc;
     Client *tc;
-    int n = 0;
 
     c->oldx = c->x; c->x = wc.x = x;
     c->oldy = c->y; c->y = wc.y = y;
@@ -1837,13 +1798,8 @@ resizeclient(Client *c, int x, int y, int w, int h)
             && !c->isfullscreen && !c->isfloating) {
         c->w = wc.width += c->bw * 2;
         c->h = wc.height += c->bw * 2;
-        wc.border_width = c->bw = 0;
+        wc.border_width = 0;
     }
-    for (tc = selmon->clients; tc; tc = tc->next)
-        if (ISVISIBLE(tc) && !HIDDEN(tc))
-            n++;
-    if (n <= 1)
-        wc.border_width = c->bw = 0;
     XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
     configure(c);
     XSync(dpy, False);
@@ -1878,7 +1834,7 @@ resizemouse(const Arg *arg)
                 handler[ev.type](&ev);
                 break;
             case MotionNotify:
-                if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+                if ((ev.xmotion.time - lasttime) <= (1000 / 120))
                     continue;
                 lasttime = ev.xmotion.time;
 
@@ -2371,12 +2327,7 @@ togglebar(const Arg *arg)
 void
 togglefloating(const Arg *arg)
 {
-    Client *c;
     int existed = 0;
-    int x = selmon->wx + selmon->ww / 6,
-        y = selmon->wy + selmon->wh / 6,
-        w = selmon->ww / 3 * 2,
-        h = selmon->wh / 3 * 2;
 
     if (!selmon->sel)
         return;
@@ -2384,23 +2335,13 @@ togglefloating(const Arg *arg)
         return;
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 
-    if (!(arg && arg->ui == 1)) {
-        if (selmon->sel->isfloating) {
-            for (c=selmon->clients; c; c = c->next) {
-                if (ISVISIBLE(c) && !HIDDEN(c) && c->x == x && c->y == y) {
-                    existed = 1;
-                    break;
-                }
-            }
-            if (existed) {
-                int d1 = 0, d2 = 0;
-                while (d1 == 0) d1 = rand()%5 - 2;
-                while (d2 == 0) d2 = rand()%5 - 2;
-                resize(selmon->sel, x + (selmon->ww / 20) * d1, y + selmon->wh / 20 * d2, w, h, 0);
-            } else
-                resize(selmon->sel, x, y, w, h, 0);
-        }
+    if (selmon->sel->isfloating && !(arg && arg->ui)) {
+        selmon->sel->x = selmon->wx + selmon->ww / 6,
+        selmon->sel->y = selmon->wy + selmon->wh / 6,
+        randomxy(selmon->sel);
+        resize(selmon->sel, selmon->sel->x, selmon->sel->y, selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
     }
+
     arrange(selmon);
 }
 
@@ -2436,25 +2377,6 @@ toggleallfloating(const Arg *arg)
                         MAX(c->w - 4 * snap, snap) , MAX(c->h - 4 * snap, snap), 0);
             }
     }
-}
-
-void
-togglescratch(const Arg *arg)
-{
-    if (scratchclient) {
-        if (selmon->sel == scratchclient) {
-            if (!HIDDEN(scratchclient)) {
-                hide(scratchclient);
-                focus(NULL);
-            }
-        } else {
-            scratchclient->tags = selmon->seltags[selmon->tagset];
-            show(scratchclient);
-            focus(scratchclient);
-        }
-        arrange(selmon);
-    } else
-        spawn(arg);
 }
 
 void
@@ -2558,9 +2480,6 @@ unmanage(Client *c, int destroyed)
 {
     Monitor *m = c->mon;
     XWindowChanges wc;
-
-    if (c == scratchclient)
-        scratchclient = NULL;
 
     detach(c);
     detachstack(c);
@@ -2968,12 +2887,6 @@ setgap(const Arg *arg)
 void
 view(const Arg *arg)
 {
-    // 如果是副屏 则跳回大屏再开启对应的应用
-    if (arg->ui >= 1 << 9 && selmon->num == 1) {
-        Arg a = { .i = +1 };
-        focusmon(&a);
-    }
-
     int i;
     unsigned int tmptag;
     Client *c;
