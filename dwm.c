@@ -1478,7 +1478,7 @@ randomxy(Client *c)
         dw = (selmon->ww / 20) * d1, dh = (selmon->wh / 20) * d2;
         tx = c->x + dw, ty = c->y + dh;
         for (tc = selmon->clients; tc; tc = tc->next) {
-            if (ISVISIBLE(tc) && !HIDDEN(tc) && tc->x == tx && tc->y == ty) {
+            if (ISVISIBLE(tc) && !HIDDEN(tc) && tc != c && tc->x == tx && tc->y == ty) {
                 existed = 1;
                 break;
             }
@@ -1488,8 +1488,8 @@ randomxy(Client *c)
             c->y = ty;
             break;
         } else {
-            while (d1 == 0) d1 = rand()%5 - 2;
-            while (d2 == 0) d2 = rand()%5 - 2;
+            while (d1 == 0) d1 = rand()%7 - 3;
+            while (d2 == 0) d2 = rand()%7 - 3;
         }
     }
 }
@@ -1531,6 +1531,10 @@ manage(Window w, XWindowAttributes *wa)
     wc.border_width = c->bw;
 
     if (c->isfloating) {
+        if (wa->x==0 && wa->y==0) {
+            c->x = selmon->wx + (selmon->ww - c->w) / 2;
+            c->y = selmon->wy + (selmon->wh - c->h) / 2;
+        }
         randomxy(c);
     }
 
@@ -1657,8 +1661,10 @@ movemouse(const Arg *arg)
                         && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
                     Arg a = { .ui = 1 };
                     togglefloating(&a);
-                    if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2)
+                    if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2) {
                         resize(c, nx, ny, c->w / 2, c->h / 2, 0);
+                        break;
+                    }
                 }
                 if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
                     resize(c, nx, ny, c->w, c->h, 1);
