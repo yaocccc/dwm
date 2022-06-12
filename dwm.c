@@ -181,6 +181,7 @@ static void logtofile(const char *format, ...);
 
 static void tile(Monitor *m);
 static void grid(Monitor *m);
+static void monocle(Monitor *m);
 
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -223,6 +224,7 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void hide(Client *c);
+static void hideotherwins(const Arg *arg);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 
@@ -282,10 +284,7 @@ static void showhide(Client *c);
 
 static int issinglewin(const Arg *arg);
 static void togglewin(const Arg *arg);
-static void toggleallhidewins(const Arg *arg);
 static void hidewin(const Arg *arg);
-static void hideotherwins(const Arg *arg);
-static void showallwins(const Arg *arg);
 
 static void restorewin(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -1395,6 +1394,16 @@ hide(Client *c) {
 }
 
 void
+hideotherwins(const Arg *arg) {
+    Client *c = (Client*)arg->v, *tc = NULL;
+    for (tc = selmon->clients; tc; tc = tc->next)
+        if (tc != c && ISVISIBLE(tc))
+            hide(tc);
+    show(c);
+    focus(c);
+}
+
+void
 incnmaster(const Arg *arg)
 {
     int nmaster = selmon->nmaster + arg->i;
@@ -1455,7 +1464,7 @@ killclient(const Arg *arg)
         if (ISVISIBLE(c) && !HIDDEN(c))
             n++;
     if (n <= 1)
-        focusstack(arg);
+        focusstack(NULL);
 }
 
 void
@@ -1974,11 +1983,7 @@ tagtoleft(const Arg *arg) {
     if(selmon->sel != NULL
             && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
             && selmon->tagset[selmon->seltags] > 1) {
-        selmon->sel->tags >>= 1;
-        selmon->seltags ^= 1; /* toggle sel tagset */
-        selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
-        focus(NULL);
-        arrange(selmon);
+        tag(&((Arg) { .ui = selmon->tagset[selmon->seltags] >> 1 }));
     }
 }
 
@@ -1987,11 +1992,7 @@ tagtoright(const Arg *arg) {
     if(selmon->sel != NULL
             && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
             && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-        selmon->sel->tags <<= 1;
-        selmon->seltags ^= 1; /* toggle sel tagset */
-        selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
-        focus(NULL);
-        arrange(selmon);
+        tag(&((Arg) { .ui = selmon->tagset[selmon->seltags] << 1 }));
     }
 }
 
@@ -2085,7 +2086,9 @@ fullscreen(const Arg *arg)
 void
 selectlayout(const Arg *arg)
 {
-    setlayout(&((Arg) { .v = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1] }));
+    Layout *cur = selmon->lt[selmon->sellt];
+    Layout *target = cur == arg->v ? &layouts[0] : arg->v;
+    setlayout(&((Arg) { .v = target }));
 }
 
 void
@@ -2093,13 +2096,9 @@ setlayout(const Arg *arg)
 {
     if (arg->v != selmon->lt[selmon->sellt])
         selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
-    if (arg && arg->v)
+    if (arg->v)
         selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
-    strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
-    if (selmon->sel)
-        arrange(selmon);
-    else
-        drawbar(selmon);
+    arrange(selmon);
 }
 
 void
@@ -2351,26 +2350,22 @@ toggleallfloating(const Arg *arg)
     Client *c = NULL;
     int somefloating = 0;
 
-    if (!selmon->bt)
-        return;
-    if (selmon->sel->isfullscreen)
+    if (!selmon->sel || selmon->sel->isfullscreen)
         return;
 
-    setlayout(&((Arg) { .v = selmon->lt[selmon->sellt] }));
-
-    for (c = (Client *)selmon->clients; c; c = c->next)
+    for (c = selmon->clients; c; c = c->next)
         if (ISVISIBLE(c) && !HIDDEN(c) && c->isfloating) {
             somefloating = 1;
             break;
         }
 
     if (somefloating) {
-        for (c = (Client *)selmon->clients; c; c = c->next)
+        for (c = selmon->clients; c; c = c->next)
             if (ISVISIBLE(c) && !HIDDEN(c))
                 c->isfloating = 0;
-        setlayout(&((Arg) { .v = selmon->lt[selmon->sellt] }));
+        arrange(selmon);
     } else {
-        for (c = (Client *)selmon->clients; c; c = c->next)
+        for (c = selmon->clients; c; c = c->next)
             if (ISVISIBLE(c) && !HIDDEN(c)) {
                 c->isfloating = 1;
                 resize(c, c->x + 2 * snap, c->y + 2 * snap,
@@ -2399,39 +2394,6 @@ hidewin(const Arg *arg) {
         return;
     Client *c = (Client *)selmon->sel;
     hide(c);
-}
-
-void
-toggleallhidewins(const Arg *arg) {
-    if (issinglewin(NULL) || !selmon->sel) {
-        showallwins(NULL);
-    } else {
-        const Arg cArg = { .v = selmon->sel };
-        hideotherwins(&cArg);
-    }
-}
-
-void
-showallwins(const Arg *arg) {
-    int i;
-    for (i = 0; i <= hiddenWinStackTop; ++i) {
-        if (HIDDEN(hiddenWinStack[i]) && ISVISIBLE(hiddenWinStack[i])) {
-            show(hiddenWinStack[i]);
-            restack(selmon);
-            memcpy(hiddenWinStack + i, hiddenWinStack + i + 1, (hiddenWinStackTop - i) * sizeof(Client *));
-            --i;
-        }
-    }
-}
-
-void
-hideotherwins(const Arg *arg) {
-    Client *c = (Client*)arg->v, *tc = NULL;
-    for (tc = selmon->clients; tc; tc = tc->next)
-        if (tc != c && ISVISIBLE(tc))
-            hide(tc);
-    show(c);
-    focus(c);
 }
 
 int
@@ -2922,12 +2884,14 @@ view(const Arg *arg)
     arrange(selmon);
 
     // 若当前tag无窗口 且附加了v参数 则执行
-    for (c = selmon->clients; c; c = c->next)
-        if (c->tags & arg->ui && !HIDDEN(c))
-            n++;
-    if (arg->v && n == 0) {
-        Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
-        spawn(&a);
+    if (arg->v) {
+        for (c = selmon->clients; c; c = c->next)
+            if (c->tags & arg->ui && !HIDDEN(c))
+                n++;
+        if (n == 0) {
+            Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
+            spawn(&a);
+        }
     }
 }
 
@@ -2943,10 +2907,7 @@ viewtoleft(const Arg *arg) {
         for (c = selmon->clients; c; c = c->next) {
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] > 1) {
-                selmon->seltags ^= 1;
-                selmon->tagset[selmon->seltags] = target;
-                focus(NULL);
-                arrange(selmon);
+                view(&((Arg) { .ui = target }));
                 return;
             }
         }
@@ -2964,10 +2925,7 @@ viewtoright(const Arg *arg) {
         for (c = selmon->clients; c; c = c->next) {
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-                selmon->seltags ^= 1;
-                selmon->tagset[selmon->seltags] = target;
-                focus(NULL);
-                arrange(selmon);
+                view(&((Arg) { .ui = target }));
                 return;
             }
         }
@@ -3044,6 +3002,14 @@ grid(Monitor *m) {
                0);
 		i++;
 	}
+}
+
+void
+monocle(Monitor *m)
+{
+	Client *c;
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+		resize(c, m->wx + m->gappoh, m->wy + m->gappov, m->ww - 2 * c->bw - 2 * m->gappoh, m->wh - 2 * c->bw - 2 * m->gappov, 0);
 }
 
 Client *

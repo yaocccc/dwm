@@ -42,8 +42,10 @@ static const Rule rules[] = {
 
 /* 自定义布局 */
 static const Layout layouts[] = {
+    //  
     { "﬿",  tile },    /* 主次栈 */
-    { "",  grid },    /* 网格   */
+    { "﩯",  grid },    /* 网格   */
+    { "",  monocle }, /* 单片镜 */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -72,20 +74,20 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_h,            restorewin,       {0} },                     /* super shift h      |  取消隐藏 窗口 */
 
     { MODKEY|ShiftMask,    XK_Return,       zoom,             {0} },                     /* super shift enter  |  将当前聚焦窗口置为主窗口 */
-    { MODKEY,              XK_t,            togglefloating,   {0} },                  /* super t            |  开启/关闭 聚焦目标的float模式 */
+    { MODKEY,              XK_t,            togglefloating,   {0} },                     /* super t            |  开启/关闭 聚焦目标的float模式 */
     { MODKEY|ShiftMask,    XK_t,            toggleallfloating,{0} },                     /* super shift t      |  开启/关闭 全部目标的float模式 */
     { MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
     { MODKEY|ShiftMask,    XK_f,            togglebar,        {0} },                     /* super shift f      |  开启/关闭 状态栏 */
-    { MODKEY,              XK_e,            incnmaster,       {.i = +1 } },              /* super e            |  改变主工作区窗口数量 (1 2中切换) */
-
-    { MODKEY,              XK_b,            focusmon,         {.i = +1 } },              /* super b            |  光标移动到另一个显示器 */
-    { MODKEY|ShiftMask,    XK_b,            tagmon,           {.i = +1 } },              /* super shift b      |  将聚焦窗口移动到另一个显示器 */
+    { MODKEY,              XK_e,            incnmaster,       {.i = +1} },               /* super e            |  改变主工作区窗口数量 (1 2中切换) */
+ 
+    { MODKEY,              XK_b,            focusmon,         {.i = +1} },               /* super b            |  光标移动到另一个显示器 */
+    { MODKEY|ShiftMask,    XK_b,            tagmon,           {.i = +1} },               /* super shift b      |  将聚焦窗口移动到另一个显示器 */
 
     { MODKEY,              XK_q,            killclient,       {0} },                     /* super q            |  关闭窗口 */
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
 
-    { MODKEY,              XK_space,        toggleallhidewins,{0} },                     /* super space        |  隐藏全部其他窗口 | 显示全部窗口 */
-	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.i = +1} },               /* super shift space  |  在主次栈模式和网格模式中切换 */
+	{ MODKEY,              XK_space,        selectlayout,     {.v = &layouts[1]} },      /* super space        |  切换到网格布局 */
+	{ MODKEY,              XK_o,            selectlayout,     {.v = &layouts[2]} },      /* super o            |  切换到单片镜布局 */
 
     { MODKEY|ControlMask,  XK_Up,           setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
     { MODKEY|ControlMask,  XK_Down,         setgap,           {.i = +6} },               /* super ctrl down    |  窗口减小 */
