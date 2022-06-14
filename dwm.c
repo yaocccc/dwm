@@ -922,6 +922,9 @@ drawbar(Monitor *m)
     unsigned int i, occ = 0, n = 0, urg = 0, scm;
     Client *c;
 
+    if (!m->showbar)
+        return;
+
     // 获取系统托盘的宽度
     if(showsystray && m == systraytomon(m))
         system_w = getsystraywidth();
