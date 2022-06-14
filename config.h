@@ -38,13 +38,13 @@ static const Rule rules[] = {
     {"chrome",               NULL,                 NULL,             1 << 9,       0,          -1 },
     {"Chromium",             NULL,                 NULL,             1 << 9,       0,          -1 },
     {"float",                NULL,                 NULL,             0,            1,          -1 },
+    {"flameshot",            NULL,                 NULL,             0,            1,          -1 },
 };
 
 /* 自定义布局 */
 static const Layout layouts[] = {
     { "﬿",  tile },    /* 主次栈 */
     { "﩯",  grid },    /* 网格   */
-    { "",  monocle }, /* 单片镜 */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -57,9 +57,9 @@ static Key keys[] = {
     /* modifier            key              function          argument */
     { MODKEY,              XK_equal,        togglesystray,    {0} },                     /* super +            |  切换 托盘栏显示状态 */
 
-    { MODKEY,              XK_Tab,          focusstack,       {0} },                     /* super tab          |  本tag内切换聚焦窗口 */
+    { MODKEY,              XK_Tab,          focusstack,       {.i = +1} },               /* super tab          |  本tag内切换聚焦窗口 */
     { MODKEY,              XK_Up,           focusstack,       {.i = -1} },               /* super up           |  本tag内切换聚焦窗口 */
-    { MODKEY,              XK_Down,         focusstack,       {0} },                     /* super down         |  本tag内切换聚焦窗口 */
+    { MODKEY,              XK_Down,         focusstack,       {.i = +1} },               /* super down         |  本tag内切换聚焦窗口 */
 
     { MODKEY,              XK_Left,         viewtoleft,       {0} },                     /* super left         |  聚焦到左边的tag */
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
@@ -87,31 +87,29 @@ static Key keys[] = {
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
 
 	{ MODKEY,              XK_space,        selectlayout,     {.v = &layouts[1]} },      /* super space        |  切换到网格布局 */
-	{ MODKEY,              XK_o,            selectlayout,     {.v = &layouts[2]} },      /* super o            |  切换到单片镜布局 */
+	{ MODKEY,              XK_o,            showonlyorall,    {0} },                     /* super o            |  切换 只显示一个窗口 / 全部显示 */
 
     { MODKEY|ControlMask,  XK_Up,           setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
     { MODKEY|ControlMask,  XK_Down,         setgap,           {.i = +6} },               /* super ctrl down    |  窗口减小 */
     { MODKEY|ControlMask,  XK_space,        setgap,           {.i = 0} },                /* super ctrl space   |  窗口重置 */
 
     /* spawn + SHCMD 执行对应命令 */
-    { MODKEY,              XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot") },
-    { MODKEY|ShiftMask,    XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot onlyclick") },
-
+    { MODKEY,              XK_minus,        spawn,            SHCMD("~/scripts/app-starter.sh fst") },
+    { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ShiftMask,    XK_a,            spawn,            SHCMD("~/scripts/app-starter.sh flameshot") },
     { MODKEY,              XK_d,            spawn,            SHCMD("~/scripts/app-starter.sh rofi") },
     { MODKEY,              XK_p,            spawn,            SHCMD("~/scripts/app-starter.sh rofi_p") },
     { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh screenkey") },
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
     { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh filemanager") },
-    { MODKEY,              XK_minus,        spawn,            SHCMD("~/scripts/app-starter.sh fst") },
-    { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/app-starter.sh set_vol up &") },
     { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
+    { MODKEY,              XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot") },
+    { MODKEY|ShiftMask,    XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot onlyclick") },
     { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
 
     /* super key : 跳转到对应tag */
     /* super shift key : 将聚焦窗口移动到对应tag */
-    /* super ctrl  key : 切换同时显示对应tag */
     /* 若跳转后的tag无窗口且附加了cmd1或者cmd2就执行对应的cmd */
     /* key tag cmd1 cmd2 */
     TAGKEYS(XK_1, 0,  0,  0)

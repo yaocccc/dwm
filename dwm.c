@@ -223,11 +223,19 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
+
 static void hide(Client *c);
+static void show(Client *c);
+static void showhide(Client *c);
+static void hidewin(const Arg *arg);
 static void hideotherwins(const Arg *arg);
+static void showonlyorall(const Arg *arg);
+static int issinglewin(const Arg *arg);
+static void togglewin(const Arg *arg);
+static void restorewin(const Arg *arg);
+
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
-
 static void killclient(const Arg *arg);
 
 static void manage(Window w, XWindowAttributes *wa);
@@ -279,14 +287,6 @@ static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
 
-static void show(Client *c);
-static void showhide(Client *c);
-
-static int issinglewin(const Arg *arg);
-static void togglewin(const Arg *arg);
-static void hidewin(const Arg *arg);
-
-static void restorewin(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
@@ -388,7 +388,7 @@ logtofile(const char *format, ...)
     va_end(args);
 
     char log [100];
-    char cmd [100];
+    char cmd [150];
     sprintf(log, format, args1);
     sprintf(cmd, "echo '%s' >> ~/log", log);
     system(cmd);
@@ -1203,10 +1203,10 @@ focusmon(const Arg *arg)
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
 }
 
-Client *tempClients[100];
 void
 focusstack(const Arg *arg)
 {
+    Client *tempClients[100];
     Client *c = NULL, *tc = selmon->sel;
     int last = -1, cur = 0, issingle = issinglewin(NULL);
 
@@ -1233,10 +1233,8 @@ focusstack(const Arg *arg)
     }
 
     if (issingle) {
-        if (c) {
-            const Arg carg = { .v = c };
-            hideotherwins(&carg);
-        }
+        if (c)
+            hideotherwins(&(Arg) { .v = c });
     } else {
         if (c) {
             focus(c);
@@ -1405,6 +1403,18 @@ hideotherwins(const Arg *arg) {
     show(c);
     focus(c);
 }
+
+void
+showonlyorall(const Arg *arg) {
+    Client *c;
+    if (issinglewin(NULL) || !selmon->sel) {
+        for (c = selmon->clients; c; c = c->next)
+            if (ISVISIBLE(c))
+                show(c);
+    } else
+        hideotherwins(&(Arg) { .v = selmon->sel });
+}
+
 
 void
 incnmaster(const Arg *arg)
@@ -1662,8 +1672,7 @@ movemouse(const Arg *arg)
                     ny = selmon->wy + selmon->wh - HEIGHT(c);
                 if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
                         && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
-                    Arg a = { .ui = 1 };
-                    togglefloating(&a);
+                    togglefloating(&(Arg) { .ui = 1 });
                     if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2) {
                         resize(c, nx, ny, c->w / 2, c->h / 2, 0);
                         break;
@@ -1862,8 +1871,7 @@ resizemouse(const Arg *arg)
                         && c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh) {
                     if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
                             && (abs(nw - c->w) > snap || abs(nh - c->h) > snap)) {
-                        Arg a = { .ui = 1 };
-                        togglefloating(&a);
+                        togglefloating(&(Arg) { .ui = 1 });
                     }
                 }
                 if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
@@ -1992,7 +2000,7 @@ tagtoleft(const Arg *arg) {
     if(selmon->sel != NULL
             && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
             && selmon->tagset[selmon->seltags] > 1) {
-        tag(&((Arg) { .ui = selmon->tagset[selmon->seltags] >> 1 }));
+        tag(&(Arg) { .ui = selmon->tagset[selmon->seltags] >> 1 });
     }
 }
 
@@ -2001,7 +2009,7 @@ tagtoright(const Arg *arg) {
     if(selmon->sel != NULL
             && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
             && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-        tag(&((Arg) { .ui = selmon->tagset[selmon->seltags] << 1 }));
+        tag(&(Arg) { .ui = selmon->tagset[selmon->seltags] << 1 });
     }
 }
 
@@ -2097,7 +2105,7 @@ selectlayout(const Arg *arg)
 {
     Layout *cur = selmon->lt[selmon->sellt];
     Layout *target = cur == arg->v ? &layouts[0] : arg->v;
-    setlayout(&((Arg) { .v = target }));
+    setlayout(&(Arg) { .v = target });
 }
 
 void
@@ -2230,7 +2238,7 @@ show(Client *c)
 
     for (int i = 0; i < hiddenWinStackTop; ++i)
         hiddenWinStack[i] = hiddenWinStack[i + 1];
-
+    hiddenWinStackTop--;
     arrange(c->mon);
 }
 
@@ -2281,8 +2289,7 @@ tag(const Arg *arg)
         selmon->sel->tags = arg->ui & TAGMASK;
         focus(NULL);
         arrange(selmon);
-        const Arg a = {.ui = arg->ui};
-        view(&a);
+        view(&(Arg) { .ui = arg->ui });
     } else
         view(arg);
 }
@@ -2290,12 +2297,10 @@ tag(const Arg *arg)
 void
 tagmon(const Arg *arg)
 {
-    const Arg a = {.i = +1};
-
     if (!selmon->sel || !mons->next)
         return;
     sendmon(selmon->sel, dirtomon(arg->i));
-    focusmon(&a);
+    focusmon(&(Arg) { .i = +1 });
 }
 
 void
@@ -2898,8 +2903,7 @@ view(const Arg *arg)
             if (c->tags & arg->ui && !HIDDEN(c))
                 n++;
         if (n == 0) {
-            Arg a = { .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } };
-            spawn(&a);
+            spawn(&(Arg){ .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } });
         }
     }
 }
@@ -2916,7 +2920,7 @@ viewtoleft(const Arg *arg) {
         for (c = selmon->clients; c; c = c->next) {
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] > 1) {
-                view(&((Arg) { .ui = target }));
+                view(&(Arg) { .ui = target });
                 return;
             }
         }
@@ -2934,7 +2938,7 @@ viewtoright(const Arg *arg) {
         for (c = selmon->clients; c; c = c->next) {
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-                view(&((Arg) { .ui = target }));
+                view(&(Arg) { .ui = target });
                 return;
             }
         }
