@@ -226,7 +226,7 @@ static void grabkeys(void);
 
 static void hide(Client *c);
 static void show(Client *c);
-static void showhide(Client *c);
+static void showtag(Client *c);
 static void hidewin(const Arg *arg);
 static void hideotherwins(const Arg *arg);
 static void showonlyorall(const Arg *arg);
@@ -501,9 +501,9 @@ void
 arrange(Monitor *m)
 {
     if (m)
-        showhide(m->stack);
+        showtag(m->stack);
     else for (m = mons; m; m = m->next)
-        showhide(m->stack);
+        showtag(m->stack);
     if (m) {
         arrangemon(m);
         restack(m);
@@ -1814,7 +1814,6 @@ void
 resizeclient(Client *c, int x, int y, int w, int h)
 {
     XWindowChanges wc;
-    Client *tc;
 
     c->oldx = c->x; c->x = wc.x = x;
     c->oldy = c->y; c->y = wc.y = y;
@@ -2235,15 +2234,13 @@ show(Client *c)
 
     XMapWindow(dpy, c->win);
     setclientstate(c, NormalState);
-
-    for (int i = 0; i < hiddenWinStackTop; ++i)
-        hiddenWinStack[i] = hiddenWinStack[i + 1];
     hiddenWinStackTop--;
     arrange(c->mon);
 }
 
+// 该方法为显示当前tag下的窗口的func，切换时会将原窗口下的win放到屏幕之外 (左边的屏幕隐藏到屏幕左边 右边的屏幕隐藏到屏幕右边)
 void
-showhide(Client *c)
+showtag(Client *c)
 {
     if (!c)
         return;
@@ -2252,11 +2249,15 @@ showhide(Client *c)
         XMoveWindow(dpy, c->win, c->x, c->y);
         if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
             resize(c, c->x, c->y, c->w, c->h, 0);
-        showhide(c->snext);
+        showtag(c->snext);
     } else {
         /* hide clients bottom up */
-        showhide(c->snext);
-        XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+        showtag(c->snext);
+        if (c->mon->mx == 0) {
+            XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+        } else {
+            XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw + WIDTH(c) * 2, c->y);
+        }
     }
 }
 
