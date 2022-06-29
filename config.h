@@ -77,7 +77,7 @@ static Key keys[] = {
     { MODKEY,              XK_t,            togglefloating,   {0} },                     /* super t            |  开启/关闭 聚焦目标的float模式 */
     { MODKEY|ShiftMask,    XK_t,            toggleallfloating,{0} },                     /* super shift t      |  开启/关闭 全部目标的float模式 */
     { MODKEY,              XK_f,            fullscreen,       {0} },                     /* super f            |  开启/关闭 全屏 */
-    { MODKEY|ShiftMask,    XK_space,        togglebar,        {0} },                     /* super shift space  |  开启/关闭 状态栏 */
+    { MODKEY|ShiftMask,    XK_f,            togglebar,        {0} },                     /* super shift f      |  开启/关闭 状态栏 */
     { MODKEY,              XK_e,            incnmaster,       {.i = +1} },               /* super e            |  改变主工作区窗口数量 (1 2中切换) */
 
     { MODKEY,              XK_b,            focusmon,         {.i = +1} },               /* super b            |  光标移动到另一个显示器 */
@@ -86,7 +86,7 @@ static Key keys[] = {
     { MODKEY,              XK_q,            killclient,       {0} },                     /* super q            |  关闭窗口 */
     { MODKEY|ControlMask,  XK_F12,          quit,             {0} },                     /* super ctrl f12     |  退出dwm */
 
-	{ MODKEY,              XK_space,        selectlayout,     {.v = &layouts[1]} },      /* super space        |  切换到网格布局 */
+	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.v = &layouts[1]} },      /* super shift space  |  切换到网格布局 */
 	{ MODKEY,              XK_o,            showonlyorall,    {0} },                     /* super o            |  切换 只显示一个窗口 / 全部显示 */
 
     { MODKEY|ControlMask,  XK_Up,           setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
@@ -94,10 +94,12 @@ static Key keys[] = {
     { MODKEY|ControlMask,  XK_space,        setgap,           {.i = 0} },                /* super ctrl space   |  窗口重置 */
 
     /* spawn + SHCMD 执行对应命令 */
+    { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("~/scripts/app-starter.sh killw") },
     { MODKEY,              XK_minus,        spawn,            SHCMD("~/scripts/app-starter.sh fst") },
     { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
     { MODKEY|ShiftMask,    XK_a,            spawn,            SHCMD("~/scripts/app-starter.sh flameshot") },
     { MODKEY,              XK_d,            spawn,            SHCMD("~/scripts/app-starter.sh rofi") },
+    { MODKEY,              XK_space,        spawn,            SHCMD("~/scripts/app-starter.sh rofi_window") },
     { MODKEY,              XK_p,            spawn,            SHCMD("~/scripts/app-starter.sh rofi_p") },
     { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh screenkey") },
     { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
@@ -128,11 +130,12 @@ static Key keys[] = {
     TAGKEYS(XK_l, 13, "~/scripts/app-starter.sh wxwork",  "~/scripts/app-starter.sh wxwork")
 };
 static Button buttons[] = {
-    /* click               event mask       button            function        argument  */
-    { ClkWinTitle,         0,               Button1,          hideotherwins,  {0} },    // 左键        |  点击标题  |  隐藏其他窗口仅保留该窗口
-    { ClkWinTitle,         0,               Button3,          togglewin,      {0} },    // 右键        |  点击标题  |  切换窗口显示状态
-    { ClkTagBar,           0,               Button1,          view,           {0} },    // 左键        |  点击tag   |  切换tag
-    { ClkClientWin,        MODKEY,          Button1,          movemouse,      {0} },    // super+左键  |  拖拽窗口  |  拖拽窗口
-    { ClkClientWin,        MODKEY,          Button3,          resizemouse,    {0} },    // super+右键  |  拖拽窗口  |  改变窗口大小
-    { ClkTagBar,           MODKEY,          Button1,          tag,            {0} },    // super+左键  |  点击tag   |  将窗口移动到对应tag
+    /* click               event mask       button            function       argument  */
+    { ClkWinTitle,         0,               Button1,          hideotherwins, {0} },                 // 左键        |  点击标题     |  隐藏其他窗口仅保留该窗口
+    { ClkWinTitle,         0,               Button3,          togglewin,     {0} },                 // 右键        |  点击标题     |  切换窗口显示状态
+    { ClkTagBar,           0,               Button1,          view,          {0} },                 // 左键        |  点击tag      |  切换tag
+    { ClkLtSymbol,         0,               Button1,          selectlayout,  { .v = &layouts[1]} }, // 左键        |  点击布局图标 |  切换tag
+    { ClkClientWin,        MODKEY,          Button1,          movemouse,     {0} },                 // super+左键  |  拖拽窗口     |  拖拽窗口
+    { ClkClientWin,        MODKEY,          Button3,          resizemouse,   {0} },                 // super+右键  |  拖拽窗口     |  改变窗口大小
+    { ClkTagBar,           MODKEY,          Button1,          tag,           {0} },                 // super+左键  |  点击tag      |  将窗口移动到对应tag
 };

@@ -181,7 +181,6 @@ static void logtofile(const char *format, ...);
 
 static void tile(Monitor *m);
 static void grid(Monitor *m);
-static void monocle(Monitor *m);
 
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -214,6 +213,8 @@ static void focusin(XEvent *e);
 static void focus(Client *c);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+
+static void pointerfocuswin(Client *c);
 
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
@@ -723,6 +724,18 @@ clientmessage(XEvent *e)
     } else if (cme->message_type == netatom[NetActiveWindow]) {
         if (c != selmon->sel && !c->isurgent)
             seturgent(c, 1);
+        if (c == selmon->sel) return;
+        // 若不是当前显示器 则跳转到对应显示器
+        if (c->mon != selmon) {
+            focusmon(&(Arg) { .i = +1 });
+        }
+        // 若不适当前tag 则跳转到对应tag
+        if (!ISVISIBLE(c)) {
+            view(&(Arg) { .ui = c->tags });
+        }
+        // 选中窗口
+        focus(c);
+        pointerfocuswin(c);
     }
 }
 
@@ -1200,7 +1213,7 @@ focusmon(const Arg *arg)
     unfocus(selmon->sel, 0);
     selmon = m;
     focus(NULL);
-    XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
+    pointerfocuswin(NULL);
 }
 
 void
@@ -1239,8 +1252,18 @@ focusstack(const Arg *arg)
         if (c) {
             focus(c);
             restack(selmon);
+            pointerfocuswin(c);
         }
     }
+}
+
+void
+pointerfocuswin(Client *c)
+{
+    if (c)
+        XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w / 2, c->y + c->h / 2);
+    else
+        XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
 }
 
 Atom
@@ -2302,6 +2325,7 @@ tagmon(const Arg *arg)
         return;
     sendmon(selmon->sel, dirtomon(arg->i));
     focusmon(&(Arg) { .i = +1 });
+    pointerfocuswin(selmon->sel);
 }
 
 void
@@ -3016,14 +3040,6 @@ grid(Monitor *m) {
                0);
 		i++;
 	}
-}
-
-void
-monocle(Monitor *m)
-{
-	Client *c;
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx + m->gappoh, m->wy + m->gappov, m->ww - 2 * c->bw - 2 * m->gappoh, m->wh - 2 * c->bw - 2 * m->gappov, 0);
 }
 
 Client *
