@@ -87,6 +87,8 @@ enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+enum { UP, DOWN, LEFT, RIGHT }; /* movewin */
+enum { V_EXPAND, V_REDUCE, H_EXPAND, H_REDUCE }; /* resizewins */
 
 typedef struct {
 	int i;
@@ -244,6 +246,8 @@ static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
+static void movewin(const Arg *arg);
+static void resizewin(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
@@ -1712,6 +1716,74 @@ movemouse(const Arg *arg)
         selmon = m;
         focus(NULL);
     }
+}
+
+void
+movewin(const Arg *arg)
+{
+    Client *c;
+    int nx, ny;
+    c = selmon->sel;
+    if (!c)
+        return;
+    if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
+        togglefloating(NULL);
+    nx = c->x;
+    ny = c->y;
+    switch (arg->ui) {
+        case UP:
+            ny -= selmon->wh / 4;
+            break;
+        case DOWN:
+            ny += selmon->wh / 4;
+            break;
+        case LEFT:
+            nx -= selmon->ww / 4;
+            break;
+        case RIGHT:
+            nx += selmon->ww / 4;
+            break;
+    }
+    nx = MAX(nx, selmon->wx + selmon->gappoh);
+    ny = MAX(ny, selmon->wy + selmon->gappoh);
+    nx = MIN(nx, selmon->wx + selmon->ww - selmon->gappoh - WIDTH(c));
+    ny = MIN(ny, selmon->wy + selmon->wh - selmon->gappoh - HEIGHT(c));
+    resize(c, nx, ny, c->w, c->h, 1);
+    focus(c);
+    pointerfocuswin(c);
+}
+
+void
+resizewin(const Arg *arg)
+{
+    Client *c;
+    int nh, nw;
+    c = selmon->sel;
+    if (!c)
+        return;
+    if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
+        togglefloating(NULL);
+    nw = c->w;
+    nh = c->h;
+    switch (arg->ui) {
+        case H_EXPAND:
+            nw += selmon->wh / 10;
+            break;
+        case H_REDUCE:
+            nw -= selmon->wh / 10;
+            break;
+        case V_EXPAND:
+            nh += selmon->ww / 10;
+            break;
+        case V_REDUCE:
+            nh -= selmon->ww / 10;
+            break;
+    }
+    nw = MAX(nw, selmon->ww / 10);
+    nh = MAX(nh, selmon->wh / 10);
+    resize(c, c->x, c->y, nw, nh, 1);
+    focus(c);
+    XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);
 }
 
 Client *

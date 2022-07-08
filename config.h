@@ -89,9 +89,19 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,    XK_space,        selectlayout,     {.v = &layouts[1]} },      /* super shift space  |  切换到网格布局 */
 	{ MODKEY,              XK_o,            showonlyorall,    {0} },                     /* super o            |  切换 只显示一个窗口 / 全部显示 */
 
-    { MODKEY|ControlMask,  XK_Up,           setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
-    { MODKEY|ControlMask,  XK_Down,         setgap,           {.i = +6} },               /* super ctrl down    |  窗口减小 */
+    { MODKEY|ControlMask,  XK_equal,        setgap,           {.i = -6} },               /* super ctrl up      |  窗口增大 */
+    { MODKEY|ControlMask,  XK_minus,        setgap,           {.i = +6} },               /* super ctrl down    |  窗口减小 */
     { MODKEY|ControlMask,  XK_space,        setgap,           {.i = 0} },                /* super ctrl space   |  窗口重置 */
+
+    { MODKEY|ControlMask,  XK_Up,           movewin,          {.ui = UP} },              /* super ctrl up      |  移动窗口 */
+    { MODKEY|ControlMask,  XK_Down,         movewin,          {.ui = DOWN} },            /* super ctrl down    |  移动窗口 */
+    { MODKEY|ControlMask,  XK_Left,         movewin,          {.ui = LEFT} },            /* super ctrl left    |  移动窗口 */
+    { MODKEY|ControlMask,  XK_Right,        movewin,          {.ui = RIGHT} },           /* super ctrl right   |  移动窗口 */
+
+    { MODKEY|ControlMask,  XK_i,            resizewin,        {.ui = V_REDUCE} },        /* super ctrl i       |  调整窗口 */
+    { MODKEY|ControlMask,  XK_k,            resizewin,        {.ui = V_EXPAND} },        /* super ctrl k       |  调整窗口 */
+    { MODKEY|ControlMask,  XK_j,            resizewin,        {.ui = H_REDUCE} },        /* super ctrl j       |  调整窗口 */
+    { MODKEY|ControlMask,  XK_l,            resizewin,        {.ui = H_EXPAND} },        /* super ctrl l       |  调整窗口 */
 
     /* spawn + SHCMD 执行对应命令 */
     { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("~/scripts/app-starter.sh killw") },
