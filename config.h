@@ -52,6 +52,7 @@ static const Layout layouts[] = {
 #define TAGKEYS(KEY, TAG, cmd1, cmd2) \
     { MODKEY,              KEY, view,       {.ui = 1 << TAG, .v = cmd1} }, \
     { MODKEY|ShiftMask,    KEY, tag,        {.ui = 1 << TAG, .v = cmd2} }, \
+    { MODKEY|ControlMask,  KEY, toggleview, {.ui = 1 << TAG} }, \
 
 static Key keys[] = {
     /* modifier            key              function          argument */
@@ -65,6 +66,8 @@ static Key keys[] = {
     { MODKEY,              XK_Right,        viewtoright,      {0} },                     /* super right        |  聚焦到右边的tag */
     { MODKEY|ShiftMask,    XK_Left,         tagtoleft,        {0} },                     /* super shift left   |  将本窗口移动到左边tag */
     { MODKEY|ShiftMask,    XK_Right,        tagtoright,       {0} },                     /* super shift right  |  将本窗口移动到右边tag */
+
+    { MODKEY,              XK_a,            viewalltag,       {0} },                     /* super a            |  显示所有tag 或 跳转到聚焦窗口的tag */
 
     { MODKEY,              XK_comma,        setmfact,         {.f = -0.05} },            /* super ,            |  缩小主工作区 */
     { MODKEY,              XK_period,       setmfact,         {.f = +0.05} },            /* super .            |  放大主工作区 */
@@ -144,7 +147,7 @@ static Button buttons[] = {
     { ClkWinTitle,         0,               Button1,          hideotherwins, {0} },                 // 左键        |  点击标题     |  隐藏其他窗口仅保留该窗口
     { ClkWinTitle,         0,               Button3,          togglewin,     {0} },                 // 右键        |  点击标题     |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,          {0} },                 // 左键        |  点击tag      |  切换tag
-    { ClkLtSymbol,         0,               Button1,          selectlayout,  { .v = &layouts[1]} }, // 左键        |  点击布局图标 |  切换tag
+	{ ClkTagBar,           0,               Button3,          toggleview,    {0} },                 // 右键        |  点击tag      |  切换是否显示tag
     { ClkClientWin,        MODKEY,          Button1,          movemouse,     {0} },                 // super+左键  |  拖拽窗口     |  拖拽窗口
     { ClkClientWin,        MODKEY,          Button3,          resizemouse,   {0} },                 // super+右键  |  拖拽窗口     |  改变窗口大小
     { ClkTagBar,           MODKEY,          Button1,          tag,           {0} },                 // super+左键  |  点击tag      |  将窗口移动到对应tag

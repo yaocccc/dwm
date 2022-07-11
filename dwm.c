@@ -315,6 +315,8 @@ static void setgap(const Arg *arg);
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
+static void toggleview(const Arg *arg);
+static void viewalltag(const Arg *arg);
 
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -2453,6 +2455,7 @@ togglefloating(const Arg *arg)
     }
 
     arrange(selmon);
+    pointerfocuswin(selmon->sel);
 }
 
 void
@@ -2479,10 +2482,10 @@ toggleallfloating(const Arg *arg)
         for (c = selmon->clients; c; c = c->next)
             if (ISVISIBLE(c) && !HIDDEN(c)) {
                 c->isfloating = 1;
-                resize(c, c->x + 2 * snap, c->y + 2 * snap,
-                        MAX(c->w - 4 * snap, snap) , MAX(c->h - 4 * snap, snap), 0);
+                resize(c, c->x + 2 * snap, c->y + 2 * snap, MAX(c->w - 4 * snap, snap) , MAX(c->h - 4 * snap, snap), 0);
             }
     }
+    pointerfocuswin(selmon->sel);
 }
 
 void
@@ -2513,7 +2516,7 @@ issinglewin(const Arg *arg) {
     int cot = 0, tag = selmon->tagset[selmon->seltags];
 
     for (c = selmon->clients; c; c = c->next) {
-        if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag)
+        if (ISVISIBLE(c) && !HIDDEN(c))
             cot++;
         if (cot > 1)
             return 0;
@@ -2533,6 +2536,18 @@ togglewin(const Arg *arg)
         focus(c);
         restack(selmon);
     }
+}
+
+void
+toggleview(const Arg *arg)
+{
+	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
+
+	if (newtagset) {
+		selmon->tagset[selmon->seltags] = newtagset;
+		focus(NULL);
+		arrange(selmon);
+	}
 }
 
 void
@@ -3003,6 +3018,17 @@ view(const Arg *arg)
             spawn(&(Arg){ .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } });
         }
     }
+}
+
+// 显示所有tag 或 跳转到聚焦窗口的tag
+void
+viewalltag(const Arg *arg)
+{
+    if (__builtin_popcount(selmon->tagset[selmon->seltags]) == LENGTH(tags) && selmon->sel) {
+        view(&(Arg){ .ui = selmon->sel->tags });
+        return;
+    }
+    view(&(Arg){ .ui = ~0 });
 }
 
 void
