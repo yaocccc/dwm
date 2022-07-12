@@ -940,6 +940,7 @@ drawbar(Monitor *m)
     int tags_w = 0, system_w = 0, tasks_w = 0, status_w, lts_w;
     unsigned int i, occ = 0, n = 0, urg = 0, scm;
     Client *c;
+	int boxw = 2;
 
     if (!m->showbar)
         return;
@@ -970,6 +971,8 @@ drawbar(Monitor *m)
         w = TEXTW(tags[i]);
         drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+        if (m->tagset[m->seltags] & 1 << i)
+            drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
         x += w;
     }
 
@@ -3024,7 +3027,7 @@ view(const Arg *arg)
 void
 viewalltag(const Arg *arg)
 {
-    if (__builtin_popcount(selmon->tagset[selmon->seltags]) == LENGTH(tags) && selmon->sel) {
+    if (selmon->tagset[selmon->seltags] == TAGMASK && selmon->sel) {
         view(&(Arg){ .ui = selmon->sel->tags });
         return;
     }

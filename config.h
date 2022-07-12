@@ -17,7 +17,7 @@ static const unsigned int baralpha       = 0xc0;      /* 状态栏透明度 */
 static const unsigned int borderalpha    = 0xdd;      /* 边框透明度 */
 static const int   resizehints           = 1;         /* */
 static const char *fonts[]               = { "JetBrainsMono Nerd Font:style=medium:size=13", "monospace:size=13" };
-static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", "#333333", "#42A5F5" }, [SchemeSystray] = { "#7799AA", "#7799AA", "#7799AA" } };
+static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", NULL, NULL }, [SchemeSystray] = { "#7799AA", "#7799AA", "#7799AA" } };
 static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha } };
 
 /* 自定义tag名称 */
@@ -101,10 +101,10 @@ static Key keys[] = {
     { MODKEY|ControlMask,  XK_Left,         movewin,          {.ui = LEFT} },            /* super ctrl left    |  移动窗口 */
     { MODKEY|ControlMask,  XK_Right,        movewin,          {.ui = RIGHT} },           /* super ctrl right   |  移动窗口 */
 
-    { MODKEY|ControlMask,  XK_i,            resizewin,        {.ui = V_REDUCE} },        /* super ctrl i       |  调整窗口 */
-    { MODKEY|ControlMask,  XK_k,            resizewin,        {.ui = V_EXPAND} },        /* super ctrl k       |  调整窗口 */
-    { MODKEY|ControlMask,  XK_j,            resizewin,        {.ui = H_REDUCE} },        /* super ctrl j       |  调整窗口 */
-    { MODKEY|ControlMask,  XK_l,            resizewin,        {.ui = H_EXPAND} },        /* super ctrl l       |  调整窗口 */
+    { MODKEY|Mod1Mask,     XK_Up,           resizewin,        {.ui = V_REDUCE} },        /* super ctrl up      |  调整窗口 */
+    { MODKEY|Mod1Mask,     XK_Down,         resizewin,        {.ui = V_EXPAND} },        /* super ctrl down    |  调整窗口 */
+    { MODKEY|Mod1Mask,     XK_Left,         resizewin,        {.ui = H_REDUCE} },        /* super ctrl left    |  调整窗口 */
+    { MODKEY|Mod1Mask,     XK_Right,        resizewin,        {.ui = H_EXPAND} },        /* super ctrl right   |  调整窗口 */
 
     /* spawn + SHCMD 执行对应命令 */
     { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("~/scripts/app-starter.sh killw") },
