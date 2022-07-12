@@ -78,7 +78,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeHid, SchemeSystray }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeHid, SchemeSystray, SchemeUnderline }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -971,8 +971,10 @@ drawbar(Monitor *m)
         w = TEXTW(tags[i]);
         drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-        if (m->tagset[m->seltags] & 1 << i)
+        if (m->tagset[m->seltags] & 1 << i) {
+            drw_setscheme(drw, scheme[SchemeUnderline]);
             drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
+        }
         x += w;
     }
 
