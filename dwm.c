@@ -316,7 +316,7 @@ static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
 static void toggleview(const Arg *arg);
-static void viewalltag(const Arg *arg);
+static void overview(const Arg *arg);
 
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -3025,13 +3025,14 @@ view(const Arg *arg)
 
 // 显示所有tag 或 跳转到聚焦窗口的tag
 void
-viewalltag(const Arg *arg)
+overview(const Arg *arg)
 {
     if (selmon->tagset[selmon->seltags] == TAGMASK && selmon->sel) {
         view(&(Arg){ .ui = selmon->sel->tags });
         return;
     }
     view(&(Arg){ .ui = ~0 });
+    pointerfocuswin(selmon->sel);
 }
 
 void
