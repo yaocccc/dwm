@@ -3031,10 +3031,10 @@ overview(const Arg *arg)
 {
     if (selmon->tagset[selmon->seltags] == TAGMASK && selmon->sel) {
         view(&(Arg){ .ui = selmon->sel->tags });
+        pointerfocuswin(selmon->sel);
         return;
     }
     view(&(Arg){ .ui = ~0 });
-    pointerfocuswin(selmon->sel);
 }
 
 void
