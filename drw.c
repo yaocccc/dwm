@@ -272,7 +272,7 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 
 	usedfont = drw->fonts;
 	while (1) {
-		utf8strlen = 0;
+		ew = utf8strlen = 0;
 		utf8str = text;
 		nextfont = NULL;
 		while (*text) {
