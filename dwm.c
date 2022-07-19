@@ -1271,9 +1271,10 @@ focusstack(const Arg *arg)
 void
 pointerfocuswin(Client *c)
 {
-    if (c)
+    if (c) {
         XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w / 2, c->y + c->h / 2);
-    else
+        focus(c);
+    } else
         XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
 }
 
