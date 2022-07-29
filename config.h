@@ -144,11 +144,12 @@ static Key keys[] = {
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
-    { ClkWinTitle,         0,               Button1,          hideotherwins, {0} },                 // 左键        |  点击标题     |  隐藏其他窗口仅保留该窗口
-    { ClkWinTitle,         0,               Button3,          togglewin,     {0} },                 // 右键        |  点击标题     |  切换窗口显示状态
-    { ClkTagBar,           0,               Button1,          view,          {0} },                 // 左键        |  点击tag      |  切换tag
-	{ ClkTagBar,           0,               Button3,          toggleview,    {0} },                 // 右键        |  点击tag      |  切换是否显示tag
-    { ClkClientWin,        MODKEY,          Button1,          movemouse,     {0} },                 // super+左键  |  拖拽窗口     |  拖拽窗口
-    { ClkClientWin,        MODKEY,          Button3,          resizemouse,   {0} },                 // super+右键  |  拖拽窗口     |  改变窗口大小
-    { ClkTagBar,           MODKEY,          Button1,          tag,           {0} },                 // super+左键  |  点击tag      |  将窗口移动到对应tag
+	{ ClkStatusText,       0,               Button1,          spawn,         SHCMD("~/scripts/app-starter.sh fst") }, // 左键        |  点击状态栏   |  打开float st
+    { ClkWinTitle,         0,               Button1,          hideotherwins, {0} },                                   // 左键        |  点击标题     |  隐藏其他窗口仅保留该窗口
+    { ClkWinTitle,         0,               Button3,          togglewin,     {0} },                                   // 右键        |  点击标题     |  切换窗口显示状态
+    { ClkTagBar,           0,               Button1,          view,          {0} },                                   // 左键        |  点击tag      |  切换tag
+	{ ClkTagBar,           0,               Button3,          toggleview,    {0} },                                   // 右键        |  点击tag      |  切换是否显示tag
+    { ClkClientWin,        MODKEY,          Button1,          movemouse,     {0} },                                   // super+左键  |  拖拽窗口     |  拖拽窗口
+    { ClkClientWin,        MODKEY,          Button3,          resizemouse,   {0} },                                   // super+右键  |  拖拽窗口     |  改变窗口大小
+    { ClkTagBar,           MODKEY,          Button1,          tag,           {0} },                                   // super+左键  |  点击tag      |  将窗口移动到对应tag
 };
