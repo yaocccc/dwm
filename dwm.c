@@ -578,7 +578,7 @@ buttonpress(XEvent *e)
             arg.ui = 1 << i;
         } else if (ev->x < x + blw)
             click = ClkLtSymbol;
-        else if (ev->x > selmon->ww - drawstatusbar(selmon, bh, stext) - getsystraywidth())
+        else if (ev->x > selmon->ww - drawstatusbar(selmon, bh, stext) -  (selmon == systraytomon(selmon) ? getsystraywidth() : 0))
             click = ClkStatusText;
         else {
             x += blw;
@@ -1334,7 +1334,7 @@ getsystraywidth()
 {
     unsigned int w = 0;
     Client *i;
-    if(showsystray && selmon == systraytomon(selmon))
+    if(showsystray)
         for(i = systray->icons; i; w += MAX(i->w, bh) + systrayspacing, i = i->next) ;
     return w ? w + systrayspacing : 1;
 }
@@ -3234,7 +3234,7 @@ systraytomon(Monitor *m) {
     }
     for(n = 1, t = mons; t && t->next; n++, t = t->next) ;
     for(i = 1, t = mons; t && t->next && i < systraypinning; i++, t = t->next) ;
-    if(systraypinningfailfirst && n < systraypinning)
+    if(n < systraypinning)
         return mons;
     return t;
 }
