@@ -42,8 +42,8 @@ static const Rule rules[] = {
 
 /* 自定义布局 */
 static const Layout layouts[] = {
-    { "﬿",  tile },    /* 主次栈 */
-    { "﩯",  grid },    /* 网格   */
+    { "﬿",  tile },         /* 主次栈 */
+    { "﩯",  magicgrid },    /* 网格   */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }

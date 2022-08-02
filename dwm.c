@@ -183,6 +183,7 @@ static void logtofile(const char *format, ...);
 
 static void tile(Monitor *m);
 static void grid(Monitor *m);
+static void magicgrid(Monitor *m);
 
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -1708,8 +1709,8 @@ movemouse(const Arg *arg)
                 if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
                         && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
                     togglefloating(&(Arg) { .ui = 1 });
-                    if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2) {
-                        resize(c, nx, ny, c->w / 2, c->h / 2, 0);
+                    if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2 && (c->w > selmon->ww * 0.5 || c->h > selmon->wh * 0.5)) {
+                        resize(c, nx, ny, c->w > selmon->ww * 0.5 ? c->w / 2 : c->w, c->h > selmon->wh * 0.5 ? c->h / 2 : c->h, 0);
                         break;
                     }
                 }
@@ -3082,8 +3083,7 @@ tile(Monitor *m)
     Client *c;
 
     for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-    if (n == 0)
-        return;
+    if (n == 0) return;
 
     if (n > m->nmaster)
         mw = m->nmaster ? (m->ww + m->gappiv) * m->mfact : 0;
@@ -3114,13 +3114,54 @@ tile(Monitor *m)
 }
 
 void
+magicgrid(Monitor *m)
+{
+    unsigned int n;
+    unsigned int cw, ch;
+    Client *c;
+
+    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+    if (n == 0) return;
+    if (n > 2) return grid(m);
+
+    if (n == 1) {
+        c = nexttiled(m->clients);
+        cw = (m->ww - 2 * m->gappov) * 0.6;
+        ch = (m->wh - 2 * m->gappoh) * 0.6;
+        resize(c,
+               m->mx + (m->mw - cw) / 2 + m->gappoh,
+               m->my + (m->mh - ch) / 2 + m->gappov,
+               cw - 2 * c->bw,
+               ch - 2 * c->bw,
+               0);
+    }
+    if (n == 2) {
+        c = nexttiled(m->clients);
+        cw = (m->ww - 2 * m->gappov - m->gappiv) / 2;
+        ch = (m->wh - 2 * m->gappoh) * 0.6;
+        resize(c,
+               m->mx + m->gappoh,
+               m->my + (m->mh - ch) / 2 + m->gappov,
+               cw - 2 * c->bw,
+               ch - 2 * c->bw,
+               0);
+        resize(nexttiled(c->next),
+               m->mx + cw + m->gappoh + m->gappiv,
+               m->my + (m->mh - ch) / 2 + m->gappov,
+               cw - 2 * c->bw,
+               ch - 2 * c->bw,
+               0);
+    }
+}
+
+void
 grid(Monitor *m) {
 	unsigned int i, n;
     unsigned int cx, cy, cw, ch;
     unsigned int cols, rows;
 	Client *c;
 
-	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
+    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
     if (n == 0) return;
     if (n == 2) rows = 1, cols = 2;
     else {
