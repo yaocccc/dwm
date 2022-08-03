@@ -1790,6 +1790,10 @@ resizewin(const Arg *arg)
     }
     nw = MAX(nw, selmon->ww / 10);
     nh = MAX(nh, selmon->wh / 10);
+    if (c->x + nw + selmon->gappoh > selmon->wx + selmon->ww)
+        nw = selmon->wx + selmon->ww - c->x - selmon->gappoh;
+    if (c->y + nh + selmon->gappov > selmon->wy + selmon->wh)
+        nh = selmon->wy + selmon->wh - c->y - selmon->gappov;
     resize(c, c->x, c->y, nw, nh, 1);
     focus(c);
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);
