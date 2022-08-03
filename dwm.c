@@ -3169,10 +3169,10 @@ grid(Monitor *m) {
     if (n == 0) return;
     if (n == 2) rows = 1, cols = 2;
     else {
-        for (rows = 0; rows <= n / 2; rows++)
-            if (rows * rows >= n)
+        for (cols = 0; cols <= n / 2; cols++)
+            if (cols * cols >= n)
                 break;
-        cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
+        rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
     }
 
 	ch = (m->wh - 2 * m->gappoh - (rows - 1) * m->gappih) / rows;
