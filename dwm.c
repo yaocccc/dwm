@@ -471,7 +471,7 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact)
         *h = bh;
     if (*w < bh)
         *w = bh;
-    if (resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
+    if (c->isfloating) {
         /* see last two sentences in ICCCM 4.1.2.3 */
         baseismin = c->basew == c->minw && c->baseh == c->minh;
         if (!baseismin) { /* temporarily remove base dimensions */
@@ -523,8 +523,7 @@ void
 arrangemon(Monitor *m)
 {
     strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
-    if (m->lt[m->sellt]->arrange)
-        m->lt[m->sellt]->arrange(m);
+    m->lt[m->sellt]->arrange(m);
 }
 
 void
@@ -804,7 +803,7 @@ configurerequest(XEvent *e)
     if ((c = wintoclient(ev->window))) {
         if (ev->value_mask & CWBorderWidth)
             c->bw = ev->border_width;
-        else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
+        else if (c->isfloating) {
             m = c->mon;
             if (ev->value_mask & CWX) {
                 c->oldx = c->x;
@@ -1706,15 +1705,14 @@ movemouse(const Arg *arg)
                     ny = selmon->wy;
                 else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
                     ny = selmon->wy + selmon->wh - HEIGHT(c);
-                if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
-                        && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
-                    togglefloating(&(Arg) { .ui = 1 });
+                if (!c->isfloating && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
+                    c->isfloating = 1;
                     if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2 && (c->w > selmon->ww * 0.5 || c->h > selmon->wh * 0.5)) {
                         resize(c, nx, ny, c->w > selmon->ww * 0.5 ? c->w / 2 : c->w, c->h > selmon->wh * 0.5 ? c->h / 2 : c->h, 0);
                         break;
                     }
                 }
-                if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+                if (c->isfloating)
                     resize(c, nx, ny, c->w, c->h, 1);
                 break;
         }
@@ -1735,7 +1733,7 @@ movewin(const Arg *arg)
     c = selmon->sel;
     if (!c)
         return;
-    if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
+    if (!c->isfloating)
         togglefloating(NULL);
     nx = c->x;
     ny = c->y;
@@ -1770,7 +1768,7 @@ resizewin(const Arg *arg)
     c = selmon->sel;
     if (!c)
         return;
-    if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
+    if (!c->isfloating)
         togglefloating(NULL);
     nw = c->w;
     nh = c->h;
@@ -1901,11 +1899,6 @@ void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
     if (applysizehints(c, &x, &y, &w, &h, interact)) {
-        const char *class, *instance;
-        XClassHint ch = { NULL, NULL };
-        XGetClassHint(dpy, c->win, &ch);
-        class    = ch.res_class ? ch.res_class : broken;
-        instance = ch.res_name  ? ch.res_name  : broken;
         resizeclient(c, x, y, w, h);
     }
 }
@@ -1928,6 +1921,7 @@ resizeclient(Client *c, int x, int y, int w, int h)
     c->oldw = c->w; c->w = wc.width = w;
     c->oldh = c->h; c->h = wc.height = h;
     wc.border_width = c->bw;
+
     if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next)))
             && !c->isfullscreen && !c->isfloating) {
         c->w = wc.width += c->bw * 2;
@@ -1976,12 +1970,11 @@ resizemouse(const Arg *arg)
                 nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
                 if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
                         && c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh) {
-                    if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
-                            && (abs(nw - c->w) > snap || abs(nh - c->h) > snap)) {
-                        togglefloating(&(Arg) { .ui = 1 });
+                    if (!c->isfloating && (abs(nw - c->w) > snap || abs(nh - c->h) > snap)) {
+                        c->isfloating = 1;
                     }
                 }
-                if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+                if (c->isfloating)
                     resize(c, c->x, c->y, nw, nh, 1);
                 break;
         }
@@ -2019,17 +2012,15 @@ restack(Monitor *m)
     drawbar(m);
     if (!m->sel)
         return;
-    if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
+    if (m->sel->isfloating)
         XRaiseWindow(dpy, m->sel->win);
-    if (m->lt[m->sellt]->arrange) {
-        wc.stack_mode = Below;
-        wc.sibling = m->barwin;
-        for (c = m->stack; c; c = c->snext)
-            if (!c->isfloating && ISVISIBLE(c)) {
-                XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
-                wc.sibling = c->win;
-            }
-    }
+    wc.stack_mode = Below;
+    wc.sibling = m->barwin;
+    for (c = m->stack; c; c = c->snext)
+        if (!c->isfloating && ISVISIBLE(c)) {
+            XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
+            wc.sibling = c->win;
+        }
     XSync(dpy, False);
     while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
@@ -2230,7 +2221,7 @@ setmfact(const Arg *arg)
 {
     float f;
 
-    if (!arg || !selmon->lt[selmon->sellt]->arrange)
+    if (!arg)
         return;
     f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
     if (f < 0.05 || f > 0.95)
@@ -2355,7 +2346,7 @@ showtag(Client *c)
     if (ISVISIBLE(c)) {
         /* show clients top down */
         XMoveWindow(dpy, c->win, c->x, c->y);
-        if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+        if (c->isfloating && !c->isfullscreen)
             resize(c, c->x, c->y, c->w, c->h, 0);
         showtag(c->snext);
     } else {
@@ -2450,15 +2441,13 @@ togglebar(const Arg *arg)
 void
 togglefloating(const Arg *arg)
 {
-    int existed = 0;
-
     if (!selmon->sel)
         return;
     if (selmon->sel->isfullscreen)
         return;
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 
-    if (selmon->sel->isfloating && !(arg && arg->ui)) {
+    if (selmon->sel->isfloating) {
         selmon->sel->x = selmon->wx + selmon->ww / 6,
         selmon->sel->y = selmon->wy + selmon->wh / 6,
         randomxy(selmon->sel);
@@ -3326,8 +3315,7 @@ zoom(const Arg *arg)
 {
     Client *c = selmon->sel;
 
-    if (!selmon->lt[selmon->sellt]->arrange
-            || (selmon->sel && selmon->sel->isfloating))
+    if (selmon->sel && selmon->sel->isfloating)
         return;
     if (c == nexttiled(selmon->clients))
         if (!c || !(c = nexttiled(c->next)))
@@ -3339,7 +3327,7 @@ int
 main(int argc, char *argv[])
 {
     if (argc == 2 && !strcmp("-v", argv[1]))
-        die("dwm-"VERSION);
+        die("dwm-6.3");
     else if (argc != 1)
         die("usage: dwm [-v]");
     if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
