@@ -5,8 +5,12 @@ static const int newclientathead         = 0;         /* 定义新窗口在栈�
 static const unsigned int borderpx       = 2;         /* 窗口边框大小 */
 static const unsigned int systraypinning = 1;         /* 托盘跟随的显示器 0代表不指定显示器 */
 static const unsigned int systrayspacing = 1;         /* 托盘间距 */
-static const unsigned int gappi          = 12;        /* 窗口与窗口 缝隙大小 */
-static const unsigned int gappo          = 12;        /* 窗口与边缘 缝隙大小 */
+static unsigned int gappi                = 12;        /* 窗口与窗口 缝隙大小 */
+static unsigned int gappo                = 12;        /* 窗口与边缘 缝隙大小 */
+static const unsigned int _gappo         = 12;        /* 窗口与窗口 缝隙大小 不可变 用于恢复时的默认值 */
+static const unsigned int _gappi         = 12;        /* 窗口与边缘 缝隙大小 不可变 用于恢复时的默认值 */
+static const unsigned int overviewgappi  = 24;        /* overview时 窗口与边缘 缝隙大小 */
+static const unsigned int overviewgappo  = 60;        /* overview时 窗口与窗口 缝隙大小 */
 static const int showbar                 = 1;         /* 是否显示状态栏 */
 static const int topbar                  = 1;         /* 指定状态栏位置 0底部 1顶部 */
 static const float mfact                 = 0.6;       /* 主工作区 大小比例 */
@@ -18,10 +22,12 @@ static const char *fonts[]               = { "JetBrainsMono Nerd Font:style=medi
 static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", NULL, NULL }, [SchemeSystray] = { "#7799AA", "#7799AA", "#7799AA" }, [SchemeUnderline] = { "#7799AA", "#7799AA", "#7799AA" } };
 static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha } };
 
+
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸ 
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
+static const char *overviewtag = "OVERVIEW";
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  monitor */
     {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          -1 },
@@ -42,7 +48,8 @@ static const Rule rules[] = {
 /* 自定义布局 */
 static const Layout layouts[] = {
     { "﬿",  tile },         /* 主次栈 */
-    { "﩯",  magicgrid },    /* 网格   */
+    { "﩯",  magicgrid },    /* 网格 */
+    { "",  overview },     /* overview页面用的layout */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -65,7 +72,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_Left,         tagtoleft,        {0} },                     /* super shift left   |  将本窗口移动到左边tag */
     { MODKEY|ShiftMask,    XK_Right,        tagtoright,       {0} },                     /* super shift right  |  将本窗口移动到右边tag */
 
-    { MODKEY,              XK_a,            overview,         {0} },                     /* super a            |  显示所有tag 或 跳转到聚焦窗口的tag */
+    { MODKEY,              XK_a,            toggleoverview,   {0} },                     /* super a            |  显示所有tag 或 跳转到聚焦窗口的tag */
 
     { MODKEY,              XK_comma,        setmfact,         {.f = -0.05} },            /* super ,            |  缩小主工作区 */
     { MODKEY,              XK_period,       setmfact,         {.f = +0.05} },            /* super .            |  放大主工作区 */

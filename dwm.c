@@ -57,6 +57,7 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+#define ISOVERVIEW(M)           (M->pertag->curtag == 0)
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 
@@ -145,10 +146,6 @@ struct Monitor {
 	int bt;               /* number of tasks */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
-	int gappih;           /* horizontal gap between windows */
-	int gappiv;           /* vertical gap between windows */
-	int gappoh;           /* horizontal outer gaps */
-	int gappov;           /* vertical outer gaps */
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
@@ -182,8 +179,9 @@ struct Systray {
 static void logtofile(const char *format, ...);
 
 static void tile(Monitor *m);
-static void grid(Monitor *m);
 static void magicgrid(Monitor *m);
+static void overview(Monitor *m);
+static void grid(Monitor *m, uint gappo, uint uappi);
 
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -317,7 +315,7 @@ static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
 static void toggleview(const Arg *arg);
-static void overview(const Arg *arg);
+static void toggleoverview(const Arg *arg);
 
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -437,6 +435,7 @@ applyrules(Client *c)
     if (ch.res_name)
         XFree(ch.res_name);
     c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
+    c->tags = ISOVERVIEW(c->mon) ? 1 : c->tags;
 }
 
 int
@@ -565,14 +564,21 @@ buttonpress(XEvent *e)
     }
     if (ev->window == selmon->barwin) {
         i = x = 0;
-        for (c = m->clients; c; c = c->next)
-            occ |= c->tags == 255 ? 0 : c->tags;
-        do {
-            /* do not reserve space for vacant tags */
-            if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
-                continue;
-            x += TEXTW(tags[i]);
-        } while (ev->x >= x && ++i < LENGTH(tags));
+        if (ISOVERVIEW(selmon)) {
+            x += TEXTW(overviewtag);
+            i = ~0;
+            if (ev->x > x)
+                i = LENGTH(tags);
+        } else {
+            for (c = m->clients; c; c = c->next)
+                occ |= c->tags == 255 ? 0 : c->tags;
+            do {
+                /* do not reserve space for vacant tags */
+                if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
+                    continue;
+                x += TEXTW(tags[i]);
+            } while (ev->x >= x && ++i < LENGTH(tags));
+        }
         if (i < LENGTH(tags)) {
             click = ClkTagBar;
             arg.ui = 1 << i;
@@ -856,10 +862,6 @@ createmon(void)
     m->nmaster = nmaster;
     m->showbar = showbar;
     m->topbar = topbar;
-    m->gappih = gappi;
-    m->gappiv = gappi;
-    m->gappoh = gappo;
-    m->gappov = gappo;
     m->lt[0] = &layouts[0];
     m->lt[1] = &layouts[1 % LENGTH(layouts)];
     strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -963,19 +965,30 @@ drawbar(Monitor *m)
 
     // 绘制TAGS
     x = 0;
-    for (i = 0; i < LENGTH(tags); i++) {
-        /* do not draw vacant tags */
-        if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
-            continue;
 
-        w = TEXTW(tags[i]);
-        drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-        drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-        if (m->tagset[m->seltags] & 1 << i) {
-            drw_setscheme(drw, scheme[SchemeUnderline]);
-            drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
-        }
+    // 代表为overview tag状态
+    if (ISOVERVIEW(m)) {
+        w = TEXTW(overviewtag);
+        drw_setscheme(drw, scheme[SchemeSel]);
+        drw_text(drw, x, 0, w, bh, lrpad / 2, overviewtag, 0);
+        drw_setscheme(drw, scheme[SchemeUnderline]);
+        drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
         x += w;
+    } else {
+        for (i = 0; i < LENGTH(tags); i++) {
+            /* do not draw vacant tags */
+            if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
+                continue;
+
+            w = TEXTW(tags[i]);
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+            drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+            if (m->tagset[m->seltags] & 1 << i) {
+                drw_setscheme(drw, scheme[SchemeUnderline]);
+                drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
+            }
+            x += w;
+        }
     }
 
     // 绘制模式图标
@@ -1709,6 +1722,7 @@ movemouse(const Arg *arg)
                     c->isfloating = 1;
                     if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2 && (c->w > selmon->ww * 0.5 || c->h > selmon->wh * 0.5)) {
                         resize(c, nx, ny, c->w > selmon->ww * 0.5 ? c->w / 2 : c->w, c->h > selmon->wh * 0.5 ? c->h / 2 : c->h, 0);
+                        arrange(selmon);
                         break;
                     }
                 }
@@ -1751,10 +1765,10 @@ movewin(const Arg *arg)
             nx += selmon->ww / 4;
             break;
     }
-    nx = MAX(nx, selmon->wx + selmon->gappoh);
-    ny = MAX(ny, selmon->wy + selmon->gappoh);
-    nx = MIN(nx, selmon->wx + selmon->ww - selmon->gappoh - WIDTH(c));
-    ny = MIN(ny, selmon->wy + selmon->wh - selmon->gappoh - HEIGHT(c));
+    nx = MAX(nx, selmon->wx + gappo);
+    ny = MAX(ny, selmon->wy + gappo);
+    nx = MIN(nx, selmon->wx + selmon->ww - gappo - WIDTH(c));
+    ny = MIN(ny, selmon->wy + selmon->wh - gappo - HEIGHT(c));
     resize(c, nx, ny, c->w, c->h, 1);
     focus(c);
     pointerfocuswin(c);
@@ -1788,10 +1802,10 @@ resizewin(const Arg *arg)
     }
     nw = MAX(nw, selmon->ww / 10);
     nh = MAX(nh, selmon->wh / 10);
-    if (c->x + nw + selmon->gappoh + 2 * c->bw > selmon->wx + selmon->ww)
-        nw = selmon->wx + selmon->ww - c->x - selmon->gappoh - 2 * c->bw;
-    if (c->y + nh + selmon->gappov + 2 * c->bw > selmon->wy + selmon->wh)
-        nh = selmon->wy + selmon->wh - c->y - selmon->gappov - 2 * c->bw;
+    if (c->x + nw + gappo + 2 * c->bw > selmon->wx + selmon->ww)
+        nw = selmon->wx + selmon->ww - c->x - gappo - 2 * c->bw;
+    if (c->y + nh + gappo + 2 * c->bw > selmon->wy + selmon->wh)
+        nh = selmon->wy + selmon->wh - c->y - gappo - 2 * c->bw;
     resize(c, c->x, c->y, nw, nh, 1);
     focus(c);
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);
@@ -1972,6 +1986,7 @@ resizemouse(const Arg *arg)
                         && c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh) {
                     if (!c->isfloating && (abs(nw - c->w) > snap || abs(nh - c->h) > snap)) {
                         c->isfloating = 1;
+                        arrange(selmon);
                     }
                 }
                 if (c->isfloating)
@@ -2967,8 +2982,8 @@ updatewmhints(Client *c)
 void
 setgap(const Arg *arg)
 {
-    selmon->gappih = selmon->gappiv = arg->i ? MAX(selmon->gappiv + arg->i, 0) : gappi;
-    selmon->gappoh = selmon->gappov = arg->i ? MAX(selmon->gappov + arg->i, 0) : gappo;
+    gappi = arg->i ? MAX(gappi + arg->i, 0) : _gappi;
+    gappo = arg->i ? MAX(gappo + arg->i, 0) : _gappo;
     arrange(selmon);
 }
 
@@ -3000,8 +3015,14 @@ view(const Arg *arg)
     selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
     selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
     selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
-    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+
+    if (ISOVERVIEW(selmon)) { // 当展示全部的tag时，只使用布局: overview
+        selmon->lt[selmon->sellt] = &layouts[2];
+        selmon->lt[selmon->sellt^1] = &layouts[2];
+    } else {
+        selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+        selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+    }
 
     if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
         togglebar(NULL);
@@ -3022,14 +3043,14 @@ view(const Arg *arg)
 
 // 显示所有tag 或 跳转到聚焦窗口的tag
 void
-overview(const Arg *arg)
+toggleoverview(const Arg *arg)
 {
     if (selmon->tagset[selmon->seltags] == TAGMASK && selmon->sel) {
         view(&(Arg){ .ui = selmon->sel->tags });
         pointerfocuswin(selmon->sel);
         return;
     }
-    view(&(Arg){ .ui = ~0 });
+    view(&(Arg){ .ui = ISOVERVIEW(selmon) ? 1 : ~0 });
 }
 
 void
@@ -3079,101 +3100,100 @@ tile(Monitor *m)
     if (n == 0) return;
 
     if (n > m->nmaster)
-        mw = m->nmaster ? (m->ww + m->gappiv) * m->mfact : 0;
+        mw = m->nmaster ? (m->ww + gappi) * m->mfact : 0;
     else
-        mw = m->ww - 2 * m->gappov + m->gappiv;
-    for (i = 0, my = ty = m->gappoh, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+        mw = m->ww - 2 * gappo + gappi;
+    for (i = 0, my = ty = gappo, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
         if (i < m->nmaster) {
             r = MIN(n, m->nmaster) - i;
-            h = (m->wh - my - m->gappoh - m->gappih * (r - 1)) / r;
+            h = (m->wh - my - gappo - gappi * (r - 1)) / r;
             resize(c,
-                   m->wx + m->gappov,
+                   m->wx + gappo,
                    m->wy + my,
-                   mw - 2 * c->bw - m->gappiv,
+                   mw - 2 * c->bw - gappi,
                    h - 2 * c->bw,
                    0);
-            my += HEIGHT(c) + m->gappih;
+            my += HEIGHT(c) + gappi;
         } else {
             r = n - i;
-            h = (m->wh - ty - m->gappoh - m->gappih * (r - 1)) / r;
+            h = (m->wh - ty - gappo - gappi * (r - 1)) / r;
             resize(c,
-                   m->wx + mw + m->gappov,
+                   m->wx + mw + gappo,
                    m->wy + ty,
-                   m->ww - mw - 2 * c->bw - 2 * m->gappov,
+                   m->ww - mw - 2 * c->bw - 2 * gappo,
                    h - 2* c->bw,
                    0);
-            ty += HEIGHT(c) + m->gappih;
+            ty += HEIGHT(c) + gappi;
         }
 }
 
 void
 magicgrid(Monitor *m)
 {
-    unsigned int n;
-    unsigned int cw, ch;
+    grid(m, gappo, gappi);
+}
+
+void
+overview(Monitor *m)
+{
+    grid(m, overviewgappo, overviewgappi);
+}
+
+void
+grid(Monitor *m, uint gappo, uint gappi)
+{
+    unsigned int i, n;
+    unsigned int cx, cy, cw, ch;
+    unsigned int cols, rows;
     Client *c;
 
     for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
     if (n == 0) return;
-    if (n > 2) return grid(m);
-
     if (n == 1) {
         c = nexttiled(m->clients);
-        cw = (m->ww - 2 * m->gappov) * 0.6;
-        ch = (m->wh - 2 * m->gappoh) * 0.6;
+        cw = (m->ww - 2 * gappo) * 0.6;
+        ch = (m->wh - 2 * gappo) * 0.6;
         resize(c,
-               m->mx + (m->mw - cw) / 2 + m->gappoh,
-               m->my + (m->mh - ch) / 2 + m->gappov,
+               m->mx + (m->mw - cw) / 2 + gappo,
+               m->my + (m->mh - ch) / 2 + gappo,
                cw - 2 * c->bw,
                ch - 2 * c->bw,
                0);
+        return;
     }
     if (n == 2) {
         c = nexttiled(m->clients);
-        cw = (m->ww - 2 * m->gappov - m->gappiv) / 2;
-        ch = (m->wh - 2 * m->gappoh) * 0.6;
+        cw = (m->ww - 2 * gappo - gappi) / 2;
+        ch = (m->wh - 2 * gappo) * 0.6;
         resize(c,
-               m->mx + m->gappoh,
-               m->my + (m->mh - ch) / 2 + m->gappov,
+               m->mx + gappo,
+               m->my + (m->mh - ch) / 2 + gappo,
                cw - 2 * c->bw,
                ch - 2 * c->bw,
                0);
         resize(nexttiled(c->next),
-               m->mx + cw + m->gappoh + m->gappiv,
-               m->my + (m->mh - ch) / 2 + m->gappov,
+               m->mx + cw + gappo + gappi,
+               m->my + (m->mh - ch) / 2 + gappo,
                cw - 2 * c->bw,
                ch - 2 * c->bw,
                0);
-    }
-}
-
-void
-grid(Monitor *m) {
-	unsigned int i, n;
-    unsigned int cx, cy, cw, ch;
-    unsigned int cols, rows;
-	Client *c;
-
-    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-    if (n == 0) return;
-    if (n == 2) rows = 1, cols = 2;
-    else {
-        for (cols = 0; cols <= n / 2; cols++)
-            if (cols * cols >= n)
-                break;
-        rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
+        return;
     }
 
-	ch = (m->wh - 2 * m->gappoh - (rows - 1) * m->gappih) / rows;
-	cw = (m->ww - 2 * m->gappov - (cols - 1) * m->gappiv) / cols;
+    for (cols = 0; cols <= n / 2; cols++)
+        if (cols * cols >= n)
+            break;
+    rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
+	ch = (m->wh - 2 * gappo - (rows - 1) * gappi) / rows;
+	cw = (m->ww - 2 * gappo - (cols - 1) * gappi) / cols;
 
 	for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-		cx = m->wx + (i % cols) * (cw + m->gappih);
-		cy = m->wy + (i / cols) * (ch + m->gappiv);
+		cx = m->wx + (i % cols) * (cw + gappi);
+		cy = m->wy + (i / cols) * (ch + gappi);
 
         resize(c,
-               cx + m->gappoh,
-               cy + m->gappov,
+               cx + gappo,
+               cy + gappo,
                cw - 2 * c->bw,
                ch - 2 * c->bw,
                0);
