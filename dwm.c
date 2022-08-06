@@ -381,9 +381,7 @@ struct Pertag {
 	int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */
 };
 
-/* compile-time check if all tags fit into an unsigned int bit array. */
-struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
-
+/* function implementations */
 void
 logtofile(const char *format, ...)
 {
@@ -400,7 +398,6 @@ logtofile(const char *format, ...)
     system(cmd);
 }
 
-/* function implementations */
 void
 applyrules(Client *c)
 {
@@ -1753,23 +1750,23 @@ movewin(const Arg *arg)
     ny = c->y;
     switch (arg->ui) {
         case UP:
-            ny -= selmon->wh / 4;
+            ny -= c->mon->wh / 4;
+            ny = MAX(ny, c->mon->wy + gappo);
             break;
         case DOWN:
-            ny += selmon->wh / 4;
+            ny += c->mon->wh / 4;
+            ny = MIN(ny, c->mon->wy + c->mon->wh - gappo - HEIGHT(c));
             break;
         case LEFT:
-            nx -= selmon->ww / 4;
+            nx -= c->mon->ww / 4;
+            nx = MAX(nx, c->mon->wx + gappo);
             break;
         case RIGHT:
-            nx += selmon->ww / 4;
+            nx += c->mon->ww / 4;
+            nx = MIN(nx, c->mon->wx + c->mon->ww - gappo - WIDTH(c));
             break;
     }
-    nx = MAX(nx, selmon->wx + gappo);
-    ny = MAX(ny, selmon->wy + gappo);
-    nx = MIN(nx, selmon->wx + selmon->ww - gappo - WIDTH(c));
-    ny = MIN(ny, selmon->wy + selmon->wh - gappo - HEIGHT(c));
-    XMoveWindow(dpy, c->win, nx, ny);
+    resize(c, nx, ny, c->w, c->h, 1);
     focus(c);
     pointerfocuswin(c);
 }
