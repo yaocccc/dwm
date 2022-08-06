@@ -1720,9 +1720,9 @@ movemouse(const Arg *arg)
                     ny = selmon->wy + selmon->wh - HEIGHT(c);
                 if (!c->isfloating && (abs(nx - c->x) > snap || abs(ny - c->y) > snap)) {
                     c->isfloating = 1;
+                    arrange(selmon);
                     if (ev.xmotion.x - nx < c->w / 2 && ev.xmotion.y - ny < c->h / 2 && (c->w > selmon->ww * 0.5 || c->h > selmon->wh * 0.5)) {
                         resize(c, nx, ny, c->w > selmon->ww * 0.5 ? c->w / 2 : c->w, c->h > selmon->wh * 0.5 ? c->h / 2 : c->h, 0);
-                        arrange(selmon);
                         break;
                     }
                 }
@@ -1769,7 +1769,7 @@ movewin(const Arg *arg)
     ny = MAX(ny, selmon->wy + gappo);
     nx = MIN(nx, selmon->wx + selmon->ww - gappo - WIDTH(c));
     ny = MIN(ny, selmon->wy + selmon->wh - gappo - HEIGHT(c));
-    resize(c, nx, ny, c->w, c->h, 1);
+    XMoveWindow(dpy, c->win, nx, ny);
     focus(c);
     pointerfocuswin(c);
 }
@@ -3144,7 +3144,8 @@ grid(Monitor *m, uint gappo, uint gappi)
 {
     unsigned int i, n;
     unsigned int cx, cy, cw, ch;
-    unsigned int cols, rows;
+    unsigned int dx;
+    unsigned int cols, rows, overcols;
     Client *c;
 
     for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
@@ -3187,17 +3188,21 @@ grid(Monitor *m, uint gappo, uint gappi)
 	ch = (m->wh - 2 * gappo - (rows - 1) * gappi) / rows;
 	cw = (m->ww - 2 * gappo - (cols - 1) * gappi) / cols;
 
-	for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-		cx = m->wx + (i % cols) * (cw + gappi);
-		cy = m->wy + (i / cols) * (ch + gappi);
-
+    overcols = n % cols;
+    if (overcols)
+        dx = (m->ww - overcols * cw - (overcols - 1) * gappi) / 2 - gappo;
+	for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        cx = m->wx + (i % cols) * (cw + gappi);
+        cy = m->wy + (i / cols) * (ch + gappi);
+        if (overcols && i >= n - overcols) {
+            cx += dx;
+        }
         resize(c,
                cx + gappo,
                cy + gappo,
                cw - 2 * c->bw,
                ch - 2 * c->bw,
                0);
-		i++;
 	}
 }
 
