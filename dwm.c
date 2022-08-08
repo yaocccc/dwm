@@ -166,6 +166,7 @@ typedef struct {
 	const char *title;
 	unsigned int tags;
 	int isfloating;
+	int noborder;
 	int monitor;
 } Rule;
 
@@ -422,6 +423,8 @@ applyrules(Client *c)
         {
             c->isfloating = r->isfloating;
             c->tags |= r->tags;
+            if (r->noborder)
+                c->bw = 0;
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
@@ -1567,6 +1570,7 @@ manage(Window w, XWindowAttributes *wa)
     c->w = c->oldw = wa->width;
     c->h = c->oldh = wa->height;
     c->oldbw = wa->border_width;
+    c->bw = borderpx;
 
     updatetitle(c);
     if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
@@ -1576,6 +1580,7 @@ manage(Window w, XWindowAttributes *wa)
         c->mon = selmon;
         applyrules(c);
     }
+    wc.border_width = c->bw;
 
     if (c->x + WIDTH(c) > c->mon->mx + c->mon->mw)
         c->x = c->mon->mx + c->mon->mw - WIDTH(c);
@@ -1585,8 +1590,6 @@ manage(Window w, XWindowAttributes *wa)
     /* only fix client y-offset, if the client center might cover the bar */
     c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
                 && (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-    c->bw = borderpx;
-    wc.border_width = c->bw;
 
     if (c->isfloating) {
         if (wa->x==0 && wa->y==0) {

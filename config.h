@@ -29,20 +29,21 @@ static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, 
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const char *overviewtag = "OVERVIEW";
 static const Rule rules[] = {
-    /* class                 instance              title             tags mask     isfloating  monitor */
-    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,          -1 },
-    {"music",                NULL,                 NULL,             1 << 10,      1,          -1 },
-    { NULL,                 "tim.exe",             NULL,             1 << 11,      0,          -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,          -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,          -1 },
-    { NULL,                  NULL,                "broken",          0,            1,          -1 },
-    { NULL,                  NULL,                "图片查看",        0,            1,          -1 },
-    { NULL,                  NULL,                "图片预览",        0,            1,          -1 },
-    { NULL,                  NULL,                "crx_",            0,            1,          -1 },
-    {"chrome",               NULL,                 NULL,             1 << 9,       0,          -1 },
-    {"Chromium",             NULL,                 NULL,             1 << 9,       0,          -1 },
-    {"float",                NULL,                 NULL,             0,            1,          -1 },
-    {"flameshot",            NULL,                 NULL,             0,            1,          -1 },
+    /* class                 instance              title             tags mask     isfloating   noborder  monitor */
+    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,           0,        -1 },
+    {"music",                NULL,                 NULL,             1 << 10,      1,           1,        -1 },
+    {"lx-music-desktop",     NULL,                 NULL,             1 << 10,      1,           1,        -1 },
+    { NULL,                 "tim.exe",             NULL,             1 << 11,      0,           0,        -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,           0,        -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,           0,        -1 },
+    { NULL,                  NULL,                "broken",          0,            1,           0,        -1 },
+    { NULL,                  NULL,                "图片查看",        0,            1,           0,        -1 },
+    { NULL,                  NULL,                "图片预览",        0,            1,           0,        -1 },
+    { NULL,                  NULL,                "crx_",            0,            1,           0,        -1 },
+    {"chrome",               NULL,                 NULL,             1 << 9,       0,           0,        -1 },
+    {"Chromium",             NULL,                 NULL,             1 << 9,       0,           0,        -1 },
+    {"float",                NULL,                 NULL,             0,            1,           0,        -1 },
+    {"flameshot",            NULL,                 NULL,             0,            1,           0,        -1 },
 };
 
 /* 自定义布局 */
