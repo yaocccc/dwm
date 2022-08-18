@@ -49,7 +49,7 @@
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
+#define ISVISIBLE(C)            ((C->mon->isoverview || C->tags & C->mon->tagset[C->mon->seltags]))
 #define HIDDEN(C)               ((getstate(C->win) == IconicState))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
@@ -57,8 +57,6 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
-#define ISOVERVIEW(M)           (M->pertag->curtag == 0)
-
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 
 /* XEMBED messages */
@@ -158,6 +156,7 @@ struct Monitor {
 	Window barwin;
 	const Layout *lt[2];
 	Pertag *pertag;
+    uint isoverview;
 };
 
 typedef struct {
@@ -435,7 +434,6 @@ applyrules(Client *c)
     if (ch.res_name)
         XFree(ch.res_name);
     c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
-    c->tags = ISOVERVIEW(c->mon) ? 1 : c->tags;
 }
 
 int
@@ -521,8 +519,13 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
-    strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
-    m->lt[m->sellt]->arrange(m);
+    if (m->isoverview) {
+        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol);
+        overviewlayout.arrange(m);
+    } else {
+        strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+        m->lt[m->sellt]->arrange(m);
+    }
 }
 
 void
@@ -564,7 +567,7 @@ buttonpress(XEvent *e)
     }
     if (ev->window == selmon->barwin) {
         i = x = 0;
-        if (ISOVERVIEW(selmon)) {
+        if (selmon->isoverview) {
             x += TEXTW(overviewtag);
             i = ~0;
             if (ev->x > x)
@@ -867,6 +870,7 @@ createmon(void)
     strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
     m->pertag = ecalloc(1, sizeof(Pertag));
     m->pertag->curtag = m->pertag->prevtag = 1;
+    m->isoverview = 0;
 
     for (i = 0; i <= LENGTH(tags); i++) {
         m->pertag->nmasters[i] = m->nmaster;
@@ -967,7 +971,7 @@ drawbar(Monitor *m)
     x = 0;
 
     // 代表为overview tag状态
-    if (ISOVERVIEW(m)) {
+    if (m->isoverview) {
         w = TEXTW(overviewtag);
         drw_setscheme(drw, scheme[SchemeSel]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, overviewtag, 0);
@@ -3015,14 +3019,8 @@ view(const Arg *arg)
     selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
     selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
     selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
-
-    if (ISOVERVIEW(selmon)) { // 当展示全部的tag时，只使用布局: overview
-        selmon->lt[selmon->sellt] = &layouts[2];
-        selmon->lt[selmon->sellt^1] = &layouts[2];
-    } else {
-        selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-        selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
-    }
+    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
 
     if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
         togglebar(NULL);
@@ -3045,12 +3043,10 @@ view(const Arg *arg)
 void
 toggleoverview(const Arg *arg)
 {
-    if (selmon->tagset[selmon->seltags] == TAGMASK && selmon->sel) {
-        view(&(Arg){ .ui = selmon->sel->tags });
-        pointerfocuswin(selmon->sel);
-        return;
-    }
-    view(&(Arg){ .ui = ISOVERVIEW(selmon) ? 1 : ~0 });
+    uint target = selmon->sel ? selmon->sel->tags : selmon->seltags;
+    selmon->isoverview ^= 1;
+    view(&(Arg){ .ui = target });
+    pointerfocuswin(selmon->sel);
 }
 
 void

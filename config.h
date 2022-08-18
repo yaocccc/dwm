@@ -27,7 +27,6 @@ static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, 
 /* 自定义特定实例的显示状态 */
 //            ﮸ 
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
-static const char *overviewtag = "OVERVIEW";
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating   noborder  monitor */
     {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,           0,        -1 },
@@ -45,12 +44,13 @@ static const Rule rules[] = {
     {"float",                NULL,                 NULL,             0,            1,           0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,           0,        -1 },
 };
+static const char *overviewtag = "OVERVIEW";
+static const Layout overviewlayout = { "",  overview };
 
 /* 自定义布局 */
 static const Layout layouts[] = {
     { "﬿",  tile },         /* 主次栈 */
     { "﩯",  magicgrid },    /* 网格 */
-    { "",  overview },     /* overview页面用的layout */
 };
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
