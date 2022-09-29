@@ -2927,7 +2927,7 @@ updatesystray(void)
         XMapRaised(dpy, i->win);
         w += systrayspacing;
         i->x = w;
-        XMoveResizeWindow(dpy, i->win, i->x, 0, MAX(i->w, bh), bh);
+        XMoveResizeWindow(dpy, i->win, i->x + 3, 0 + 3, MAX(i->w - 6, bh - 6), bh - 6); // 限制过大的图标
         w += MAX(i->w, bh);
         if (i->mon != m)
             i->mon = m;
@@ -3148,8 +3148,8 @@ grid(Monitor *m, uint gappo, uint gappi)
     if (n == 0) return;
     if (n == 1) {
         c = nexttiled(m->clients);
-        cw = (m->ww - 2 * gappo) * 0.6;
-        ch = (m->wh - 2 * gappo) * 0.6;
+        cw = (m->ww - 2 * gappo) * 0.7;
+        ch = (m->wh - 2 * gappo) * 0.65;
         resize(c,
                m->mx + (m->mw - cw) / 2 + gappo,
                m->my + (m->mh - ch) / 2 + gappo,
@@ -3161,7 +3161,7 @@ grid(Monitor *m, uint gappo, uint gappi)
     if (n == 2) {
         c = nexttiled(m->clients);
         cw = (m->ww - 2 * gappo - gappi) / 2;
-        ch = (m->wh - 2 * gappo) * 0.6;
+        ch = (m->wh - 2 * gappo) * 0.65;
         resize(c,
                m->mx + gappo,
                m->my + (m->mh - ch) / 2 + gappo,

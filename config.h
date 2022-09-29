@@ -33,6 +33,7 @@ static const Rule rules[] = {
     {"music",                NULL,                 NULL,             1 << 10,      1,           1,        -1 },
     {"lx-music-desktop",     NULL,                 NULL,             1 << 10,      1,           1,        -1 },
     { NULL,                 "tim.exe",             NULL,             1 << 11,      0,           0,        -1 },
+    { NULL,                 "icalingua",           NULL,             1 << 11,      0,           1,        -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,           0,        -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,           0,        -1 },
     { NULL,                  NULL,                "broken",          0,            1,           0,        -1 },
@@ -41,8 +42,9 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "crx_",            0,            1,           0,        -1 },
     {"chrome",               NULL,                 NULL,             1 << 9,       0,           0,        -1 },
     {"Chromium",             NULL,                 NULL,             1 << 9,       0,           0,        -1 },
-    {"float",                NULL,                 NULL,             0,            1,           0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,           0,        -1 },
+    {"float",                NULL,                 NULL,             0,            1,           0,        -1 },
+    {"noborder",             NULL,                 NULL,             0,            1,           1,        -1 },
 };
 static const char *overviewtag = "OVERVIEW";
 static const Layout overviewlayout = { "",  overview };
