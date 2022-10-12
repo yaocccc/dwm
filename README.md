@@ -1,6 +1,8 @@
-# DWM
+# DWM YES
 
 dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
+
+[展示视频: BV1Ef4y1Z7kA](https://www.bilibili.com/video/BV1Ef4y1Z7kA/)
 
 ## 安装
 
@@ -43,6 +45,29 @@ dwm启动时会去调用 ~/scripts/autostart.sh 脚本(如果存在的话)
 
 可参考 [autostart脚本](https://github.com/yaocccc/scripts/blob/master/autostart.sh)
 
-## 展示
+## Q & A
 
-[BV1Ef4y1Z7kA](https://www.bilibili.com/video/BV1Ef4y1Z7kA/)
+1. 如何启动dwm？
+
+确保 ~/.xinitrc 中有 exec dwm。在tty中使用 startx 命令启动
+
+2. 进入后是黑屏啥都没
+
+壁纸需要用类似feh的软件设置 `feh --randomize --bg-fill ~/pictures/*.png`
+
+3. 打不开终端
+
+务必先修改config.h中启动终端的快捷键，个人使用的版本 请自行修改 `/* spawn + SHCMD 执行对应命令 */` 后面的行
+
+4. 字体显示不全
+
+请自行安装字体 仅已archlinux举例
+
+```shell
+yay -S nerd-fonts-jetbrains-mono
+yay -S ttf-material-design-icons
+yay -S ttf-joypixels
+yay -S wqy-microhei
+```
+
+## ENJOY IT 😃
