@@ -2,38 +2,47 @@
 
 dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
 
-## 要求
-
-构建 dwm 前, 你需要有 `Xlib` 头文件
-In order to build dwm you need the Xlib header files.
-
 ## 安装
 
-编辑 `config.mk` 来匹配你的本地设置 (dwm 将默认安装在 /usr/local)
-
-之后通过以下命令安装 dwm (必须使用 root 用户):
-   sudo make clean install
+ sudo make clean install
 
 ## 运行 dwm
 
-将以下行添加到 .xinitrc 中来通过 `startx` 启动 dwm:
-    exec dwm
+将你的dwm源代码目录写入 ~/.profile, 例如  
 
-如果你需要使用多显示器启动 dwm, 你需要设置屏幕变量, 以下是一个例子:
-    DISPLAY=foo.bar:1 exec dwm
+```plaintext
+export DWM=~/workspace/dwm
+```
 
-(这样将会启动 dwm 并显示在显示器一上)
+将以下行添加到 .xinitrc 中来通过 `startx` 启动 dwm:  
 
-如果你想自定义你的状态栏, 你可以在 .xinitrc 添加行, 以下是一个例子:
-
-```shell
-while xsetroot -name "`date` `uptime | sed 's/.*,//'`"
-do
-  sleep 1
-done &
+```plaintext
 exec dwm
 ```
 
+## 状态栏
+
+本dwm版本使用了 status2d patch，请参考文档使用 [status2d](http://dwm.suckless.org/patches/status2d/)
+
+```plaintext
+  本仓库维护了 statusbar脚本 入口为 ./statusbar/statusbar.sh
+  
+  模块列表见 ./statusbar/packages
+  
+  若需要使用 请逐个去查看 修改packages中的脚本文件
+  
+  请在dwm启动时 调用 $DWM/statusbar/statusbar.sh cron
+
+  注意 ~/.profile中需要有 该环境变量为强依赖关系
+  export DWM=~/workspace/dwm
+```
+
+## 随DWM启动的自启动命令
+
+dwm启动时会去调用 ~/scripts/autostart.sh 脚本(如果存在的话)
+
+可参考 [autostart脚本](https://github.com/yaocccc/scripts/blob/master/autostart.sh)
+
 ## 展示
 
-![show](./show.gif)
+[BV1Ef4y1Z7kA](https://www.bilibili.com/video/BV1Ef4y1Z7kA/)
