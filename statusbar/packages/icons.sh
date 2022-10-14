@@ -17,12 +17,12 @@ main() {
     [ "$(ps -aux | grep 'aria2c' | sed 1d)" ] && icons=(${icons[@]} "")
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
+    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
     if [ "$icons" ]; then
         text=" ${icons[@]} "
-        sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
         printf "export %s='%s%s%s'\n" $this "$color" "$text" "$s2d_reset" >> $DWM/statusbar/temp
     else
-        sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
+        printf "export %s=''\n" $this >> $DWM/statusbar/temp
     fi
 }
 

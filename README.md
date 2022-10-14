@@ -57,7 +57,14 @@ dwm启动时会去调用 ~/scripts/autostart.sh 脚本(如果存在的话)
 
 3. 打不开终端
 
-务必先修改config.h中启动终端的快捷键，个人使用的版本 请自行修改 `/* spawn + SHCMD 执行对应命令 */` 后面的行
+务必先修改config.h中启动终端的快捷键，本项目的config.h是我自用的配置 你需要手动修改
+
+例如 可以修改以下部分(如果你用的终端是st的话) 
+
+```plaintext
+    /* spawn + SHCMD 执行对应命令 */
+    { MODKEY,              XK_Return,       spawn,            SHCMD("st") },
+```
 
 4. 字体显示不全
 
