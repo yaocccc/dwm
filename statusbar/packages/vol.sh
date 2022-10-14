@@ -1,5 +1,19 @@
 #! /bin/bash
-# VOL 音量
+# VOL 音量脚本
+# 本脚本需要你自行修改音量获取命令
+# 例如我使用的是 pipewire
+#
+# $ pactl lisk sinks | grep RUNNING -A 8
+#         State: RUNNING
+#         Name: bluez_output.88_C9_E8_14_2A_72.1
+#         Description: WH-1000XM4
+#         Driver: PipeWire
+#         Sample Specification: float32le 2ch 48000Hz
+#         Channel Map: front-left,front-right
+#         Owner Module: 4294967295
+# 静音 -> Mute: no                                                                                 
+# 音量 -> Volume: front-left: 13183 /  20% / -41.79 dB,   front-right: 13183 /  20% / -41.79 dB
+
 
 source ~/.profile
 
@@ -8,11 +22,8 @@ s2d_reset="^d^"
 color="^c#553388^^b#334466^"
 
 main() {
-    OUTPORT=$SPEAKER
-    [ "$(pactl list sinks | grep $HEADPHONE_HSP_HFP)" ] && OUTPORT=$HEADPHONE_HSP_HFP
-    [ "$(pactl list sinks | grep $HEADPHONE_HSP_HFP_SONY)" ] && OUTPORT=$HEADPHONE_HSP_HFP_SONY
-    volunmuted=$(pactl list sinks | grep $OUTPORT -A 10 | grep 'Mute: no')
-    vol_text=$(pactl list sinks | grep $OUTPORT -A 8 | sed -n '8p' | awk '{printf int($5)}')
+    volunmuted=$(pactl list sinks | grep RUNNING -A 8 | sed -n '8p' | grep 'Mute: no')
+    vol_text=$(pactl list sinks | grep RUNNING -A 8 | sed -n '9p' | awk '{printf int($5)}')
     if [ "$vol_text" -eq 0 ] || [ ! "$volunmuted" ]; then vol_text="--"; vol_icon="婢";
     elif [ "$vol_text" -lt 10 ]; then vol_icon="奄"; vol_text=0$vol_text;
     elif [ "$vol_text" -le 20 ]; then vol_icon="奄";

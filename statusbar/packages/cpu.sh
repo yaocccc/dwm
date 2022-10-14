@@ -1,5 +1,5 @@
 #! /bin/bash
-# CPU
+# CPU 获取CPU使用率和温度的脚本
 
 source ~/.profile
 

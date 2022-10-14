@@ -1,5 +1,5 @@
 #! /bin/bash
-# ICONS 部分特殊的标记图标
+# ICONS 部分特殊的标记图标 这里是我自己用的，你用不上的话去掉就行
 
 source ~/.profile
 
@@ -21,8 +21,6 @@ main() {
     if [ "$icons" ]; then
         text=" ${icons[@]} "
         printf "export %s='%s%s%s'\n" $this "$color" "$text" "$s2d_reset" >> $DWM/statusbar/temp
-    else
-        printf "export %s=''\n" $this >> $DWM/statusbar/temp
     fi
 }
 

@@ -1,5 +1,5 @@
 #! /bin/bash
-# DATE
+# DATE 获取日期和时间的脚本
 
 source ~/.profile
 
