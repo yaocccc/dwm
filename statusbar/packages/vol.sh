@@ -22,8 +22,9 @@ s2d_reset="^d^"
 color="^c#553388^^b#334466^"
 
 main() {
-    volunmuted=$(pactl list sinks | grep RUNNING -A 8 | sed -n '8p' | grep 'Mute: no')
-    vol_text=$(pactl list sinks | grep RUNNING -A 8 | sed -n '9p' | awk '{printf int($5)}')
+    sink=$(pactl info | grep 'Default Sink' | awk '{print $3}')
+    volunmuted=$(pactl list sinks | grep $sink -A 6 | sed -n '7p' | grep 'Mute: no')
+    vol_text=$(pactl list sinks | grep $sink -A 7 | sed -n '8p' | awk '{printf int($5)}')
     if [ "$vol_text" -eq 0 ] || [ ! "$volunmuted" ]; then vol_text="--"; vol_icon="婢";
     elif [ "$vol_text" -lt 10 ]; then vol_icon="奄"; vol_text=0$vol_text;
     elif [ "$vol_text" -le 20 ]; then vol_icon="奄";

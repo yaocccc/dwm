@@ -22,16 +22,13 @@ static const char *fonts[]               = { "JetBrainsMono Nerd Font:style=medi
 static const char *colors[][3]           = { [SchemeNorm] = { "#bbbbbb", "#333333", "#444444" }, [SchemeSel] = { "#ffffff", "#37474F", "#42A5F5" }, [SchemeHid] = { "#dddddd", NULL, NULL }, [SchemeSystray] = { "#7799AA", "#7799AA", "#7799AA" }, [SchemeUnderline] = { "#7799AA", "#7799AA", "#7799AA" } };
 static const unsigned int alphas[][3]    = { [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, [SchemeSel] = { OPAQUE, baralpha, borderalpha } };
 
-
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸ 
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating   noborder  monitor */
-    {"netease-cloud-music",  NULL,                 NULL,             1 << 10,      1,           0,        -1 },
     {"music",                NULL,                 NULL,             1 << 10,      1,           1,        -1 },
-    {"lx-music-desktop",     NULL,                 NULL,             1 << 10,      1,           1,        -1 },
     { NULL,                 "tim.exe",             NULL,             1 << 11,      0,           0,        -1 },
     { NULL,                 "icalingua",           NULL,             1 << 11,      0,           1,        -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,           0,        -1 },
@@ -114,22 +111,20 @@ static Key keys[] = {
     { MODKEY|Mod1Mask,     XK_Left,         resizewin,        {.ui = H_REDUCE} },        /* super ctrl left    |  调整窗口 */
     { MODKEY|Mod1Mask,     XK_Right,        resizewin,        {.ui = H_EXPAND} },        /* super ctrl right   |  调整窗口 */
 
-    /* spawn + SHCMD 执行对应命令 */
-    { MODKEY|ShiftMask,    XK_q,            spawn,            SHCMD("~/scripts/app-starter.sh killw") },
-    { MODKEY,              XK_minus,        spawn,            SHCMD("~/scripts/app-starter.sh fst") },
-    { MODKEY,              XK_Return,       spawn,            SHCMD("~/scripts/app-starter.sh st") },
-    { MODKEY|ShiftMask,    XK_a,            spawn,            SHCMD("~/scripts/app-starter.sh flameshot") },
-    { MODKEY,              XK_d,            spawn,            SHCMD("~/scripts/app-starter.sh rofi") },
-    { MODKEY,              XK_space,        spawn,            SHCMD("~/scripts/app-starter.sh rofi_window") },
-    { MODKEY,              XK_p,            spawn,            SHCMD("~/scripts/app-starter.sh rofi_p") },
-    { MODKEY|ShiftMask,    XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh screenkey") },
-    { MODKEY,              XK_k,            spawn,            SHCMD("~/scripts/app-starter.sh blurlock") },
-    { MODKEY,              XK_F1,           spawn,            SHCMD("~/scripts/app-starter.sh filemanager") },
-    { MODKEY|ShiftMask,    XK_Up,           spawn,            SHCMD("~/scripts/app-starter.sh set_vol up &") },
-    { MODKEY|ShiftMask,    XK_Down,         spawn,            SHCMD("~/scripts/app-starter.sh set_vol down &") },
-    { MODKEY,              XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot") },
-    { MODKEY|ShiftMask,    XK_j,            spawn,            SHCMD("~/scripts/app-starter.sh robot onlyclick") },
-    { ShiftMask|ControlMask, XK_c,          spawn,            SHCMD("xclip -o | xclip -selection c") },
+    /* spawn + SHCMD 执行对应命令(已下部分建议完全自己重新定义) */
+    { MODKEY,              XK_Return, spawn, SHCMD("st") },                                                     /* super enter      | 打开st终端             */
+    { MODKEY,              XK_minus,  spawn, SHCMD("floatst") },                                                /* super +          | 打开浮动st终端         */
+    { MODKEY,              XK_d,      spawn, SHCMD("rofi -show run") },                                         /* super d          | rofi: 执行命令         */
+    { MODKEY,              XK_space,  spawn, SHCMD("rofi -show window -show-icons") },                          /* super space      | rofi: 窗口选择         */
+    { MODKEY,              XK_p,      spawn, SHCMD("rofi -show menu -modi 'menu:~/scripts/rofi.sh'") },         /* super p          | rofi: 自定义脚本       */
+    { MODKEY,              XK_F1,     spawn, SHCMD("pcmanfm") },                                                /* super F1         | 文件管理器             */
+    { MODKEY,              XK_k,      spawn, SHCMD("~/scripts/blurlock.sh") },                                  /* super k          | 锁定屏幕               */
+    { MODKEY|ShiftMask,    XK_Up,     spawn, SHCMD("~/scripts/set_vol.sh up") },                                /* super shift up   | 音量加                 */
+    { MODKEY|ShiftMask,    XK_Down,   spawn, SHCMD("~/scripts/set_vol.sh down") },                              /* super shift down | 音量减                 */
+    { MODKEY|ShiftMask,    XK_a,      spawn, SHCMD("flameshot gui -c -p ~/Pictures/screenshots") },             /* super shift a    | 截图                   */
+    { MODKEY|ShiftMask,    XK_k,      spawn, SHCMD("~/scripts/screenkey.sh") },                                 /* super shift k    | 打开键盘输入显示       */
+    { MODKEY|ShiftMask,    XK_q,      spawn, SHCMD("kill -9 $(xprop | grep _NET_WM_PID | awk '{print $3}')") }, /* super shift q    | 选中某个窗口并强制kill */
+    { ShiftMask|ControlMask, XK_c,    spawn, SHCMD("xclip -o | xclip -selection c") },                          /* super shift c    | 进阶复制               */
 
     /* super key : 跳转到对应tag */
     /* super shift key : 将聚焦窗口移动到对应tag */
@@ -144,15 +139,14 @@ static Key keys[] = {
     TAGKEYS(XK_7, 6,  0,  0)
     TAGKEYS(XK_8, 7,  0,  0)
     TAGKEYS(XK_9, 8,  0,  0)
-    TAGKEYS(XK_c, 9,  "~/scripts/app-starter.sh chrome",  "~/scripts/app-starter.sh chrome")
-    TAGKEYS(XK_m, 10, "~/scripts/app-starter.sh music",   "~/scripts/app-starter.sh pavucontrol")
-    TAGKEYS(XK_0, 11, "~/scripts/app-starter.sh tim",     "~/scripts/app-starter.sh tim")
-    TAGKEYS(XK_w, 12, "~/scripts/app-starter.sh wechat",  "~/scripts/app-starter.sh wechat")
-    TAGKEYS(XK_l, 13, "~/scripts/app-starter.sh wxwork",  "~/scripts/app-starter.sh wxwork")
+    TAGKEYS(XK_c, 9,  "google-chrome-stable", "google-chrome-stable")
+    TAGKEYS(XK_m, 10, "~/scripts/music_player.sh", "pavucontrol")
+    TAGKEYS(XK_0, 11, "icalingua", "icalingua")
+    TAGKEYS(XK_w, 12, "/opt/apps/com.qq.weixin.deepin/files/run.sh", "/opt/apps/com.qq.weixin.deepin/files/run.sh")
+    TAGKEYS(XK_l, 13, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", "/opt/apps/com.qq.weixin.work.deepin/files/run.sh")
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
-	{ ClkStatusText,       0,               Button1,          spawn,         SHCMD("~/scripts/app-starter.sh fst") }, // 左键        |  点击状态栏   |  打开float st
     { ClkWinTitle,         0,               Button1,          hideotherwins, {0} },                                   // 左键        |  点击标题     |  隐藏其他窗口仅保留该窗口
     { ClkWinTitle,         0,               Button3,          togglewin,     {0} },                                   // 右键        |  点击标题     |  切换窗口显示状态
     { ClkTagBar,           0,               Button1,          view,          {0} },                                   // 左键        |  点击tag      |  切换tag
