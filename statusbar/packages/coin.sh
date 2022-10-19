@@ -8,10 +8,16 @@ s2d_reset="^d^"
 color="^c#223344^^b#4E5173^"
 
 main() {
+    prices=()
     eth_price=$(curl --connect-timeout 10 -m 20 -s 'https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT' | jq .price | sed 's/\.*0*"//g')
-    text=" ﲹ$eth_price "
+    apt_price=$(curl --connect-timeout 10 -m 20 -s 'https://api.binance.com/api/v3/ticker/price?symbol=APTUSDT' | jq .price | sed 's/\.*0*"//g')
+    [ "$eth_price" ] && prices=(${prices[@]} "ETH:$eth_price")
+    [ "$apt_price" ] && prices=(${prices[@]} "APT:$apt_price")
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    [ "$eth_price" ] && printf "export %s='%s%s%s'\n" $this "$color" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+    if [ "$prices" ]; then
+        text=" ${prices[@]} "
+        printf "export %s='%s%s%s'\n" $this "$color" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+    fi
 }
 
 main
