@@ -1251,6 +1251,8 @@ focusstack(const Arg *arg)
     Client *c = NULL, *tc = selmon->sel;
     int last = -1, cur = 0, issingle = issinglewin(NULL);
 
+    if (tc && tc->isfullscreen) /* no support for focusstack with fullscreen windows */
+        return;
     if (!tc)
         tc = selmon->clients;
     if (!tc)
@@ -1749,7 +1751,7 @@ movewin(const Arg *arg)
     Client *c;
     int nx, ny;
     c = selmon->sel;
-    if (!c)
+    if (!c || c->isfullscreen)
         return;
     if (!c->isfloating)
         togglefloating(NULL);
@@ -1784,7 +1786,7 @@ resizewin(const Arg *arg)
     Client *c;
     int nh, nw;
     c = selmon->sel;
-    if (!c)
+    if (!c || c->isfullscreen)
         return;
     if (!c->isfloating)
         togglefloating(NULL);
@@ -3043,6 +3045,9 @@ view(const Arg *arg)
 void
 toggleoverview(const Arg *arg)
 {
+    if (selmon->sel && selmon->sel->isfullscreen) /* no support for fullscreen windows */
+        return;
+
     uint target = selmon->sel ? selmon->sel->tags : selmon->seltags;
     selmon->isoverview ^= 1;
     view(&(Arg){ .ui = target });
@@ -3336,7 +3341,7 @@ zoom(const Arg *arg)
 {
     Client *c = selmon->sel;
 
-    if (selmon->sel && selmon->sel->isfloating)
+    if (c && (c->isfloating || c->isfullscreen))
         return;
     if (c == nexttiled(selmon->clients))
         if (!c || !(c = nexttiled(c->next)))

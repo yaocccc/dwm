@@ -9,12 +9,11 @@ color="^c#223344^^b#4E5173^"
 
 main() {
     icons=()
+    [ "$(ps -aux | grep 'aria2' | sed 1d)" ] && icons=(${icons[@]} "")
     [ "$(sudo docker ps | grep 'v2raya')" ] && icons=(${icons[@]} "")
-    [ "$(sudo docker ps | grep 'arch')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 64:03:7F:7C:81:15 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 8C:DE:F9:E6:E5:6B | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
-    [ "$(ps -aux | grep 'aria2c' | sed 1d)" ] && icons=(${icons[@]} "")
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
