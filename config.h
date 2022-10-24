@@ -29,7 +29,6 @@ static const char *tags[] = { "", "", "", "", "", "", "", "
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating   noborder  monitor */
     {"music",                NULL,                 NULL,             1 << 10,      1,           1,        -1 },
-    { NULL,                 "tim.exe",             NULL,             1 << 11,      0,           0,        -1 },
     { NULL,                 "icalingua",           NULL,             1 << 11,      0,           1,        -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,           0,        -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,           0,        -1 },
