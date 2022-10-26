@@ -1,5 +1,7 @@
 #! /bin/bash
 
+touch $DWM/statusbar/temp
+
 # 设置某个模块的状态 update cpu mem ...
 update() {
     [ ! "$1" ] && return                                                 # 当指定模块为空时 结束
