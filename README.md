@@ -24,9 +24,16 @@ exec dwm
 
 ## 状态栏
 
-本dwm版本使用了 status2d patch，请参考文档使用 [status2d](http://dwm.suckless.org/patches/status2d/)
+请将每一个块置为下列样式, 可直接使用本仓库statusbar相关脚本 或参考使用
 
 ```plaintext
+  ^c#2D1B46^^b#335566^^sdate^  11/04 00:42 ^d^
+
+  ^c?????^ => 前景色
+  ^b?????^ => 背景色
+  ^s?????^ => 点击时的信号值
+  ^d^      => 重置颜色
+
   本仓库维护了 statusbar脚本 入口为 ./statusbar/statusbar.sh
   
   模块列表见 ./statusbar/packages
@@ -37,6 +44,9 @@ exec dwm
 
   注意 ~/.profile中需要有 该环境变量为强依赖关系
   export DWM=~/workspace/dwm
+
+  点击事件发生时 会调用 $DWM/statusbar/statusbar.sh 并传入信号值 请自行处理
+  例如 $DWM/statusbar/statusbar.sh date L  # 其中date为信号值 L为按键 (L左键 M中键 R右键)
 ```
 
 ## 随DWM启动的自启动命令

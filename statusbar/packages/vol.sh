@@ -14,14 +14,14 @@
 # 静音 -> Mute: no                                                                                 
 # 音量 -> Volume: front-left: 13183 /  20% / -41.79 dB,   front-right: 13183 /  20% / -41.79 dB
 
-
 source ~/.profile
 
 this=_vol
 s2d_reset="^d^"
 color="^c#553388^^b#334466^"
+signal=$(echo "^s$this^" | sed 's/_//')
 
-main() {
+update() {
     sink=$(pactl info | grep 'Default Sink' | awk '{print $3}')
     volunmuted=$(pactl list sinks | grep $sink -A 6 | sed -n '7p' | grep 'Mute: no')
     vol_text=$(pactl list sinks | grep $sink -A 7 | sed -n '8p' | awk '{printf int($5)}')
@@ -35,7 +35,18 @@ main() {
 
     text=" $vol_icon $vol_text "
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s'\n" $this "$color" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+    printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
-main
+click() {
+    case "$1" in
+        L) pactl set-sink-volume @DEFAULT_SINK@ +5%  ;; # 音量加
+        M) pactl set-sink-mute @DEFAULT_SINK@ toggle ;; # 切换静音
+        R) pactl set-sink-volume @DEFAULT_SINK@ -5%  ;; # 音量减
+    esac
+}
+
+case "$1" in
+    click) click $2 ;;
+    *) update ;;
+esac

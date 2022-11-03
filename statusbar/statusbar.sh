@@ -10,6 +10,13 @@ update() {
     update $*                                                            # 递归调用
 }
 
+click() {
+    [ ! "$1" ] && return                                                 # 未传递参数时 结束
+    bash $DWM/statusbar/packages/$1.sh click $2                          # 执行指定模块脚本
+    update $1                                                            # 更新指定模块
+    refresh                                                              # 刷新状态栏
+}
+
 # 更新状态栏
 refresh() {
     _icons=''; _coin=''; _cpu=''; _mem=''; _date=''; _vol=''; _bat='';   # 重置所有模块的状态为空
@@ -31,4 +38,6 @@ case $1 in
     refresh) refresh ;;
     update) shift 1; update $*; refresh ;;
     updateall) update icons coin cpu mem date vol bat; refresh ;;
+    # 接收clickstatusbar传递过来的信号 $1: 模块名  $2: 按键(L|M|R)
+    *) click $1 $2 ;;
 esac
