@@ -24,8 +24,7 @@ update() {
     fi
 }
 
-click() {
-}
+click() { :; }
 
 case "$1" in
     click) click $2 ;;

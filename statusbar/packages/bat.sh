@@ -32,8 +32,7 @@ update() {
     printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
-click() {
-}
+click() { :; }
 
 case "$1" in
     click) click $2 ;;
