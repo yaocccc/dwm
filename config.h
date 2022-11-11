@@ -117,8 +117,8 @@ static Key keys[] = {
     /* spawn + SHCMD 执行对应命令(已下部分建议完全自己重新定义) */
     { MODKEY,              XK_Return, spawn, SHCMD("st") },                                                     /* super enter      | 打开st终端             */
     { MODKEY,              XK_minus,  spawn, SHCMD("floatst") },                                                /* super +          | 打开浮动st终端         */
+    { MODKEY,              XK_space,  spawn, SHCMD("floatst") },                                                /* super space      | 打开浮动st终端         */
     { MODKEY,              XK_d,      spawn, SHCMD("rofi -show run") },                                         /* super d          | rofi: 执行命令         */
-    { MODKEY,              XK_space,  spawn, SHCMD("rofi -show window -show-icons") },                          /* super space      | rofi: 窗口选择         */
     { MODKEY,              XK_p,      spawn, SHCMD("rofi -show menu -modi 'menu:~/scripts/rofi.sh'") },         /* super p          | rofi: 自定义脚本       */
     { MODKEY,              XK_F1,     spawn, SHCMD("pcmanfm") },                                                /* super F1         | 文件管理器             */
     { MODKEY,              XK_k,      spawn, SHCMD("~/scripts/blurlock.sh") },                                  /* super k          | 锁定屏幕               */

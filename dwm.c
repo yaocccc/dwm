@@ -748,13 +748,10 @@ clientmessage(XEvent *e)
         if (c->mon != selmon) {
             focusmon(&(Arg) { .i = +1 });
         }
-        // 若不适当前tag 则跳转到对应tag
+        // 若不是当前tag 则跳转到对应tag
         if (!ISVISIBLE(c)) {
             view(&(Arg) { .ui = c->tags });
         }
-        // 选中窗口
-        focus(c);
-        pointerfocuswin(c);
     }
 }
 
@@ -1341,9 +1338,8 @@ focusstack(const Arg *arg)
             hideotherwins(&(Arg) { .v = c });
     } else {
         if (c) {
-            focus(c);
-            restack(selmon);
             pointerfocuswin(c);
+            restack(selmon);
         }
     }
 }
@@ -1837,7 +1833,6 @@ movewin(const Arg *arg)
             break;
     }
     resize(c, nx, ny, c->w, c->h, 1);
-    focus(c);
     pointerfocuswin(c);
 }
 
