@@ -943,8 +943,9 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
-    int x, w, empty_w;
-    int tags_w = 0, system_w = 0, tasks_w = 0, status_w, lts_w;
+    int x, empty_w;
+    int w = 0;
+    int system_w = 0, tasks_w = 0, status_w;
     unsigned int i, occ = 0, n = 0, urg = 0, scm;
     Client *c;
 	int boxw = 2;
@@ -997,7 +998,6 @@ drawbar(Monitor *m)
     }
 
     // 绘制模式图标
-    lts_w = w = blw = TEXTW(m->ltsymbol);
     drw_setscheme(drw, scheme[SchemeNorm]);
     x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
@@ -1160,7 +1160,7 @@ clickstatusbar(const Arg *arg)
     if (!arg->i && arg->i < 0)
         return;
 
-    int offset = -1, limit = 0;
+    int offset = -1;
     int status_w = 0;
     int iscode = 0, issignal = 0, signalindex = 0;
     char signal [20];
@@ -2115,7 +2115,9 @@ run(void)
 
 void
 runAutostart(void) {
-    system("cd ~/scripts; ./autostart.sh &");
+    char cmd [100];
+    sprintf(cmd, "%s &", autostartscript);
+    system(cmd);
 }
 
 void
@@ -2278,8 +2280,8 @@ fullscreen(const Arg *arg)
 void
 selectlayout(const Arg *arg)
 {
-    Layout *cur = selmon->lt[selmon->sellt];
-    Layout *target = cur == arg->v ? &layouts[0] : arg->v;
+    const Layout *cur = selmon->lt[selmon->sellt];
+    const Layout *target = cur == arg->v ? &layouts[0] : arg->v;
     setlayout(&(Arg) { .v = target });
 }
 
@@ -2590,7 +2592,7 @@ hidewin(const Arg *arg) {
 int
 issinglewin(const Arg *arg) {
     Client *c = NULL;
-    int cot = 0, tag = selmon->tagset[selmon->seltags];
+    int cot = 0;
 
     for (c = selmon->clients; c; c = c->next) {
         if (ISVISIBLE(c) && !HIDDEN(c))
@@ -3246,9 +3248,8 @@ grid(Monitor *m, uint gappo, uint gappi)
 	cw = (m->ww - 2 * gappo - (cols - 1) * gappi) / cols;
 
     overcols = n % cols;
-    if (overcols)
-        dx = (m->ww - overcols * cw - (overcols - 1) * gappi) / 2 - gappo;
-	for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    if (overcols) dx = (m->ww - overcols * cw - (overcols - 1) * gappi) / 2 - gappo;
+	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
         cx = m->wx + (i % cols) * (cw + gappi);
         cy = m->wy + (i / cols) * (ch + gappi);
         if (overcols && i >= n - overcols) {
