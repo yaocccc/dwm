@@ -1592,7 +1592,7 @@ killclient(const Arg *arg)
 }
 
 void
-randomxy(Client *c)
+managefloating(Client *c)
 {
     Client *tc;
     int d1 = 0, d2 = 0, tx, ty;
@@ -1659,7 +1659,7 @@ manage(Window w, XWindowAttributes *wa)
             c->x = selmon->wx + (selmon->ww - c->w) / 2;
             c->y = selmon->wy + (selmon->wh - c->h) / 2;
         }
-        randomxy(c);
+        managefloating(c);
     }
 
     XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2529,7 +2529,7 @@ togglefloating(const Arg *arg)
     if (selmon->sel->isfloating) {
         selmon->sel->x = selmon->wx + selmon->ww / 6,
         selmon->sel->y = selmon->wy + selmon->wh / 6,
-        randomxy(selmon->sel);
+        managefloating(selmon->sel);
         resize(selmon->sel, selmon->sel->x, selmon->sel->y, selmon->ww / 3 * 2, selmon->wh / 3 * 2, 0);
     }
 
