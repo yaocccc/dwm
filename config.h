@@ -31,23 +31,24 @@ static const char *statusbarscript = "$DWM/statusbar/statusbar.sh";
 //            ﮸ 
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
-    /* class                 instance              title             tags mask     isfloating   noborder  monitor */
-    {"music",                NULL,                 NULL,             1 << 10,      1,           1,        -1 },
-    { NULL,                 "icalingua",           NULL,             1 << 11,      0,           1,        -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,           0,        -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,           0,        -1 },
-    { NULL,                  NULL,                "broken",          0,            1,           0,        -1 },
-    { NULL,                  NULL,                "图片查看",        0,            1,           0,        -1 },
-    { NULL,                  NULL,                "图片预览",        0,            1,           0,        -1 },
-    { NULL,                  NULL,                "crx_",            0,            1,           0,        -1 },
-    {"chrome",               NULL,                 NULL,             1 << 9,       0,           0,        -1 },
-    {"Chromium",             NULL,                 NULL,             1 << 9,       0,           0,        -1 },
-    {"flameshot",            NULL,                 NULL,             0,            1,           0,        -1 },
-    {"float",                NULL,                 NULL,             0,            1,           0,        -1 },
-    {"noborder",             NULL,                 NULL,             0,            1,           1,        -1 },
+    /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor */
+    {"music",                NULL,                 NULL,             1 << 10,      1,          0,          1,        -1 },
+    { NULL,                 "icalingua",           NULL,             1 << 11,      0,          0,          1,        -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,          0,          0,        -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 13,      0,          0,          0,        -1 },
+    { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1 },
+    { NULL,                  NULL,                "图片查看",        0,            1,          0,          0,        -1 },
+    { NULL,                  NULL,                "图片预览",        0,            1,          0,          0,        -1 },
+    { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1 },
+    {"chrome",               NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
+    {"Chromium",             NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
+    {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
+    {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 特殊class client默认浮动
+    {"noborder",             NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 特殊class client默认无边框
+    {"global",               NULL,                 NULL,             255,          1,          1,          0,        -1 }, // 特殊class client全局于所有tag
 };
 static const char *overviewtag = "OVERVIEW";
-static const Layout overviewlayout = { "",  overview };
+static const Layout overviewlayout = { "--------",  overview };
 
 /* 自定义布局 */
 static const Layout layouts[] = {
@@ -116,8 +117,8 @@ static Key keys[] = {
 
     /* spawn + SHCMD 执行对应命令(已下部分建议完全自己重新定义) */
     { MODKEY,              XK_Return, spawn, SHCMD("st") },                                                     /* super enter      | 打开st终端             */
-    { MODKEY,              XK_minus,  spawn, SHCMD("floatst") },                                                /* super +          | 打开浮动st终端         */
-    { MODKEY,              XK_space,  spawn, SHCMD("floatst") },                                                /* super space      | 打开浮动st终端         */
+    { MODKEY,              XK_minus,  spawn, SHCMD("st -c global") },                                           /* super +          | 打开全局st终端         */
+    { MODKEY,              XK_space,  spawn, SHCMD("st -c float") },                                            /* super space      | 打开浮动st终端         */
     { MODKEY,              XK_d,      spawn, SHCMD("rofi -show run") },                                         /* super d          | rofi: 执行命令         */
     { MODKEY,              XK_p,      spawn, SHCMD("rofi -show menu -modi 'menu:~/scripts/rofi.sh'") },         /* super p          | rofi: 自定义脚本       */
     { MODKEY,              XK_F1,     spawn, SHCMD("pcmanfm") },                                                /* super F1         | 文件管理器             */
