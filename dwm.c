@@ -236,6 +236,7 @@ static void hideotherwins(const Arg *arg);
 static void showonlyorall(const Arg *arg);
 static int issinglewin(const Arg *arg);
 static void togglewin(const Arg *arg);
+static void toggleglobal(const Arg *arg);
 static void restorewin(const Arg *arg);
 
 static void incnmaster(const Arg *arg);
@@ -2670,6 +2671,16 @@ toggleview(const Arg *arg)
 		focus(NULL);
 		arrange(selmon);
 	}
+}
+
+void
+toggleglobal(const Arg *arg)
+{
+    if (!selmon->sel)
+        return;
+    selmon->sel->isglobal ^= 1;
+    selmon->sel->tags = selmon->sel->isglobal ? 255 : selmon->tagset[selmon->seltags];
+    focus(NULL);
 }
 
 void
