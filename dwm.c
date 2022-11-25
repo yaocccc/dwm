@@ -177,7 +177,7 @@ struct Systray {
 };
 
 /* function declarations */
-static void logtofile(const char *format, ...);
+static void logtofile(char log[100]);
 
 static void tile(Monitor *m);
 static void magicgrid(Monitor *m);
@@ -385,17 +385,9 @@ struct Pertag {
 
 /* function implementations */
 void
-logtofile(const char *format, ...)
+logtofile(char log[100])
 {
-    va_list args;
-    const char *args1;
-    va_start(args, format);
-    args1 = va_arg(args,const char *);
-    va_end(args);
-
-    char log [100];
     char cmd [150];
-    sprintf(log, format, args1);
     sprintf(cmd, "echo '%s' >> ~/log", log);
     system(cmd);
 }
@@ -1810,8 +1802,9 @@ movemouse(const Arg *arg)
 void
 movewin(const Arg *arg)
 {
-    Client *c;
+    Client *c, *tc;
     int nx, ny;
+    int buttom, top, left, right;
     c = selmon->sel;
     if (!c || c->isfullscreen)
         return;
@@ -1821,24 +1814,69 @@ movewin(const Arg *arg)
     ny = c->y;
     switch (arg->ui) {
         case UP:
+            top = c->y;
             ny -= c->mon->wh / 4;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的顶边会穿过tc的底边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
+                buttom = tc->y + HEIGHT(tc) + gappi;  
+                if (top > buttom && ny < buttom) {  
+                    ny = buttom; 
+                    break;
+                };
+            }
             ny = MAX(ny, c->mon->wy + gappo);
             break;
         case DOWN:
+            buttom = c->y + HEIGHT(c);
             ny += c->mon->wh / 4;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的底边会穿过tc的顶边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
+                top = tc->y - gappi;
+                if (buttom < top && (ny + HEIGHT(c)) > top) {  
+                    ny = top - HEIGHT(c); 
+                    break;
+                };
+            }
             ny = MIN(ny, c->mon->wy + c->mon->wh - gappo - HEIGHT(c));
             break;
         case LEFT:
+            left = c->x;
             nx -= c->mon->ww / 4;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的左边会穿过tc的右边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
+                right = tc->x + WIDTH(tc) + gappi;
+                if (left > right && nx < right) {
+                    nx = right;  
+                    break; 
+                };
+            }
             nx = MAX(nx, c->mon->wx + gappo);
             break;
         case RIGHT:
+            right = c->x + WIDTH(c);
             nx += c->mon->ww / 4;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的右边会穿过tc的左边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
+                left = tc->x - gappi;
+                if (right < left && (nx + WIDTH(c)) > left) {
+                    nx = left - WIDTH(c);
+                    break;
+                };
+            }
             nx = MIN(nx, c->mon->wx + c->mon->ww - gappo - WIDTH(c));
             break;
     }
     resize(c, nx, ny, c->w, c->h, 1);
     pointerfocuswin(c);
+    restack(selmon);
 }
 
 void

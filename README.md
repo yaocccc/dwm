@@ -78,7 +78,7 @@ dwm启动时会去调用 ~/scripts/autostart.sh 脚本(如果存在的话)
 
 4. 字体显示不全
 
-请自行安装字体 仅已archlinux举例
+请自行安装字体 仅以archlinux举例
 
 ```shell
 yay -S nerd-fonts-jetbrains-mono
