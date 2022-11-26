@@ -1883,8 +1883,9 @@ movewin(const Arg *arg)
 void
 resizewin(const Arg *arg)
 {
-    Client *c;
+    Client *c, *tc;
     int nh, nw;
+    int buttom, top, left, right;
     c = selmon->sel;
     if (!c || c->isfullscreen)
         return;
@@ -1893,25 +1894,47 @@ resizewin(const Arg *arg)
     nw = c->w;
     nh = c->h;
     switch (arg->ui) {
-        case H_EXPAND:
+        case H_EXPAND: // 右
+            right = c->x + WIDTH(c);
             nw += selmon->wh / 10;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的右边会穿过tc的左边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
+                left = tc->x - gappi;
+                if (right < left && (c->x + nw) > left) {
+                    nw = left - c->x - 2 * c->bw;
+                    break;
+                };
+            }
+            if (c->x + nw + gappo + 2 * c->bw > selmon->wx + selmon->ww)
+                nw = selmon->wx + selmon->ww - c->x - gappo - 2 * c->bw;
             break;
-        case H_REDUCE:
+        case H_REDUCE: // 左
             nw -= selmon->wh / 10;
+            nw = MAX(nw, selmon->ww / 10);
             break;
-        case V_EXPAND:
+        case V_EXPAND: // 下
+            buttom = c->y + HEIGHT(c);
             nh += selmon->ww / 10;
+            for (tc = c->mon->clients; tc; tc = tc->next) {
+                // 若浮动tc c的底边会穿过tc的顶边 
+                if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
+                if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
+                top = tc->y - gappi;
+                if (buttom < top && (c->y + nh) > top) {  
+                    nh = top - c->y - 2 * c->bw;
+                    break;
+                };
+            }
+            if (c->y + nh + gappo + 2 * c->bw > selmon->wy + selmon->wh)
+                nh = selmon->wy + selmon->wh - c->y - gappo - 2 * c->bw;
             break;
-        case V_REDUCE:
+        case V_REDUCE: // 上
             nh -= selmon->ww / 10;
+            nh = MAX(nh, selmon->wh / 10);
             break;
     }
-    nw = MAX(nw, selmon->ww / 10);
-    nh = MAX(nh, selmon->wh / 10);
-    if (c->x + nw + gappo + 2 * c->bw > selmon->wx + selmon->ww)
-        nw = selmon->wx + selmon->ww - c->x - gappo - 2 * c->bw;
-    if (c->y + nh + gappo + 2 * c->bw > selmon->wy + selmon->wh)
-        nh = selmon->wy + selmon->wh - c->y - gappo - 2 * c->bw;
     resize(c, c->x, c->y, nw, nh, 1);
     focus(c);
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);
