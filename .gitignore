@@ -4,3 +4,4 @@ dwm
 compile_commands.json
 .cache
 statusbar/temp
+result/
