@@ -22,6 +22,12 @@ export DWM=~/workspace/dwm
 exec dwm
 ```
 
+### Nix Flake
+
+```sh
+nix run github:yaocccc/dwm
+```
+
 ## 状态栏
 
 请将每一个块置为下列样式, 可直接使用本仓库statusbar相关脚本 或参考使用
