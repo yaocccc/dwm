@@ -242,6 +242,7 @@ static void restorewin(const Arg *arg);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
+static void forcekillclient(const Arg *arg);
 
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
@@ -1588,6 +1589,16 @@ killclient(const Arg *arg)
     if (n <= 1)
         focusstack(NULL);
 }
+
+void
+forcekillclient(const Arg *arg)
+{
+    if (!selmon->sel)
+        return;
+    killclient(arg);
+    unmanage(selmon->sel, 1);
+}
+
 
 void
 managefloating(Client *c)
