@@ -51,6 +51,7 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "图片查看",        0,            1,          0,          0,        -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,          0,        -1 },
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1 },
+    {"wemeetapp",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
     {"chrome",               NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
     {"Chromium",             NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
