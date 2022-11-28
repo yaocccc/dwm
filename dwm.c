@@ -1816,7 +1816,7 @@ movewin(const Arg *arg)
 {
     Client *c, *tc;
     int nx, ny;
-    int buttom, top, left, right;
+    int buttom, top, left, right, tar;
     c = selmon->sel;
     if (!c || c->isfullscreen)
         return;
@@ -1826,6 +1826,7 @@ movewin(const Arg *arg)
     ny = c->y;
     switch (arg->ui) {
         case UP:
+            tar = -99999;
             top = c->y;
             ny -= c->mon->wh / 4;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1834,13 +1835,14 @@ movewin(const Arg *arg)
                 if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
                 buttom = tc->y + HEIGHT(tc) + gappi;  
                 if (top > buttom && ny < buttom) {  
-                    ny = buttom; 
-                    break;
+                    tar = MAX(tar, buttom);
                 };
             }
+            ny = tar == -99999 ? ny : tar;
             ny = MAX(ny, c->mon->wy + gappo);
             break;
         case DOWN:
+            tar = 99999;
             buttom = c->y + HEIGHT(c);
             ny += c->mon->wh / 4;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1849,13 +1851,14 @@ movewin(const Arg *arg)
                 if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
                 top = tc->y - gappi;
                 if (buttom < top && (ny + HEIGHT(c)) > top) {  
-                    ny = top - HEIGHT(c); 
-                    break;
+                    tar = MIN(tar, top - HEIGHT(c));
                 };
             }
+            ny = tar == 99999 ? ny : tar;
             ny = MIN(ny, c->mon->wy + c->mon->wh - gappo - HEIGHT(c));
             break;
         case LEFT:
+            tar = -99999;
             left = c->x;
             nx -= c->mon->ww / 4;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1864,13 +1867,14 @@ movewin(const Arg *arg)
                 if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
                 right = tc->x + WIDTH(tc) + gappi;
                 if (left > right && nx < right) {
-                    nx = right;  
-                    break; 
+                    tar = MAX(tar, right);
                 };
             }
+            nx = tar == -99999 ? nx : tar;
             nx = MAX(nx, c->mon->wx + gappo);
             break;
         case RIGHT:
+            tar = 99999;
             right = c->x + WIDTH(c);
             nx += c->mon->ww / 4;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1879,10 +1883,10 @@ movewin(const Arg *arg)
                 if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
                 left = tc->x - gappi;
                 if (right < left && (nx + WIDTH(c)) > left) {
-                    nx = left - WIDTH(c);
-                    break;
+                    tar = MIN(tar, left - WIDTH(c));
                 };
             }
+            nx = tar == 99999 ? nx : tar;
             nx = MIN(nx, c->mon->wx + c->mon->ww - gappo - WIDTH(c));
             break;
     }
@@ -1896,7 +1900,7 @@ resizewin(const Arg *arg)
 {
     Client *c, *tc;
     int nh, nw;
-    int buttom, top, left, right;
+    int buttom, top, left, right, tar;
     c = selmon->sel;
     if (!c || c->isfullscreen)
         return;
@@ -1906,6 +1910,7 @@ resizewin(const Arg *arg)
     nh = c->h;
     switch (arg->ui) {
         case H_EXPAND: // 右
+            tar = 99999;
             right = c->x + WIDTH(c);
             nw += selmon->wh / 10;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1914,10 +1919,10 @@ resizewin(const Arg *arg)
                 if (c->y + HEIGHT(c) < tc->y || c->y > tc->y + HEIGHT(tc)) continue;
                 left = tc->x - gappi;
                 if (right < left && (c->x + nw) > left) {
-                    nw = left - c->x - 2 * c->bw;
-                    break;
+                    tar = MIN(tar, left - c->x - 2 * c->bw);
                 };
             }
+            nw = tar == 99999 ? nw : tar;
             if (c->x + nw + gappo + 2 * c->bw > selmon->wx + selmon->ww)
                 nw = selmon->wx + selmon->ww - c->x - gappo - 2 * c->bw;
             break;
@@ -1926,6 +1931,7 @@ resizewin(const Arg *arg)
             nw = MAX(nw, selmon->ww / 10);
             break;
         case V_EXPAND: // 下
+            tar = -99999;
             buttom = c->y + HEIGHT(c);
             nh += selmon->ww / 10;
             for (tc = c->mon->clients; tc; tc = tc->next) {
@@ -1934,10 +1940,10 @@ resizewin(const Arg *arg)
                 if (c->x + WIDTH(c) < tc->x || c->x > tc->x + WIDTH(tc)) continue;
                 top = tc->y - gappi;
                 if (buttom < top && (c->y + nh) > top) {  
-                    nh = top - c->y - 2 * c->bw;
-                    break;
+                    tar = MAX(tar, top - c->y - 2 * c->bw);
                 };
             }
+            nh = tar == -99999 ? nh : tar;
             if (c->y + nh + gappo + 2 * c->bw > selmon->wy + selmon->wh)
                 nh = selmon->wy + selmon->wh - c->y - gappo - 2 * c->bw;
             break;
@@ -1947,8 +1953,8 @@ resizewin(const Arg *arg)
             break;
     }
     resize(c, c->x, c->y, nw, nh, 1);
-    focus(c);
     XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);
+    restack(selmon);
 }
 
 Client *
