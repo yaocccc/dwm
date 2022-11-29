@@ -43,6 +43,8 @@ static const char *statusbarscript = "$DWM/statusbar/statusbar.sh";
 static const char *tags[] = { "", "", "", "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor */
+    {"chrome",               NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
+    {"Chromium",             NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
     {"music",                NULL,                 NULL,             1 << 10,      1,          0,          1,        -1 },
     { NULL,                 "icalingua",           NULL,             1 << 11,      0,          0,          1,        -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 12,      0,          0,          0,        -1 },
@@ -51,10 +53,8 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "图片查看",        0,            1,          0,          0,        -1 },
     { NULL,                  NULL,                "图片预览",        0,            1,          0,          0,        -1 },
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1 },
-    {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
-    {"chrome",               NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
-    {"Chromium",             NULL,                 NULL,             1 << 9,       0,          0,          0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
+    {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
     {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 特殊class client默认浮动
     {"noborder",             NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 特殊class client默认无边框
     {"global",               NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 特殊class client全局于所有tag
