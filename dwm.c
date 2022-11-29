@@ -1972,6 +1972,7 @@ pop(Client *c)
     c->mon->clients = c;
 	focus(c);
 	arrange(c->mon);
+    pointerfocuswin(c);
 }
 
 void
