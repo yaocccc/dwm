@@ -558,6 +558,7 @@ buttonpress(XEvent *e)
     Monitor *m;
     XButtonPressedEvent *ev = &e->xbutton;
 
+    // 判断鼠标点击的位置
     click = ClkRootWin;
     /* focus monitor if necessary */
     if ((m = wintomon(ev->window)) && m != selmon) {
@@ -566,8 +567,10 @@ buttonpress(XEvent *e)
         focus(NULL);
     }
     int status_w = drawstatusbar(selmon, bh, stext);
-    if (ev->window == selmon->barwin) {
+    if (ev->window == selmon->barwin) { // 点击在bar上
         i = x = 0;
+        blw = TEXTW(selmon->ltsymbol);
+        
         if (selmon->isoverview) {
             x += TEXTW(overviewtag);
             i = ~0;
