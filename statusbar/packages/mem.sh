@@ -24,8 +24,8 @@ update() {
 click() {
     case "$1" in
         L) ;;
-        M) floatst btop 82 25 ;;
-        R) floatst btop 82 25 ;;
+        M) st -g 82x25 -c noborder -e btop ;;
+        R) st -g 82x25 -c noborder -e btop ;;
     esac
 }
 
