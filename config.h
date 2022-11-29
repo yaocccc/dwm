@@ -60,7 +60,7 @@ static const Rule rules[] = {
     {"global",               NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 特殊class client全局于所有tag
 };
 static const char *overviewtag = "OVERVIEW";
-static const Layout overviewlayout = { "--------",  overview };
+static const Layout overviewlayout = { "舘",  overview };
 
 /* 自定义布局 */
 static const Layout layouts[] = {
