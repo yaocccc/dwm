@@ -575,7 +575,7 @@ buttonpress(XEvent *e)
                 i = LENGTH(tags);
         } else {
             for (c = m->clients; c; c = c->next)
-                occ |= c->tags == 255 ? 0 : c->tags;
+                occ |= c->tags == TAGMASK ? 0 : c->tags;
             do {
                 /* do not reserve space for vacant tags */
                 if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
@@ -963,7 +963,7 @@ drawbar(Monitor *m)
     for (c = m->clients; c; c = c->next) {
         if (ISVISIBLE(c))
             n++;
-        occ |= c->tags == 255 ? 0 : c->tags;
+        occ |= c->tags == TAGMASK ? 0 : c->tags;
         if (c->isurgent)
             urg |= c->tags;
     }
@@ -2719,7 +2719,7 @@ toggleglobal(const Arg *arg)
     if (!selmon->sel)
         return;
     selmon->sel->isglobal ^= 1;
-    selmon->sel->tags = selmon->sel->isglobal ? 255 : selmon->tagset[selmon->seltags];
+    selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
     focus(NULL);
 }
 
@@ -3200,7 +3200,7 @@ toggleoverview(const Arg *arg)
     if (selmon->sel && selmon->sel->isfullscreen) /* no support for fullscreen windows */
         return;
 
-    uint target = selmon->sel ? selmon->sel->tags : selmon->seltags;
+    uint target = selmon->sel && selmon->sel->tags != TAGMASK ? selmon->sel->tags : selmon->seltags;
     selmon->isoverview ^= 1;
     view(&(Arg){ .ui = target });
     pointerfocuswin(selmon->sel);
@@ -3216,6 +3216,7 @@ viewtoleft(const Arg *arg) {
         if (target == pre) return;
 
         for (c = selmon->clients; c; c = c->next) {
+            if (c->isglobal && c->tags == TAGMASK) continue;
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] > 1) {
                 view(&(Arg) { .ui = target });
@@ -3234,6 +3235,7 @@ viewtoright(const Arg *arg) {
         if (!(target & TAGMASK)) return;
 
         for (c = selmon->clients; c; c = c->next) {
+            if (c->isglobal && c->tags == TAGMASK) continue;
             if (c->tags & target && __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
                     && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
                 view(&(Arg) { .ui = target });

@@ -57,7 +57,7 @@ static const Rule rules[] = {
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
     {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 特殊class client默认浮动
     {"noborder",             NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 特殊class client默认无边框
-    {"global",               NULL,                 NULL,             255,          1,          1,          0,        -1 }, // 特殊class client全局于所有tag
+    {"global",               NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 特殊class client全局于所有tag
 };
 static const char *overviewtag = "OVERVIEW";
 static const Layout overviewlayout = { "--------",  overview };
