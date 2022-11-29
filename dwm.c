@@ -1860,7 +1860,7 @@ movewin(const Arg *arg)
         case LEFT:
             tar = -99999;
             left = c->x;
-            nx -= c->mon->ww / 4;
+            nx -= c->mon->ww / 6;
             for (tc = c->mon->clients; tc; tc = tc->next) {
                 // 若浮动tc c的左边会穿过tc的右边 
                 if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
@@ -1876,7 +1876,7 @@ movewin(const Arg *arg)
         case RIGHT:
             tar = 99999;
             right = c->x + WIDTH(c);
-            nx += c->mon->ww / 4;
+            nx += c->mon->ww / 6;
             for (tc = c->mon->clients; tc; tc = tc->next) {
                 // 若浮动tc c的右边会穿过tc的左边 
                 if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
@@ -1912,7 +1912,7 @@ resizewin(const Arg *arg)
         case H_EXPAND: // 右
             tar = 99999;
             right = c->x + WIDTH(c);
-            nw += selmon->wh / 10;
+            nw += selmon->ww / 16;
             for (tc = c->mon->clients; tc; tc = tc->next) {
                 // 若浮动tc c的右边会穿过tc的左边 
                 if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
@@ -1927,13 +1927,13 @@ resizewin(const Arg *arg)
                 nw = selmon->wx + selmon->ww - c->x - gappo - 2 * c->bw;
             break;
         case H_REDUCE: // 左
-            nw -= selmon->wh / 10;
+            nw -= selmon->ww / 16;
             nw = MAX(nw, selmon->ww / 10);
             break;
         case V_EXPAND: // 下
             tar = -99999;
             buttom = c->y + HEIGHT(c);
-            nh += selmon->ww / 10;
+            nh += selmon->wh / 8;
             for (tc = c->mon->clients; tc; tc = tc->next) {
                 // 若浮动tc c的底边会穿过tc的顶边 
                 if (!ISVISIBLE(tc) || !tc->isfloating || tc == c) continue;
@@ -1948,7 +1948,7 @@ resizewin(const Arg *arg)
                 nh = selmon->wy + selmon->wh - c->y - gappo - 2 * c->bw;
             break;
         case V_REDUCE: // 上
-            nh -= selmon->ww / 10;
+            nh -= selmon->wh / 8;
             nh = MAX(nh, selmon->wh / 10);
             break;
     }
