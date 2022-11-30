@@ -3282,7 +3282,7 @@ viewtoright(const Arg *arg) {
 void
 tile(Monitor *m)
 {
-    unsigned int i, n, h, r, mw, my, ty;
+    unsigned int i, n, mw, mh, sh, my, sy; // mw: master的宽度, mh: master的高度, sh: stack的高度, my: master的y坐标, sy: stack的y坐标
     Client *c;
 
     for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
@@ -3292,27 +3292,27 @@ tile(Monitor *m)
         mw = m->nmaster ? (m->ww + gappi) * m->mfact : 0;
     else
         mw = m->ww - 2 * gappo + gappi;
-    for (i = 0, my = ty = gappo, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+
+    mh = m->nmaster == 0 ? 0 : (m->wh - 2 * gappo - gappi * (m->nmaster - 1)) / m->nmaster;           // 单个master的高度
+    sh = n == m->nmaster ? 0 : (m->wh - 2 * gappo - gappi * (n - m->nmaster - 1)) / (n - m->nmaster); // 单个stack的高度
+
+    for (i = 0, my = sy = gappo, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
         if (i < m->nmaster) {
-            r = MIN(n, m->nmaster) - i;
-            h = (m->wh - my - gappo - gappi * (r - 1)) / r;
             resize(c,
                    m->wx + gappo,
                    m->wy + my,
                    mw - 2 * c->bw - gappi,
-                   h - 2 * c->bw,
+                   mh - 2 * c->bw,
                    0);
             my += HEIGHT(c) + gappi;
         } else {
-            r = n - i;
-            h = (m->wh - ty - gappo - gappi * (r - 1)) / r;
             resize(c,
                    m->wx + mw + gappo,
-                   m->wy + ty,
+                   m->wy + sy,
                    m->ww - mw - 2 * c->bw - 2 * gappo,
-                   h - 2* c->bw,
+                   sh - 2* c->bw,
                    0);
-            ty += HEIGHT(c) + gappi;
+            sy += HEIGHT(c) + gappi;
         }
 }
 
