@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -594,7 +595,7 @@ buttonpress(XEvent *e)
         else if (ev->x > selmon->ww - status_w -  (selmon == systraytomon(selmon) ? getsystraywidth() : 0)) {
             click = ClkStatusText;
             arg.i = ev->x - (selmon->ww - status_w - (selmon == systraytomon(selmon) ? getsystraywidth() : 0));
-            arg.ui = ev->button; // 1 => L，2 => M，3 => R
+            arg.ui = ev->button; // 1 => L，2 => M，3 => R, 5 => U, 6 => D
         } else {
             x += blw;
             c = m->clients;
@@ -1156,12 +1157,21 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
 
 // 点击状态栏时执行的func
 // 传入参数为 i  => 鼠标点击的位置相对于左边界的距离
-// 传入参数为 ui => 鼠标按键 1 => 左键 2 => 中键 3 => 右键
+// 传入参数为 ui => 鼠标按键, 1 => 左键, 2 => 中键, 3 => 右键, 4 => 滚轮向上, 5 => 滚轮向下
+long lastclickstatusbartime = 0; // 用于避免过于频繁的点击和滚轮行为
 void
 clickstatusbar(const Arg *arg)
 {
     if (!arg->i && arg->i < 0)
         return;
+
+    // 用于避免过于频繁的点击和滚轮行为
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    long now = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    if (now - lastclickstatusbartime < 100)
+        return;
+    lastclickstatusbartime = now;
 
     int offset = -1;
     int status_w = 0;
@@ -1216,6 +1226,8 @@ clickstatusbar(const Arg *arg)
         case Button1: button = "L"; break;
         case Button2: button = "M"; break;
         case Button3: button = "R"; break;
+        case Button4: button = "U"; break;
+        case Button5: button = "D"; break;
     }
 
     memset(text, '\0', sizeof(text));

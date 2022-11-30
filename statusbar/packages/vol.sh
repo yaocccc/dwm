@@ -40,9 +40,11 @@ update() {
 
 click() {
     case "$1" in
-        L) pactl set-sink-volume @DEFAULT_SINK@ +5%  ;; # 音量加
+        L) pavucontrol & ;;                             # 打开pavucontrol
         M) pactl set-sink-mute @DEFAULT_SINK@ toggle ;; # 切换静音
-        R) pactl set-sink-volume @DEFAULT_SINK@ -5%  ;; # 音量减
+        R) pactl set-sink-mute @DEFAULT_SINK@ toggle ;; # 切换静音
+        U) pactl set-sink-volume @DEFAULT_SINK@ +5%  ;; # 音量加
+        D) pactl set-sink-volume @DEFAULT_SINK@ -5%  ;; # 音量减
     esac
 }
 

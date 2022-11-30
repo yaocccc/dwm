@@ -4,6 +4,17 @@ dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
 
 [展示视频: BV1Ef4y1Z7kA](https://www.bilibili.com/video/BV1Ef4y1Z7kA/)
 
+## 功能
+
+- 支持布局 tile(磁块)、magicgrid(进阶的网格布局)
+- 键盘移动/调整窗口大小 且移动/调整时有窗口间吸附效果
+- 窗口隐藏
+- 窗口可自定义是否全局(在所有tag内展示)
+- 更好的浮动窗口支持
+- 优化后的status2d 状态栏，可用鼠标点击操作
+- 系统托盘支持
+- overview
+
 ## 安装
 
  sudo make clean install
