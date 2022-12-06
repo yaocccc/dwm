@@ -37,6 +37,9 @@ static const unsigned int alphas[][3]    = {          /* 透明度设置 ColFg, 
 static const char *autostartscript = "~/scripts/autostart.sh";
 static const char *statusbarscript = "$DWM/statusbar/statusbar.sh";
 
+/* 自定义 scratchpad 命令和instance */
+static const char scratchpadname[] = "scratchpad";
+
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸ 
@@ -129,6 +132,7 @@ static Key keys[] = {
     { MODKEY|Mod1Mask,     XK_Right,        resizewin,        {.ui = H_EXPAND} },        /* super alt right    |  调整窗口 */
 
     /* spawn + SHCMD 执行对应命令(已下部分建议完全自己重新定义) */
+    { MODKEY,              XK_s,      togglescratch, SHCMD("st -t scratchpad -c float") },                      /* super s          | 打开scratch终端        */
     { MODKEY,              XK_Return, spawn, SHCMD("st") },                                                     /* super enter      | 打开st终端             */
     { MODKEY,              XK_minus,  spawn, SHCMD("st -c global") },                                           /* super +          | 打开全局st终端         */
     { MODKEY,              XK_space,  spawn, SHCMD("st -c float") },                                            /* super space      | 打开浮动st终端         */

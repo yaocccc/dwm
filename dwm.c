@@ -295,6 +295,7 @@ static void togglebar(const Arg *arg);
 static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
+static void togglescratch(const Arg *arg);
 
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
@@ -430,6 +431,8 @@ applyrules(Client *c)
                 c->mon = m;
         }
     }
+    if (!strcmp(c->name, scratchpadname)) // scratchpad is default global
+        c->isglobal = 1;
     if (ch.res_class)
         XFree(ch.res_class);
     if (ch.res_name)
@@ -2689,6 +2692,31 @@ toggleallfloating(const Arg *arg)
 }
 
 void
+togglescratch(const Arg *arg)
+{
+	Client *c;
+    Monitor *m;
+	unsigned int found = 0;
+
+    for (m = mons; m && !found; m = m->next)
+        for (c = m->clients; c && !(found = !strcmp(c->name, scratchpadname)); c = c->next);
+	if (found) {
+        if (c->mon == selmon) // 在同屏幕则toggle win状态
+            togglewin(&(Arg){.v = c});
+        else {                // 不在同屏幕则将win移到当前屏幕 并显示
+            sendmon(c, selmon);
+            show(c);
+            focus(c);
+            if (c->isfloating) {
+                resize(c, selmon->mx + (selmon->mw - selmon->sel->w) / 2, selmon->my + (selmon->mh - selmon->sel->h) / 2, selmon->sel->w, selmon->sel->h, 0);
+            }
+            pointerfocuswin(c);
+        }
+	} else
+		spawn(arg);
+}
+
+void
 restorewin(const Arg *arg) {
     int i = hiddenWinStackTop;
     while (i > -1) {
@@ -2754,6 +2782,8 @@ void
 toggleglobal(const Arg *arg)
 {
     if (!selmon->sel)
+        return;
+    if (!strcmp(selmon->sel->name, scratchpadname))
         return;
     selmon->sel->isglobal ^= 1;
     selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
