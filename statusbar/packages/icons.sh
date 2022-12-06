@@ -20,6 +20,7 @@ update() {
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
     if [ "$icons" ]; then
         text=" ${icons[@]} "
+        echo $text
         printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
     fi
 }
