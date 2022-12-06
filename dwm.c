@@ -2541,18 +2541,18 @@ showtag(Client *c)
     if (!c)
         return;
     if (ISVISIBLE(c)) {
-        /* show clients top down */
+        /** 将可见的client从屏幕边缘移动到屏幕内 */
         XMoveWindow(dpy, c->win, c->x, c->y);
         if (c->isfloating && !c->isfullscreen)
             resize(c, c->x, c->y, c->w, c->h, 0);
         showtag(c->snext);
     } else {
-        /* hide clients bottom up */
+        /* 将不可见的client移动到屏幕之外 */
         showtag(c->snext);
         if (c->mon->mx == 0) {
-            XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+            XMoveWindow(dpy, c->win, WIDTH(c) * -1.5, c->y);
         } else {
-            XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw + WIDTH(c) * 2, c->y);
+            XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw + WIDTH(c) * 1.5, c->y);
         }
     }
 }
@@ -2598,6 +2598,9 @@ tagmon(const Arg *arg)
         return;
     sendmon(selmon->sel, dirtomon(arg->i));
     focusmon(&(Arg) { .i = +1 });
+    if (selmon->sel && selmon->sel->isfloating) {
+        resize(selmon->sel, selmon->mx + (selmon->mw - selmon->sel->w) / 2, selmon->my + (selmon->mh - selmon->sel->h) / 2, selmon->sel->w, selmon->sel->h, 0);
+    }
     pointerfocuswin(selmon->sel);
 }
 
