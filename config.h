@@ -37,7 +37,7 @@ static const unsigned int alphas[][3]    = {          /* 透明度设置 ColFg, 
 static const char *autostartscript = "~/scripts/autostart.sh";
 static const char *statusbarscript = "$DWM/statusbar/statusbar.sh";
 
-/* 自定义 scratchpad 命令和instance */
+/* 自定义 scratchpad instance */
 static const char scratchpadname[] = "scratchpad";
 
 /* 自定义tag名称 */

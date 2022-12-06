@@ -2694,13 +2694,13 @@ toggleallfloating(const Arg *arg)
 void
 togglescratch(const Arg *arg)
 {
-	Client *c;
+    Client *c;
     Monitor *m;
-	unsigned int found = 0;
+    unsigned int found = 0;
 
     for (m = mons; m && !found; m = m->next)
         for (c = m->clients; c && !(found = !strcmp(c->name, scratchpadname)); c = c->next);
-	if (found) {
+    if (found) {
         if (c->mon == selmon) // 在同屏幕则toggle win状态
             togglewin(&(Arg){.v = c});
         else {                // 不在同屏幕则将win移到当前屏幕 并显示
@@ -2712,8 +2712,8 @@ togglescratch(const Arg *arg)
             }
             pointerfocuswin(c);
         }
-	} else
-		spawn(arg);
+    } else
+        spawn(arg);
 }
 
 void
