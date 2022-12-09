@@ -19,15 +19,22 @@ update() {
     printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
+notify() {
+    notify-send "閭 CPU tops" "\n$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)\\n\\n(100% per core)" -r 9527
+}
+
 click() {
     case "$1" in
-        L) notify-send "閭 CPU tops" "\n$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)\\n\\n(100% per core)" -r 9527 ;;
+        L) notify ;;
         M) st -g 82x25 -c noborder -e btop ;;
         R) st -g 82x25 -c noborder -e btop ;;
+        U) ;;
+        D) ;;
     esac
 }
 
 case "$1" in
     click) click $2 ;;
+    notify) notify ;;
     *) update ;;
 esac

@@ -31,11 +31,20 @@ update() {
     printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
+notify() {
+    notify-send "  Calendar" "\n$(cal --color=always | sed 1,2d | sed 's/..7m/<b><span color="#A1E1FF">/;s/..27m/<\/span><\/b>/' )" -r 9527
+}
+
 click() {
-     notify-send "  Calendar" "\n$(cal --color=always | sed 1,2d | sed 's/..7m/<b><span color="#A1E1FF">/;s/..27m/<\/span><\/b>/' )" -r 9527
+    L) notify ;;
+    M) ;;
+    R) ;;
+    U) ;;
+    D) ;;
 }
 
 case "$1" in
     click) click $2 ;;
+    notify) notify ;;
     *) update ;;
 esac

@@ -39,17 +39,22 @@ update() {
     printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
+notify() {
+    notify-send -r 9527 Volume "$(update)" -i audio-volume-medium
+}
+
 click() {
     case "$1" in
-        L) pavucontrol & ;;                             # 打开pavucontrol
-        M) pactl set-sink-mute @DEFAULT_SINK@ toggle ;; # 切换静音
-        R) pactl set-sink-mute @DEFAULT_SINK@ toggle ;; # 切换静音
-        U) pactl set-sink-volume @DEFAULT_SINK@ +5%  ;; # 音量加
-        D) pactl set-sink-volume @DEFAULT_SINK@ -5%  ;; # 音量减
+        L) notify                                           ;; # 仅通知
+        M) pactl set-sink-mute @DEFAULT_SINK@ toggle        ;; # 切换静音
+        R) pavucontrol &                                    ;; # 打开pavucontrol
+        U) pactl set-sink-volume @DEFAULT_SINK@ +5%; notify ;; # 音量加
+        D) pactl set-sink-volume @DEFAULT_SINK@ -5%; notify ;; # 音量减
     esac
 }
 
 case "$1" in
     click) click $2 ;;
+    notify) notify ;;
     *) update ;;
 esac
