@@ -36,11 +36,13 @@ notify() {
 }
 
 click() {
-    L) notify ;;
-    M) ;;
-    R) ;;
-    U) ;;
-    D) ;;
+    case "$1" in
+        L) notify ;;
+        M) ;;
+        R) ;;
+        U) ;;
+        D) ;;
+    esac
 }
 
 case "$1" in
