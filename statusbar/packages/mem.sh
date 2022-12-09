@@ -24,7 +24,7 @@ update() {
 
 click() {
     case "$1" in
-        L) ;;
+        L) notify-send " Memory tops" "\n$(ps axch -o cmd:15,%mem --sort=-%mem | head)" -r 9527 ;;
         M) st -g 82x25 -c noborder -e btop ;;
         R) st -g 82x25 -c noborder -e btop ;;
     esac

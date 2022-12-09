@@ -32,7 +32,7 @@ update() {
 }
 
 click() {
-     notify-send "  Calendar" "\n$(cal --color=always | sed 1d | sed 's/..7m/<b><span color="#A1E1FF">/;s/..27m/<\/span><\/b>/' | sed 's/ /  /g' )"
+     notify-send "  Calendar" "\n$(cal --color=always | sed 1,2d | sed 's/..7m/<b><span color="#A1E1FF">/;s/..27m/<\/span><\/b>/' )" -r 9527
 }
 
 case "$1" in

@@ -21,7 +21,7 @@ update() {
 
 click() {
     case "$1" in
-        L) ;;
+        L) notify-send "閭 CPU tops" "\n$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)\\n\\n(100% per core)" -r 9527 ;;
         M) st -g 82x25 -c noborder -e btop ;;
         R) st -g 82x25 -c noborder -e btop ;;
     esac
