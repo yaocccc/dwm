@@ -26,11 +26,15 @@ static const char *colors[][3]           = {          /* 颜色设置 ColFg, Col
     [SchemeHid] = { "#dddddd", NULL, NULL },
     [SchemeSystray] = { NULL, "#7799AA", NULL },
     [SchemeUnderline] = { "#7799AA", NULL, NULL }, 
+    [SchemeNormTag] = { "#bbbbbb", "#333333", NULL },
+    [SchemeSelTag] = { "#eeeeee", "#333333", NULL },
 };
 static const unsigned int alphas[][3]    = {          /* 透明度设置 ColFg, ColBg, ColBorder */ 
     [SchemeNorm] = { OPAQUE, baralpha, borderalpha }, 
     [SchemeSel] = { OPAQUE, baralpha, borderalpha },
     [SchemeSelGlobal] = { OPAQUE, baralpha, borderalpha },
+    [SchemeNormTag] = { OPAQUE, baralpha, borderalpha }, 
+    [SchemeSelTag] = { OPAQUE, baralpha, borderalpha },
 };
 
 /* 自定义脚本位置 */
@@ -50,6 +54,8 @@ static const Rule rules[] = {
     {"chrome",               NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
     {"Chromium",             NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
     {"music",                NULL,                 NULL,             1 << 6,       1,          0,          1,        -1 },
+    {"TelegramDesktop",      NULL,                 NULL,             1 << 7,       0,          0,          0,        -1 },
+    { NULL,                 "discord",             NULL,             1 << 8,       0,          0,          0,        -1 },
     { NULL,                 "icalingua",           NULL,             1 << 9,       0,          0,          1,        -1 },
     { NULL,                 "wechat.exe",          NULL,             1 << 10,      0,          0,          0,        -1 },
     { NULL,                 "wxwork.exe",          NULL,             1 << 11,      0,          0,          0,        -1 },

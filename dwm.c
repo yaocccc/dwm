@@ -78,7 +78,16 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeSelGlobal, SchemeHid, SchemeSystray, SchemeUnderline }; /* color schemes */
+enum {
+    SchemeNorm,       // 普通
+    SchemeSel,        // 选中的
+    SchemeSelGlobal,  // 全局并选中的
+    SchemeHid,        // 隐藏的
+    SchemeSystray,    // 托盘
+    SchemeNormTag,    // 普通标签
+    SchemeSelTag,     // 选中的标签
+    SchemeUnderline   // 下划线
+}; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -981,7 +990,7 @@ drawbar(Monitor *m)
     // 代表为overview tag状态
     if (m->isoverview) {
         w = TEXTW(overviewtag);
-        drw_setscheme(drw, scheme[SchemeSel]);
+        drw_setscheme(drw, scheme[SchemeSelTag]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, overviewtag, 0);
         drw_setscheme(drw, scheme[SchemeUnderline]);
         drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
@@ -993,11 +1002,11 @@ drawbar(Monitor *m)
                 continue;
 
             w = TEXTW(tags[i]);
-            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSelTag : SchemeNormTag]);
             drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
             if (m->tagset[m->seltags] & 1 << i) {
                 drw_setscheme(drw, scheme[SchemeUnderline]);
-                drw_rect(drw, x, bh - boxw, w + lrpad, boxw, 1, 0);
+                drw_rect(drw, x + 2, bh - boxw, w + lrpad - 4, boxw, 1, 0);
             }
             x += w;
         }
