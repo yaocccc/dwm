@@ -2646,8 +2646,12 @@ togglefloating(const Arg *arg)
 {
     if (!selmon->sel)
         return;
-    if (selmon->sel->isfullscreen)
-        return;
+    if (selmon->sel->isfullscreen) {
+        fullscreen(NULL);
+        if (selmon->sel->isfloating)
+            return;
+    }
+
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 
     if (selmon->sel->isfloating) {
