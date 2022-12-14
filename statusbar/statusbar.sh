@@ -34,10 +34,15 @@ cron() {
     while true; do update date; refresh;  sleep 5;   done &              # 每隔5s更新时间并更新状态栏
 }
 
+# 程序入口 根据不同的参数执行不同的操作
+# cron 启动定时更新状态栏
+# update 更新指定模块 `update cpu` `update mem` `update date` `update vol` `update bat` 等
+# updateall 更新所有模块
+# check 检查模块是否正常(行为等于updateall)
+# * 处理状态栏点击 `cpu 按键` `mem 按键` `date 按键` `vol 按键` `bat 按键` 等
 case $1 in
     cron) cron ;;
-    refresh) refresh ;;
     update) shift 1; update $*; refresh ;;
     updateall|check) update icons cpu mem date vol bat; refresh ;;
-    *) click $1 $2 ;; # 接收clickstatusbar传递过来的信号 $1: 模块名  $2: 按键(L|M|R)
+    *) click $1 $2 ;; # 接收clickstatusbar传递过来的信号 $1: 模块名  $2: 按键(L|M|R|U|D)
 esac
