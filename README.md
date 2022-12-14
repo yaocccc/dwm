@@ -64,6 +64,8 @@ nix run github:yaocccc/dwm
 
   点击事件发生时 会调用 $DWM/statusbar/statusbar.sh 并传入信号值 请自行处理
   例如 $DWM/statusbar/statusbar.sh date L  # 其中date为信号值 L为按键 (L左键 M中键 R右键)
+
+  可执行 $DWM/statusbar/statusbar.sh check 检查是否有模块存在问题
 ```
 
 ## 随DWM启动的自启动命令

@@ -5,6 +5,7 @@ touch $DWM/statusbar/temp
 # 设置某个模块的状态 update cpu mem ...
 update() {
     [ ! "$1" ] && return                                                 # 当指定模块为空时 结束
+    printf "update $1:\t"                                                # 输出 update cpu mem ...
     bash $DWM/statusbar/packages/$1.sh                                   # 执行指定模块脚本
     shift 1                                                              # 从参数列表中删除第一个参数
     update $*                                                            # 递归调用
@@ -37,6 +38,6 @@ case $1 in
     cron) cron ;;
     refresh) refresh ;;
     update) shift 1; update $*; refresh ;;
-    updateall) update icons cpu mem date vol bat; refresh ;;
+    updateall|check) update icons cpu mem date vol bat; refresh ;;
     *) click $1 $2 ;; # 接收clickstatusbar传递过来的信号 $1: 模块名  $2: 按键(L|M|R)
 esac
