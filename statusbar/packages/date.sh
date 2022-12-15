@@ -35,11 +35,15 @@ notify() {
     notify-send "  Calendar" "\n$(cal --color=always | sed 1,2d | sed 's/..7m/<b><span color="#A1E1FF">/;s/..27m/<\/span><\/b>/' )" -r 9527
 }
 
+notify_todo() {
+    notify-send "TODO" "\n$(cat ~/.todo.md | sed 's/\(- \[x\] \)\(.*\)/<span color="#ff79c6">\1<s>\2<\/s><\/span>/' | sed 's/- \[[ |x]\] //')" -r 9527
+}
+
 click() {
     case "$1" in
         L) notify ;;
-        M) ;;
-        R) ;;
+        M) st -g 82x25 -c noborder -e nvim ~/.todo.md ;;
+        R) notify_todo ;;
         U) ;;
         D) ;;
     esac

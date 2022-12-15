@@ -29,8 +29,8 @@ notify() {
 click() {
     case "$1" in
         L) notify ;;
-        M) st -g 82x25 -c noborder -e btop ;;
-        R) st -g 82x25 -c noborder -e btop ;;
+        M) ;;
+        R) killall btop || st -g 82x25 -c noborder -e btop ;;
         U) ;;
         D) ;;
     esac
