@@ -3265,7 +3265,7 @@ view(const Arg *arg)
     // 若当前tag无窗口 且附加了v参数 则执行
     if (arg->v) {
         for (c = selmon->clients; c; c = c->next)
-            if (c->tags & arg->ui && !HIDDEN(c))
+            if (c->tags & arg->ui && !HIDDEN(c) && !c->isglobal)
                 n++;
         if (n == 0) {
             spawn(&(Arg){ .v = (const char*[]){ "/bin/sh", "-c", arg->v, NULL } });
