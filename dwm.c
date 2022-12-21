@@ -1334,7 +1334,7 @@ focusstack(const Arg *arg)
 {
     Client *tempClients[100];
     Client *c = NULL, *tc = selmon->sel;
-    int last = -1, cur = 0, issingle = issinglewin(NULL);
+    int last = -1, cur = 0, issingle = issinglewin(NULL), hasfloating = 0;
 
     if (tc && tc->isfullscreen) /* no support for focusstack with fullscreen windows */
         return;
@@ -1343,7 +1343,14 @@ focusstack(const Arg *arg)
     if (!tc)
         return;
 
+    // 判断是否有浮动窗口
+    for (c = selmon->clients; c && !hasfloating; c = c->next)
+        if (ISVISIBLE(c) && !HIDDEN(c) && c->isfloating)
+            hasfloating = 1;
+
     for (c = selmon->clients; c; c = c->next) {
+        if (hasfloating != c->isfloating) continue; // 如果有浮动窗口，只在浮动窗口中切换
+
         if (ISVISIBLE(c) && (issingle || !HIDDEN(c))) {
             last ++;
             tempClients[last] = c;
