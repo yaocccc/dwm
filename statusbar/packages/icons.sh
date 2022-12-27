@@ -9,8 +9,7 @@ color="^c#223344^^b#4E5173^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
-    icons=()
-    [ "$(ps -aux | grep 'aria2' | sed 1d)" ] && icons=(${icons[@]} "")
+    icons=("")
     [ "$(sudo docker ps | grep 'v2raya')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 64:03:7F:7C:81:15 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 8C:DE:F9:E6:E5:6B | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
@@ -18,14 +17,25 @@ update() {
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    if [ "$icons" ]; then
-        text=" ${icons[@]} "
-        echo $text
-        printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
-    fi
+    text=" ${icons[@]} "
+    echo $text
+    printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
 }
 
-click() { :; }
+call_menu() {
+    case $(echo -e '关机\n重启\n锁定' | rofi -dmenu -window-title power) in
+        关机) sudo poweroff ;;
+        重启) sudo reboot ;;
+        锁定) ~/scripts/blurlock.sh ;;
+    esac
+}
+
+click() {
+    case "$1" in
+        L) feh --randomize --bg-fill ~/Pictures/wallpaper/*.png ;;
+        R) call_menu ;;
+    esac
+}
 
 case "$1" in
     click) click $2 ;;
