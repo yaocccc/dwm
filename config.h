@@ -48,20 +48,18 @@ static const char scratchpadname[] = "scratchpad";
 /* 自定义特定实例的显示状态 */
 //            ﮸  ﭮ 切
 // 对应的tag序号以及快捷键:   0:1  1:2  2:3  3:4  4:5  5:c  6:m  7:6  8:9  9:0  10:w 11:l
-static const char *tags[] = { "", "", "", "", "", "", "", "", "ﭮ", "ﬄ", "﬐", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor */
     {"chrome",               NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
     {"Chromium",             NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
     {"music",                NULL,                 NULL,             1 << 6,       1,          0,          1,        -1 },
-    {"TelegramDesktop",      NULL,                 NULL,             1 << 7,       0,          0,          0,        -1 },
-    { NULL,                 "discord",             NULL,             1 << 8,       0,          0,          0,        -1 },
-    { NULL,                 "icalingua",           NULL,             1 << 9,       0,          0,          1,        -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 10,      0,          0,          0,        -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 11,      0,          0,          0,        -1 },
+    { NULL,                 "icalingua",           NULL,             1 << 7,       0,          0,          1,        -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 8,       0,          0,          0,        -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 9,       0,          0,          0,        -1 },
     { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1 },
-    { NULL,                  NULL,                "图片查看",        0,            1,          0,          0,        -1 },
-    { NULL,                  NULL,                "图片预览",        0,            1,          0,          0,        -1 },
+    { "图片查看",           "图片查看",           "图片查看",        0,            1,          0,          0,        -1 },
+    { "图片预览",           "图片预览",           "图片预览",        0,            1,          0,          0,        -1 },
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
     {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
@@ -167,11 +165,9 @@ static Key keys[] = {
     TAGKEYS(XK_5, 4,  0,  0)
     TAGKEYS(XK_c, 5,  "google-chrome-stable", 0)
     TAGKEYS(XK_m, 6,  "~/scripts/music_player.sh", "pavucontrol")
-    TAGKEYS(XK_8, 7,  "telegram-desktop", 0)
-    TAGKEYS(XK_9, 8,  "discord", 0)
-    TAGKEYS(XK_0, 9, "icalingua", 0)
-    TAGKEYS(XK_w, 10, "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
-    TAGKEYS(XK_l, 11, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
+    TAGKEYS(XK_0, 7, "icalingua", 0)
+    TAGKEYS(XK_w, 8, "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
+    TAGKEYS(XK_l, 9, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
