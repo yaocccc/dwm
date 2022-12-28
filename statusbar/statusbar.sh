@@ -24,15 +24,19 @@ refresh() {
     xsetroot -name "$_icons$_cpu$_mem$_date$_vol$_bat"                   # 更新状态栏
 }
 
-# 启动定时更新状态栏 不用的package有不同的刷新周期 注意不要重复启动该func
+# 启动定时更新状态栏 不同的模块有不同的刷新周期 注意不要重复启动该func
 cron() {
-    while true; do update cpu mem;   sleep 20;  done &                   # 每隔20s更新cpu 内存
-    while true; do update vol icons; sleep 20;  done &                   # 每隔20s更新音量 图标
-    while true; do update bat;       sleep 300; done &                   # 每隔300s更新电池
-    while true; do update date;      sleep 5;   done &                   # 每隔5s更新时间
+    let i=0
+    while true; do
+        to=()                                                            # 存放本次需要更新的模块
+        [ $((i % 20)) -eq 0 ]  && to=(${to[@]} cpu mem vol icons)        # 每 20秒  更新 cpu mem vol icons
+        [ $((i % 300)) -eq 0 ] && to=(${to[@]} bat)                      # 每 300秒 更新 bat
+        [ $((i % 5)) -eq 0 ]   && to=(${to[@]} date)                     # 每 5秒   更新 date
+        update ${to[@]}                                                  # 将需要更新的模块传递给 update
+        sleep 5; let i+=5
+    done &
 }
 
-# 程序入口 根据不同的参数执行不同的操作
 # cron 启动定时更新状态栏
 # update 更新指定模块 `update cpu` `update mem` `update date` `update vol` `update bat` 等
 # updateall 更新所有模块 | check 检查模块是否正常(行为等于updateall)

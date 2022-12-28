@@ -44,5 +44,6 @@ click() {
 
 case "$1" in
     click) click $2 ;;
+    notify) notify ;;
     *) update ;;
 esac
