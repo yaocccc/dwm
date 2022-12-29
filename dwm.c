@@ -2587,9 +2587,6 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
-    if (selmon->sel && selmon->sel->isfullscreen) /* no support spawning while fullscreen */
-        return;
-
     if (fork() == 0) {
         if (dpy)
             close(ConnectionNumber(dpy));

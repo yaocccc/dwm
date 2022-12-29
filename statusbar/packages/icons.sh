@@ -28,9 +28,11 @@ notify() {
 }
 
 call_menu() {
-    case $(echo -e '关机\n重启\n锁定' | rofi -dmenu -window-title power) in
+    case $(echo -e '关机\n重启\n休眠\n挂起\n锁定' | rofi -dmenu -window-title power) in
         关机) sudo poweroff ;;
         重启) sudo reboot ;;
+        休眠) sudo systemctl hibernate ;;
+        挂起) sudo systemctl suspend ;;
         锁定) ~/scripts/blurlock.sh ;;
     esac
 }
