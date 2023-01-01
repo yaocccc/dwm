@@ -18,7 +18,7 @@ source ~/.profile
 
 this=_vol
 s2d_reset="^d^"
-color="^c#553388^^b#334466^"
+color="^c#442266^^b#385056^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {

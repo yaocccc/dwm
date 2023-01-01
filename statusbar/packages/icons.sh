@@ -5,7 +5,7 @@ source ~/.profile
 
 this=_icons
 s2d_reset="^d^"
-color="^c#223344^^b#4E5173^"
+color="^c#2D1B46^^b#335566^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {

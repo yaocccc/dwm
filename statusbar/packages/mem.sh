@@ -5,14 +5,14 @@ source ~/.profile
 
 this=_mem
 s2d_reset="^d^"
-color="^c#442266^^b#334466^"
+color="^c#442266^^b#385056^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
-    mem_total=$(cat /proc/meminfo | grep "MemTotal:"|awk '{print $2}')
-    mem_free=$(cat /proc/meminfo | grep "MemFree:"|awk '{print $2}')
-    mem_buffers=$(cat /proc/meminfo | grep "Buffers:"|awk '{print $2}')
-    mem_cached=$(cat /proc/meminfo | grep -w "Cached:"|awk '{print $2}')
+    mem_total=$(cat /proc/meminfo | grep "MemTotal:"| awk '{print $2}')
+    mem_free=$(cat /proc/meminfo | grep "MemFree:"| awk '{print $2}')
+    mem_buffers=$(cat /proc/meminfo | grep "Buffers:"| awk '{print $2}')
+    mem_cached=$(cat /proc/meminfo | grep -w "Cached:"| awk '{print $2}')
     men_usage_rate=$(((mem_total - mem_free - mem_buffers - mem_cached) * 100 / mem_total))
 	mem_icon=""
     mem_text=$(echo $men_usage_rate | awk '{printf "%02d%", $1}')
@@ -23,7 +23,13 @@ update() {
 }
 
 notify() {
-    notify-send " Memory tops" "\n$(ps axch -o cmd:15,%mem --sort=-%mem | head)" -r 9527
+    free_result=`free -h`
+    text="
+可用:\t $(echo "$free_result" | sed -n 2p | awk '{print $7}')
+用量:\t $(echo "$free_result" | sed -n 2p | awk '{print $3}')/$(echo "$free_result" | sed -n 2p | awk '{print $2}')
+swap:\t $(echo "$free_result" | sed -n 3p | awk '{print $3}')/$(echo "$free_result" | sed -n 3p | awk '{print $2}')
+"
+    notify-send " Memory" "$text" -r 9527
 }
 
 call_btop() {

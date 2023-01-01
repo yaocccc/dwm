@@ -5,7 +5,7 @@ source ~/.profile
 
 this=_date
 s2d_reset="^d^"
-color="^c#2D1B46^^b#335566^"
+color="^c#223344^^b#4E5168^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
