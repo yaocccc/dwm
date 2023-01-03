@@ -19,9 +19,9 @@ click() {
 
 # 更新状态栏
 refresh() {
-    _icons=''; _wifi=''; _cpu=''; _mem=''; _date=''; _vol=''; _bat='';             # 重置所有模块的状态为空
+    _icons=''; _wifi=''; _cpu=''; _mem=''; _date=''; _vol=''; _bat='';   # 重置所有模块的状态为空
     source $DWM/statusbar/temp                                           # 从 temp 文件中读取模块的状态
-    xsetroot -name "$_icons$_wifi$_cpu$_mem$_date$_vol$_bat"                   # 更新状态栏
+    xsetroot -name "$_icons$_wifi$_cpu$_mem$_date$_vol$_bat"             # 更新状态栏
 }
 
 # 启动定时更新状态栏 不同的模块有不同的刷新周期 注意不要重复启动该func

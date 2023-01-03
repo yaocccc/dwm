@@ -4,8 +4,8 @@
 source ~/.profile
 
 this=_date
-s2d_reset="^d^"
-color="^c#223344^^b#4E5168^"
+icon_color="^c#4B005B^^b#7E51680x88^"
+text_color="^c#4B005B^^b#7E51680xaa^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
@@ -25,10 +25,11 @@ update() {
         "12") time_icon="" ;;
     esac
 
-    text=" $time_icon $time_text "
-    echo $text
+    icon=" $time_icon "
+    text=" $time_text "
+
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+    printf "export %s='%s%s%s%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
 }
 
 notify() {

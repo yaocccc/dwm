@@ -17,8 +17,8 @@
 source ~/.profile
 
 this=_vol
-s2d_reset="^d^"
-color="^c#442266^^b#385056^"
+icon_color="^c#442266^^b#7879560x88^"
+text_color="^c#442266^^b#7879560xaa^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
@@ -31,16 +31,16 @@ update() {
     elif [ "$vol_text" -le 50 ]; then vol_icon="奔";
     else vol_icon="墳"; fi
 
-    vol_text=$vol_text%
+    icon=" $vol_icon "
+    text=" $vol_text% "
 
-    text=" $vol_icon $vol_text "
-    echo $text
     sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+    printf "export %s='%s%s%s%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
 }
 
 notify() {
-    notify-send -r 9527 Volume "$(update)" -i audio-volume-medium
+    update
+    notify-send -r 9527 -h int:value:$vol_text -h string:hlcolor:#dddddd "$vol_icon Volume"
 }
 
 click() {

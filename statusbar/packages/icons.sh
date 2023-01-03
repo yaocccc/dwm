@@ -4,8 +4,7 @@
 source ~/.profile
 
 this=_icons
-s2d_reset="^d^"
-color="^c#2D1B46^^b#335566^"
+color="^c#2D1B46^^b#5555660x66^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
@@ -14,10 +13,10 @@ update() {
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
     text=" ${icons[@]} "
-    echo $text
-    printf "export %s='%s%s%s%s'\n" $this "$color" "$signal" "$text" "$s2d_reset" >> $DWM/statusbar/temp
+
+    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
+    printf "export %s='%s%s%s'\n" $this "$signal" "$color" "$text" >> $DWM/statusbar/temp
 }
 
 notify() {
