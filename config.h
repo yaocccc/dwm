@@ -168,7 +168,7 @@ static Key keys[] = {
     TAGKEYS(XK_5, 4,  0,  0)
     TAGKEYS(XK_c, 5,  "google-chrome-stable", 0)
     TAGKEYS(XK_m, 6,  "~/scripts/music_player.sh", "pavucontrol")
-    TAGKEYS(XK_0, 7, "tencent-qq", 0)
+    TAGKEYS(XK_0, 7, "linuxqq", 0)
     TAGKEYS(XK_w, 8, "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
     TAGKEYS(XK_l, 9, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
 };
