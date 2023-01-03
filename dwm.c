@@ -1074,6 +1074,8 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
     short isCode = 0;
     char *text;
     char *p;
+    char buf8[8], buf5[5];
+    uint textsalpha;
 
     if(showsystray && m == systraytomon(m))
         system_w = getsystraywidth();
@@ -1132,17 +1134,32 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
             /* process code */
             while (text[++i] != '^') {
                 if (text[i] == 'c') {
-                    char buf[8];
-                    memcpy(buf, (char*)text+i+1, 7);
-                    buf[7] = '\0';
-                    drw_clr_create(drw, &drw->scheme[ColFg], buf, alphas[SchemeStatusText][ColFg]);
+                    memcpy(buf8, (char*)text+i+1, 7);
+                    buf8[7] = '\0';
                     i += 7;
+
+                    textsalpha = alphas[SchemeStatusText][ColFg];
+                    if (text[i + 1] != '^') {
+                        memcpy(buf5, (char*)text+i+1, 4);
+                        buf5[4] = '\0';
+                        i += 4;
+                        sscanf(buf5, "%x", &textsalpha);
+                    }
+
+                    drw_clr_create(drw, &drw->scheme[ColFg], buf8, textsalpha);
                 } else if (text[i] == 'b') {
-                    char buf[8];
-                    memcpy(buf, (char*)text+i+1, 7);
-                    buf[7] = '\0';
-                    drw_clr_create(drw, &drw->scheme[ColBg], buf, alphas[SchemeStatusText][ColBg]);
+                    memcpy(buf8, (char*)text+i+1, 7);
+                    buf8[7] = '\0';
                     i += 7;
+
+                    textsalpha = alphas[SchemeStatusText][ColBg];
+                    if (text[i + 1] != '^') {
+                        memcpy(buf5, (char*)text+i+1, 4);
+                        buf5[4] = '\0';
+                        i += 4;
+                        sscanf(buf5, "%x", &textsalpha);
+                    }
+                    drw_clr_create(drw, &drw->scheme[ColBg], buf8, textsalpha);
                 } else if (text[i] == 's') {
                     while (text[i + 1] != '^') i++;
                 } else if (text[i] == 'd') {
@@ -1199,7 +1216,7 @@ clickstatusbar(const Arg *arg)
         if (stext[offset] == '^' && !iscode) {
             iscode = 1;
             offset++;
-            if (stext[offset] == 's') {
+            if (stext[offset] == 's') { // 查询到s->signal
                 issignal = 1;
                 signalindex = 0;
                 memset(signal, '\0', sizeof(signal));
@@ -1216,7 +1233,7 @@ clickstatusbar(const Arg *arg)
             continue;
         }
 
-        if (issignal) {
+        if (issignal) { // 逐位读取signal
             signal[signalindex++] = stext[offset];
         }
 
@@ -1224,11 +1241,10 @@ clickstatusbar(const Arg *arg)
         if (!iscode) {
             // 查找到下一个^
             int limit = 0;
-            while (stext[offset + ++limit] != '^');
-            limit++;
+            while (stext[offset + ++limit] != '^') ;
             memset(text, '\0', sizeof(text));
-            strncpy(text, stext + offset, limit - 1);
-            offset += limit;
+            strncpy(text, stext + offset, limit);
+            offset += --limit;
             status_w += TEXTW(text) - lrpad;
             if (status_w > arg->i) {
                 break;
