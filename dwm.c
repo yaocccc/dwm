@@ -1210,6 +1210,8 @@ clickstatusbar(const Arg *arg)
     char signal [20];
     char text [100];
     char *button = "L";
+    int limit, max = sizeof(stext);
+
 
     while (stext[++offset] != '\0') {
         // 左侧^
@@ -1239,16 +1241,18 @@ clickstatusbar(const Arg *arg)
 
         // 是普通文本
         if (!iscode) {
-            // 查找到下一个^
-            int limit = 0;
-            while (stext[offset + ++limit] != '^') ;
+            // 查找到下一个^ 或 游标到达最后
+            limit = 0;
+            while (stext[offset + ++limit] != '^' && offset + limit < max);
+            if (offset + limit == max)
+                break;
+
             memset(text, '\0', sizeof(text));
             strncpy(text, stext + offset, limit);
             offset += --limit;
             status_w += TEXTW(text) - lrpad;
-            if (status_w > arg->i) {
+            if (status_w > arg->i)
                 break;
-            }
         }
     }
 
