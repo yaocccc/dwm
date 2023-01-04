@@ -194,4 +194,8 @@ static Button buttons[] = {
     { ClkStatusText,       0,               Button3,          clickstatusbar,{0} },                                   // 右键        |  点击状态栏   |  根据状态栏的信号执行 ~/scripts/dwmstatusbar.sh $signal R
     { ClkStatusText,       0,               Button4,          clickstatusbar,{0} },                                   // 鼠标滚轮上  |  状态栏       |  根据状态栏的信号执行 ~/scripts/dwmstatusbar.sh $signal U
     { ClkStatusText,       0,               Button5,          clickstatusbar,{0} },                                   // 鼠标滚轮下  |  状态栏       |  根据状态栏的信号执行 ~/scripts/dwmstatusbar.sh $signal D
+
+    /* 点击桌面空白处 */
+    { ClkRootWin,          0,               Button1,          spawn, SHCMD("~/scripts/call_rofi.sh window") },        // 左键        |  桌面空白处   |  rofi 执行 window
+    { ClkRootWin,          0,               Button3,          spawn, SHCMD("~/scripts/call_rofi.sh drun") },          // 右键        |  桌面空白处   |  rofi 执行 drun
 };
