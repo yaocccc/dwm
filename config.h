@@ -198,4 +198,8 @@ static Button buttons[] = {
     /* 点击桌面空白处 */
     { ClkRootWin,          0,               Button1,          spawn, SHCMD("~/scripts/call_rofi.sh window") },        // 左键        |  桌面空白处   |  rofi 执行 window
     { ClkRootWin,          0,               Button3,          spawn, SHCMD("~/scripts/call_rofi.sh drun") },          // 右键        |  桌面空白处   |  rofi 执行 drun
+                                                                                                                      //
+    /* 点击bar空白处 */
+    { ClkBarEmpty,         0,               Button1,          spawn, SHCMD("~/scripts/call_rofi.sh window") },        // 左键        |  bar空白处    |  rofi 执行 window
+    { ClkBarEmpty,         0,               Button3,          spawn, SHCMD("~/scripts/call_rofi.sh drun") },          // 右键        |  bar空白处    |  rofi 执行 drun
 };
