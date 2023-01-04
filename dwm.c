@@ -96,7 +96,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
-enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkBarEmpty,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { UP, DOWN, LEFT, RIGHT }; /* movewin */
 enum { V_EXPAND, V_REDUCE, H_EXPAND, H_REDUCE }; /* resizewins */
@@ -626,6 +626,8 @@ buttonpress(XEvent *e)
             if (c) {
                 click = ClkWinTitle;
                 arg.v = c;
+            } else {
+                click = ClkBarEmpty;
             }
         }
     } else if ((c = wintoclient(ev->window))) {
