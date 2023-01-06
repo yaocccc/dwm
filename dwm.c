@@ -611,6 +611,8 @@ buttonpress(XEvent *e)
             arg.i = ev->x - (selmon->ww - status_w - (selmon == systraytomon(selmon) ? getsystraywidth() : 0));
             arg.ui = ev->button; // 1 => L，2 => M，3 => R, 5 => U, 6 => D
         } else {
+            click = ClkBarEmpty;
+
             x += blw;
             c = m->clients;
 
@@ -626,8 +628,6 @@ buttonpress(XEvent *e)
             if (c) {
                 click = ClkWinTitle;
                 arg.v = c;
-            } else {
-                click = ClkBarEmpty;
             }
         }
     } else if ((c = wintoclient(ev->window))) {
