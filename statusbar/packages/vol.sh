@@ -18,7 +18,7 @@ source ~/.profile
 
 this=_vol
 icon_color="^c#442266^^b#7879560x88^"
-text_color="^c#442266^^b#7879560xaa^"
+text_color="^c#442266^^b#7879560x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {

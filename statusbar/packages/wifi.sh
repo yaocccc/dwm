@@ -4,7 +4,7 @@ source ~/.profile
 
 this=_wifi
 icon_color="^c#000080^^b#3870560x88^"
-text_color="^c#000080^^b#3870560xaa^"
+text_color="^c#000080^^b#3870560x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {

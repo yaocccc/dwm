@@ -5,7 +5,7 @@ source ~/.profile
 
 this=_mem
 icon_color="^c#3B001B^^b#6873790x88^"
-text_color="^c#3B001B^^b#6873790xaa^"
+text_color="^c#3B001B^^b#6873790x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {

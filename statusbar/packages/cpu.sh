@@ -5,7 +5,7 @@ source ~/.profile
 
 this=_cpu
 icon_color="^c#3E206F^^b#6E51760x88^"
-text_color="^c#3E206F^^b#6E51760xaa^"
+text_color="^c#3E206F^^b#6E51760x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
