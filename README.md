@@ -15,7 +15,7 @@ dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
 - 系统托盘支持
 - overview
 - mod + tab, 在窗口间切换 有浮动窗口时仅在浮动窗口切换
-
+- mod + [tag], 切换tag到指定目录时 可指定一个cmd，若目标tag无窗口 则执行该tag
 ## 安装
 
  sudo make clean install

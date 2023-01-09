@@ -82,9 +82,9 @@ static const Layout layouts[] = {
 
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG, cmd1, cmd2) \
-    { MODKEY,              KEY, view,       {.ui = 1 << TAG, .v = cmd1} }, \
-    { MODKEY|ShiftMask,    KEY, tag,        {.ui = 1 << TAG, .v = cmd2} }, \
+#define TAGKEYS(KEY, TAG, cmd) \
+    { MODKEY,              KEY, view,       {.ui = 1 << TAG, .v = cmd} }, \
+    { MODKEY|ShiftMask,    KEY, tag,        {.ui = 1 << TAG} }, \
     { MODKEY|ControlMask,  KEY, toggleview, {.ui = 1 << TAG} }, \
 
 static Key keys[] = {
@@ -160,21 +160,20 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_q,      spawn, SHCMD("kill -9 $(xprop | grep _NET_WM_PID | awk '{print $3}')") }, /* super shift q    | 选中某个窗口并强制kill */
     { ShiftMask|ControlMask, XK_c,    spawn, SHCMD("xclip -o | xclip -selection c") },                          /* super shift c    | 进阶复制               */
 
-    /* super key : 跳转到对应tag */
+    /* super key : 跳转到对应tag (可附加一条命令 若目标目录无窗口，则执行该命令) */
     /* super shift key : 将聚焦窗口移动到对应tag */
-    /* 若跳转后的tag无窗口且附加了cmd1或者cmd2就执行对应的cmd */
-    /* key tag cmd1 cmd2 */
-    TAGKEYS(XK_1, 0,  0,  0)
-    TAGKEYS(XK_2, 1,  0,  0)
-    TAGKEYS(XK_3, 2,  0,  0)
-    TAGKEYS(XK_4, 3,  0,  0)
-    TAGKEYS(XK_5, 4,  0,  0)
-    TAGKEYS(XK_9, 5,  "obs",  0)
-    TAGKEYS(XK_c, 6,  "google-chrome-stable", 0)
-    TAGKEYS(XK_m, 7,  "~/scripts/music_player.sh", "pavucontrol")
-    TAGKEYS(XK_0, 8,  "linuxqq", 0)
-    TAGKEYS(XK_w, 9,  "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
-    TAGKEYS(XK_l, 10, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
+    /* key tag cmd */
+    TAGKEYS(XK_1, 0,  0)
+    TAGKEYS(XK_2, 1,  0)
+    TAGKEYS(XK_3, 2,  0)
+    TAGKEYS(XK_4, 3,  0)
+    TAGKEYS(XK_5, 4,  0)
+    TAGKEYS(XK_9, 5,  "obs")
+    TAGKEYS(XK_c, 6,  "google-chrome-stable")
+    TAGKEYS(XK_m, 7,  "~/scripts/music_player.sh")
+    TAGKEYS(XK_0, 8,  "linuxqq")
+    TAGKEYS(XK_w, 9,  "/opt/apps/com.qq.weixin.deepin/files/run.sh")
+    TAGKEYS(XK_l, 10, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh")
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
