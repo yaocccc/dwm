@@ -50,16 +50,17 @@ static const char scratchpadname[] = "scratchpad";
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸  ﭮ 切
-// 对应的tag序号以及快捷键:   0:1  1:2  2:3  3:4  4:5  5:c  6:m  7:6  8:9  9:0  10:w 11:l
-static const char *tags[] = { "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
+// 对应的tag序号以及快捷键:   0:1  1:2  2:3  3:4  4:5  5:9  6:c  7:m  8:0  9:w 10:l
+static const char *tags[] = { "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor */
-    {"chrome",               NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
-    {"Chromium",             NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
-    {"music",                NULL,                 NULL,             1 << 6,       1,          0,          1,        -1 },
-    { NULL,                 "qq",                  NULL,             1 << 7,       0,          0,          1,        -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 8,       0,          0,          0,        -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 9,       0,          0,          0,        -1 },
+    {"obs",                  NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
+    {"chrome",               NULL,                 NULL,             1 << 6,       0,          0,          0,        -1 },
+    {"Chromium",             NULL,                 NULL,             1 << 6,       0,          0,          0,        -1 },
+    {"music",                NULL,                 NULL,             1 << 7,       1,          0,          1,        -1 },
+    { NULL,                 "qq",                  NULL,             1 << 8,       0,          0,          1,        -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 9,       0,          0,          0,        -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 10,      0,          0,          0,        -1 },
     { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1 },
     { "图片查看",           "图片查看",           "图片查看",        0,            1,          0,          0,        -1 },
     { "图片预览",           "图片预览",           "图片预览",        0,            1,          0,          0,        -1 },
@@ -168,11 +169,12 @@ static Key keys[] = {
     TAGKEYS(XK_3, 2,  0,  0)
     TAGKEYS(XK_4, 3,  0,  0)
     TAGKEYS(XK_5, 4,  0,  0)
-    TAGKEYS(XK_c, 5,  "google-chrome-stable", 0)
-    TAGKEYS(XK_m, 6,  "~/scripts/music_player.sh", "pavucontrol")
-    TAGKEYS(XK_0, 7, "linuxqq", 0)
-    TAGKEYS(XK_w, 8, "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
-    TAGKEYS(XK_l, 9, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
+    TAGKEYS(XK_9, 5,  "obs",  0)
+    TAGKEYS(XK_c, 6,  "google-chrome-stable", 0)
+    TAGKEYS(XK_m, 7,  "~/scripts/music_player.sh", "pavucontrol")
+    TAGKEYS(XK_0, 8,  "linuxqq", 0)
+    TAGKEYS(XK_w, 9,  "/opt/apps/com.qq.weixin.deepin/files/run.sh", 0)
+    TAGKEYS(XK_l, 10, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh", 0)
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
