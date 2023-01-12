@@ -2830,7 +2830,7 @@ toggleglobal(const Arg *arg)
 {
     if (!selmon->sel)
         return;
-    if (selmon->sel->isscratchpad) { // is scratchpad always global
+    if (selmon->sel->isscratchpad) // is scratchpad always global
         return;
     selmon->sel->isglobal ^= 1;
     selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
