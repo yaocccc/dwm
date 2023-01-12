@@ -127,7 +127,7 @@ struct Client {
 	int bw, oldbw;
     int taskw;
 	unsigned int tags;
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isglobal, isnoborder;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isglobal, isnoborder, isscratchpad;
 	Client *next;
 	Client *snext;
 	Monitor *mon;
@@ -420,6 +420,7 @@ applyrules(Client *c)
     c->isfloating = 0;
     c->isglobal = 0;
     c->isnoborder = 0;
+    c->isscratchpad = 0;
     c->tags = 0;
     XGetClassHint(dpy, c->win, &ch);
     class    = ch.res_class ? ch.res_class : broken;
@@ -442,8 +443,10 @@ applyrules(Client *c)
                 c->mon = m;
         }
     }
-    if (!strcmp(c->name, scratchpadname)) // scratchpad is default global
-        c->isglobal = 1;
+    if (!strcmp(c->name, scratchpadname)) {
+        c->isscratchpad = 1;
+        c->isglobal = 1; // scratchpad is default global
+    } 
     if (ch.res_class)
         XFree(ch.res_class);
     if (ch.res_name)
@@ -2743,7 +2746,7 @@ togglescratch(const Arg *arg)
     unsigned int found = 0;
 
     for (m = mons; m && !found; m = m->next)
-        for (c = m->clients; c && !(found = !strcmp(c->name, scratchpadname)); c = c->next);
+        for (c = m->clients; c && !(found = c->isscratchpad); c = c->next);
     if (found) {
         if (c->mon == selmon) // 在同屏幕则toggle win状态
             togglewin(&(Arg){.v = c});
@@ -2827,7 +2830,7 @@ toggleglobal(const Arg *arg)
 {
     if (!selmon->sel)
         return;
-    if (!strcmp(selmon->sel->name, scratchpadname))
+    if (selmon->sel->isscratchpad) { // is scratchpad always global
         return;
     selmon->sel->isglobal ^= 1;
     selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
