@@ -2835,8 +2835,8 @@ toggleglobal(const Arg *arg)
     selmon->sel->isglobal ^= 1;
     selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
     focus(NULL);
+    }
 }
-
 void
 unfocus(Client *c, int setfocus)
 {
