@@ -587,6 +587,7 @@ buttonpress(XEvent *e)
         focus(NULL);
     }
     int status_w = drawstatusbar(selmon, bh, stext);
+    int system_w = getsystraywidth();
     if (ev->window == selmon->barwin) { // 点击在bar上
         i = x = 0;
         blw = TEXTW(selmon->ltsymbol);
@@ -611,9 +612,9 @@ buttonpress(XEvent *e)
             arg.ui = 1 << i;
         } else if (ev->x < x + blw)
             click = ClkLtSymbol;
-        else if (ev->x > selmon->ww - status_w -  (selmon == systraytomon(selmon) ? getsystraywidth() : 0)) {
+        else if (ev->x > selmon->ww - status_w - 2 * sp - (selmon == systraytomon(selmon) ? (system_w ? system_w + systraypinning + 2 : 0) : 0)) {
             click = ClkStatusText;
-            arg.i = ev->x - (selmon->ww - status_w - (selmon == systraytomon(selmon) ? getsystraywidth() : 0));
+            arg.i = ev->x - (selmon->ww - status_w - 2 * sp - (selmon == systraytomon(selmon) ? (system_w ? system_w + systraypinning + 2 : 0) : 0));
             arg.ui = ev->button; // 1 => L，2 => M，3 => R, 5 => U, 6 => D
         } else {
             click = ClkBarEmpty;
@@ -1219,7 +1220,6 @@ clickstatusbar(const Arg *arg)
     char text [100];
     char *button = "L";
     int limit, max = sizeof(stext);
-
 
     while (stext[++offset] != '\0') {
         // 左侧^
