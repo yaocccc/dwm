@@ -2135,7 +2135,7 @@ resizebarwin(Monitor *m) {
     uint system_w = getsystraywidth();
     if (showsystray && m == systraytomon(m))
         w -= system_w;
-    XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w -  2 * sp - (system_w ? systrayspadding : 0), bh); // 如果托盘存在 额外减去systrayspadding
+    XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w -  2 * sp - (m == systraytomon(m) && system_w ? systrayspadding : 0), bh); // 如果托盘存在 额外减去systrayspadding
 }
 
 void
