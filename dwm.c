@@ -622,14 +622,13 @@ buttonpress(XEvent *e)
             x += blw;
             c = m->clients;
 
-            if (m->bt == 0) return;
-
-            do {
-                if (!ISVISIBLE(c))
-                    continue;
-                else
-                    x += c->taskw;
-            } while (ev->x > x && (c = c->next));
+            if (m->bt != 0)
+                do {
+                    if (!ISVISIBLE(c))
+                        continue;
+                    else
+                        x += c->taskw;
+                } while (ev->x > x && (c = c->next));
 
             if (c) {
                 click = ClkWinTitle;
@@ -642,6 +641,7 @@ buttonpress(XEvent *e)
         XAllowEvents(dpy, ReplayPointer, CurrentTime);
         click = ClkClientWin;
     }
+
     for (i = 0; i < LENGTH(buttons); i++)
         if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
                 && CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
