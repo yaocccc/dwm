@@ -984,7 +984,7 @@ drawbar(Monitor *m)
     // 绘制STATUSBAR
     status_w = drawstatusbar(m, bh, stext);
 
-    // 未知
+    // 判断tag显示数量
     for (c = m->clients; c; c = c->next) {
         if (ISVISIBLE(c))
             n++;
@@ -1054,7 +1054,8 @@ drawbar(Monitor *m)
             tasks_w += w;
         }
     }
-    empty_w = m->ww - x - status_w - system_w - 2 * sp; // 最后多加了一个w
+    /** 空白部分的宽度 = 总宽度 - 状态栏的宽度 - 托盘的宽度 - sp (托盘存在时 额外多-一个 systrayspadding) */
+    empty_w = m->ww - x - status_w - system_w - 2 * sp - (system_w ? systrayspadding : 0);
     if (empty_w > 0) {
         drw_setscheme(drw, scheme[SchemeBarEmpty]);
         drw_rect(drw, x, 0, empty_w, bh, 1, 1);
@@ -1117,7 +1118,7 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
     text = p;
 
     // w += 2; /* 1px padding on both sides */
-    x = m->ww - w - system_w - 2 * sp;
+    x = m->ww - w - system_w - 2 * sp - (system_w ? systrayspadding : 0); // 托盘存在时 额外多-一个systrayspadding
 
     drw_setscheme(drw, scheme[LENGTH(colors)]);
     drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
@@ -1475,7 +1476,7 @@ getsystraywidth()
     Client *i;
     if(showsystray)
         for(i = systray->icons; i; w += MAX(i->w, bh) + systrayspacing, i = i->next) ;
-    return w ? w + systrayspacing : 1;
+    return w ? w + systrayspacing : 0;
 }
 
 int
@@ -2131,9 +2132,10 @@ resize(Client *c, int x, int y, int w, int h, int interact)
 void
 resizebarwin(Monitor *m) {
     unsigned int w = m->ww;
+    uint system_w = getsystraywidth();
     if (showsystray && m == systraytomon(m))
-        w -= getsystraywidth();
-    XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w -  2 * sp, bh);
+        w -= system_w;
+    XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, w -  2 * sp - (system_w ? systrayspadding : 0), bh); // 如果托盘存在 额外减去systrayspadding
 }
 
 void
