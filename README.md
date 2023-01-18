@@ -111,4 +111,12 @@ yay -S ttf-joypixels
 yay -S wqy-microhei
 ```
 
+## 贡献者 THX
+
+- [yaocccc](https://github.com/yaoccc)
+- [p3psi-boo](https://github.com/p3psi-boo)
+  - [PR#4 添加 Nix Flake 支持](https://github.com/yaocccc/dwm/pull/4)
+- [gxt-kt](https://github.com/gxt-kt)
+  - [PR#7 修复hide/show窗口栈索引带来的无法恢复窗口的bug](https://github.com/yaocccc/dwm/pull/7)
+
 ## ENJOY IT 😃
