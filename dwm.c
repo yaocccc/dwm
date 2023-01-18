@@ -189,7 +189,7 @@ struct Systray {
 };
 
 /* function declarations */
-static void logtofile(char log[100]);
+static void logtofile(const char *fmt, ...);
 
 static void tile(Monitor *m);
 static void magicgrid(Monitor *m);
@@ -402,10 +402,17 @@ struct Pertag {
 
 /* function implementations */
 void
-logtofile(char log[100])
+logtofile(const char *fmt, ...)
 {
-    char cmd [150];
-    sprintf(cmd, "echo '%s' >> ~/log", log);
+    char buf[256];
+    char cmd[256];
+    va_list ap;
+    va_start(ap, fmt);
+    vsprintf((char *)buf, fmt, ap);
+    va_end(ap);
+    uint i = strlen((const char *)buf);
+
+    sprintf(cmd, "echo '%.*s' >> ~/log", i, buf);
     system(cmd);
 }
 
