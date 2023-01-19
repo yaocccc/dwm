@@ -595,7 +595,7 @@ buttonpress(XEvent *e)
     }
     int status_w = drawstatusbar(selmon, bh, stext);
     int system_w = getsystraywidth();
-    if (ev->window == selmon->barwin || (!c && selmon->showbar && (topbar ? ev->y <= selmon->wy : ev->y >= selmon->wy))) { // 点击在bar上
+    if (ev->window == selmon->barwin || (!c && selmon->showbar && (topbar ? ev->y <= selmon->wy : ev->y >= selmon->wy + selmon->wh))) { // 点击在bar上
         i = x = 0;
         blw = TEXTW(selmon->ltsymbol);
         
