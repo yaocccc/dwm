@@ -113,7 +113,7 @@ yay -S wqy-microhei
 
 ## 贡献者 THX
 
-- [yaocccc](https://github.com/yaoccc)
+- [yaocccc](https://github.com/yaocccc)
 - [p3psi-boo](https://github.com/p3psi-boo)
   - [PR#4 添加 Nix Flake 支持](https://github.com/yaocccc/dwm/pull/4)
 - [gxt-kt](https://github.com/gxt-kt)
