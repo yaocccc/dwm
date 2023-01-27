@@ -16,9 +16,13 @@ dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
 - overview
 - mod + tab, 在窗口间切换 有浮动窗口时仅在浮动窗口切换
 - mod + [tag], 切换tag到指定目录时 可指定一个cmd，若目标tag无窗口 则执行该tag
+
 ## 安装
 
- sudo make clean install
+```plaintext
+  每次修改源代码后都需要执行
+  sudo make clean install
+```
 
 ## 运行 dwm
 
@@ -75,9 +79,9 @@ nix run github:yaocccc/dwm
 
 ## 随DWM启动的自启动命令
 
-dwm启动时会去调用 ~/scripts/autostart.sh 脚本(如果存在的话)
+dwm启动时会去调用 $DWM/autostart.sh 脚本
 
-可参考 [autostart脚本](https://github.com/yaocccc/scripts/blob/master/autostart.sh)
+可参考 [autostart脚本](https://github.com/yaocccc/dwm/blob/master/autostart.sh)
 
 ## Q & A
 
