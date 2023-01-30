@@ -70,9 +70,15 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1 },
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1 },
     {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
-    {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 特殊class client默认浮动
-    {"noborder",             NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 特殊class client默认无边框
-    {"global",               NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 特殊class client全局于所有tag
+
+    /** 部分特殊class的规则 */
+    {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 浮动
+    {"global",               NULL,                 NULL,             TAGMASK,      0,          1,          0,        -1 }, // 全局
+    {"noborder",             NULL,                 NULL,             0,            0,          0,          1,        -1 }, // 无边框
+    {"FG",                   NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1 }, // 浮动 + 全局
+    {"FN",                   NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 浮动 + 无边框
+    {"GN",                   NULL,                 NULL,             TAGMASK,      0,          1,          1,        -1 }, // 全局 + 无边框
+    {"FGN",                  NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1 }, // 浮动 + 全局 + 无边框
 };
 static const char *overviewtag = "OVERVIEW";
 static const Layout overviewlayout = { "舘",  overview };
@@ -148,7 +154,7 @@ static Key keys[] = {
     /* spawn + SHCMD 执行对应命令(已下部分建议完全自己重新定义) */
     { MODKEY,              XK_s,      togglescratch, SHCMD("st -t scratchpad -c float") },                      /* super s          | 打开scratch终端        */
     { MODKEY,              XK_Return, spawn, SHCMD("st") },                                                     /* super enter      | 打开st终端             */
-    { MODKEY,              XK_minus,  spawn, SHCMD("st -c global") },                                           /* super +          | 打开全局st终端         */
+    { MODKEY,              XK_minus,  spawn, SHCMD("st -c FG") },                                               /* super +          | 打开全局st终端         */
     { MODKEY,              XK_space,  spawn, SHCMD("st -c float") },                                            /* super space      | 打开浮动st终端         */
     { MODKEY,              XK_d,      spawn, SHCMD("~/scripts/call_rofi.sh run") },                             /* super d          | rofi: 执行run          */
     { MODKEY|ShiftMask,    XK_d,      spawn, SHCMD("~/scripts/call_rofi.sh drun") },                            /* super shift d    | rofi: 执行drun         */
