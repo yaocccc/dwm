@@ -124,3 +124,15 @@ yay -S wqy-microhei
   - [PR#7 修复hide/show窗口栈索引带来的无法恢复窗口的bug](https://github.com/yaocccc/dwm/pull/7)
 
 ## ENJOY IT 😃
+
+## Support
+
+<a href="https://www.buymeacoffee.com/yaocccc" target="_blank">
+  <img src="https://github.com/yaocccc/yaocccc/raw/master/qr.png">
+</a>
+
+<br>
+
+<a href="https://www.buymeacoffee.com/yaocccc" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 200px !important;" >
+</a>
