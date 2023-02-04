@@ -1,7 +1,7 @@
 #! /bin/bash
 # DATE 获取日期和时间的脚本
 
-source ~/.profile
+tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
 this=_date
 icon_color="^c#4B005B^^b#7E51680x88^"
@@ -28,8 +28,8 @@ update() {
     icon=" $time_icon "
     text=" $time_text "
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
+    sed -i '/^export '$this'=.*$/d' $tempfile
+    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
 notify() {

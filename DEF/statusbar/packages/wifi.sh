@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source ~/.profile
+tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
 this=_wifi
 icon_color="^c#000080^^b#3870560x88^"
@@ -24,8 +24,8 @@ update() {
     icon=" $wifi_icon "
     text=" $wifi_text "
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
+    sed -i '/^export '$this'=.*$/d' $tempfile
+    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
 notify() {

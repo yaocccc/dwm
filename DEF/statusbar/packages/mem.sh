@@ -1,7 +1,7 @@
 #! /bin/bash
 # MEM
 
-source ~/.profile
+tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
 this=_mem
 icon_color="^c#3B001B^^b#6873790x88^"
@@ -20,8 +20,8 @@ update() {
     icon=" $mem_icon "
     text=" $mem_text "
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
+    sed -i '/^export '$this'=.*$/d' $tempfile
+    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
 notify() {

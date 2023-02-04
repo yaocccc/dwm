@@ -1,7 +1,7 @@
 #! /bin/bash
 # CPU 获取CPU使用率和温度的脚本
 
-source ~/.profile
+tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
 this=_cpu
 icon_color="^c#3E206F^^b#6E51760x88^"
@@ -16,8 +16,8 @@ update() {
     icon=" $cpu_icon "
     text=" $cpu_text $temp_text "
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $DWM/statusbar/temp
+    sed -i '/^export '$this'=.*$/d' $tempfile
+    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
 notify() {
