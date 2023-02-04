@@ -9,7 +9,7 @@ signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
     icons=("")
-    [ "$(docker ps | grep 'v2raya')" ] && icons=(${icons[@]} "")
+    [ "$(ps aux | grep -v grep | grep 'v2raya')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
@@ -21,7 +21,7 @@ update() {
 
 notify() {
     texts=""
-    [ "$(docker ps | grep 'v2raya')" ] && texts="$texts\n v2raya 已启动"
+    [ "$(ps aux | grep -v grep | grep 'v2raya')" ] && texts="$texts\n v2raya 已启动"
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && texts="$texts\n WH-1000XM4 已链接"
     [ "$texts" != "" ] && notify-send " Info" "$texts" -r 9527
 }
