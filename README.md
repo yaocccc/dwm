@@ -20,6 +20,8 @@ dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
 ## 安装
 
 ```plaintext
+  !!!首次使用 请 cp -r DEF/* .
+
   每次修改源代码后都需要执行
   sudo make clean install
 ```
@@ -36,6 +38,27 @@ export DWM=~/workspace/dwm
 
 ```plaintext
 exec dwm
+```
+
+## !!!关于fork配置!!!
+
+```plaintext
+  本仓库默认集成了 `DEF/` 目录，该目录为作者本人使用的配置
+  DEF: 推荐配置 亦是 作者本人使用的配置
+
+  首次运行 可自行 `cp -r DEF/* .`
+
+  后续请用户自行维护 ./config.h ./statusbar ./autostart.sh 文件
+  且此部分文件已被 gitignore
+
+  即用户可始终保持yaocccc/dwm仓库代码最新版而不受影响
+
+  较推荐的fork方式
+
+  1. fork本代码仓库
+  2. 自行维护fork后的仓库相关的配置文件: ./config.h ./statusbar ./autostart.sh
+  3. 注释掉fork后仓库中 .gitignore 的前三行
+  4. 定期在github页面sync yaocccc/dwm 仓库保持最新
 ```
 
 ### Nix Flake

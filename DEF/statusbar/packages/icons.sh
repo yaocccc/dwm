@@ -1,7 +1,7 @@
 #! /bin/bash
 # ICONS 部分特殊的标记图标 这里是我自己用的，你用不上的话去掉就行
 
-source ~/.profile
+tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
 this=_icons
 color="^c#2D1B46^^b#5555660x66^"
@@ -15,8 +15,8 @@ update() {
 
     text=" ${icons[@]} "
 
-    sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
-    printf "export %s='%s%s%s'\n" $this "$signal" "$color" "$text" >> $DWM/statusbar/temp
+    sed -i '/^export '$this'=.*$/d' $tempfile
+    printf "export %s='%s%s%s'\n" $this "$signal" "$color" "$text" >> $tempfile
 }
 
 notify() {

@@ -1,7 +1,10 @@
+config.h
+autostart.sh
+statusbar/
+
 dwm
 *.o
 .ccls-cache/
 compile_commands.json
 .cache
-statusbar/temp
-result/
+DEF/statusbar/temp

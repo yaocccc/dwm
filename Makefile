@@ -6,7 +6,15 @@ include config.mk
 SRC = drw.c dwm.c util.c
 OBJ = ${SRC:.c=.o}
 
-all: options dwm
+all: check options dwm
+
+check:
+	@ [ -f "config.h" ] || echo -e "\033[31mconfig.h not found, please run 'cp DEF/config.h .'\033[0m"
+	@ [ -f "autostart.sh" ] || echo -e "\033[31mautostart.sh not found, please run 'cp DEF/autostart.sh .'\033[0m"
+	@ [ -d "statusbar" ] || echo -e "\033[31mstatusbar/ not found, please run 'cp -r DEF/statusbar .'\033[0m"
+	@ [ -f "config.h" ] || exit 1
+	@ [ -f "autostart.sh" ] || exit 1
+	@ [ -d "statusbar" ] || exit 1
 
 options:
 	@echo dwm build options:
@@ -48,4 +56,4 @@ uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
 		${DESTDIR}${MANPREFIX}/man1/dwm.1
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all check options clean dist install uninstall
