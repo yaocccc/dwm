@@ -9,7 +9,7 @@ signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
     icons=("")
-    [ "$(sudo docker ps | grep 'v2raya')" ] && icons=(${icons[@]} "")
+    [ "$(docker ps | grep 'v2raya')" ] && icons=(${icons[@]} "")
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && icons=(${icons[@]} "")
     [ "$AUTOSCREEN" = "OFF" ] && icons=(${icons[@]} "ﴸ")
 
@@ -21,16 +21,16 @@ update() {
 
 notify() {
     texts=""
-    [ "$(sudo docker ps | grep 'v2raya')" ] && texts="$texts\n v2raya 已启动"
+    [ "$(docker ps | grep 'v2raya')" ] && texts="$texts\n v2raya 已启动"
     [ "$(bluetoothctl info 88:C9:E8:14:2A:72 | grep 'Connected: yes')" ] && texts="$texts\n WH-1000XM4 已链接"
     [ "$texts" != "" ] && notify-send " Info" "$texts" -r 9527
 }
 
 call_menu() {
     case $(echo -e ' 关机\n 重启\n 休眠\n 锁定' | rofi -dmenu -window-title power -theme ~/scripts/config/rofi.rasi) in
-        " 关机") sudo poweroff ;;
-        " 重启") sudo reboot ;;
-        " 休眠") sudo systemctl hibernate ;;
+        " 关机") poweroff ;;
+        " 重启") reboot ;;
+        " 休眠") systemctl hibernate ;;
         " 锁定") ~/scripts/blurlock.sh ;;
     esac
 }
