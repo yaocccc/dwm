@@ -8,7 +8,7 @@ icon_color="^c#442266^^b#7879560x88^"
 text_color="^c#442266^^b#7879560x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
-m=$(xrandr | grep -v disconnected | grep connected | awk '{print $1}')
+monitor=$(xrandr | grep -v disconnected | grep connected | awk '{print $1}')
 brightness=`awk -v x=$(xrandr --verbose | grep Brightness | awk '{ print $2 }') 'BEGIN{printf "%d",x*100}'`
 
 update() {
@@ -23,24 +23,24 @@ update() {
 
 notify() {
     update
-    notify-send -r 9527 -h int:value:$result -h string:hlcolor:#dddddd "$icon Brightness"
+    notify-send -r 9527 -h int:value:$brightness -h string:hlcolor:#dddddd "$icon Brightness"
 }
 
 adjust() {
   step=1
-  if [ $brightness -gt 100 ] || [ $brightness = 100 ]; then
+  if [ $brightness -gt 100 ]; then
     step=10
   fi
 
   case "$1" in
-    UP)   xrandr --output $m --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x+y)/100}'` ;;
-    DOWN) xrandr --output $m --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x-y)/100}'` ;;
+    UP)   xrandr --output $monitor --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x+y)/100}'` ;;
+    DOWN) xrandr --output $monitor --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x-y)/100}'` ;;
   esac
 }
 
 click() {
   case "$1" in
-      L) adjust _     ; notify ;; # 仅通知
+      L) notify                ;; # 仅通知
       U) adjust UP    ; notify ;; # 亮度加
       D) adjust DOWN  ; notify ;; # 亮度减
   esac
