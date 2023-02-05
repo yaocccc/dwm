@@ -32,6 +32,11 @@ adjust() {
     step=10
   fi
 
+  // only UP
+  if [ $brightness = 100 ] && [ "$1" = UP ]; then
+    step=10
+  fi
+
   case "$1" in
     UP)   xrandr --output $monitor --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x+y)/100}'` ;;
     DOWN) xrandr --output $monitor --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x-y)/100}'` ;;
