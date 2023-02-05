@@ -9,14 +9,13 @@ text_color="^c#442266^^b#7879560x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
 m=$(xrandr | grep -v disconnected | grep connected | awk '{print $1}')
-brightness=$(xrandr --verbose | grep Brightness | awk '{ print $2 }')
+brightness=`awk -v x=$(xrandr --verbose | grep Brightness | awk '{ print $2 }') 'BEGIN{printf "%d",x*100}'`
 
 update() {
-  brightness=$(xrandr --verbose | grep Brightness | awk '{ print $2 }')
-  result=`awk -v x=$(xrandr --verbose | grep Brightness | awk '{ print $2 }') 'BEGIN{printf "%.0f",x*100}'`
+  brightness=`awk -v x=$(xrandr --verbose | grep Brightness | awk '{ print $2 }') 'BEGIN{printf "%d",x*100}'`
 
   icon=" 󰳲 "
-  text=" $result% "
+  text=" $brightness% "
 
   sed -i '/^export '$this'=.*$/d' $DWM/statusbar/temp
   printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
@@ -27,14 +26,25 @@ notify() {
     notify-send -r 9527 -h int:value:$result -h string:hlcolor:#dddddd "$icon Brightness"
 }
 
-click() {
+adjust() {
+  step=1
+  if [ $brightness -gt 100 ] || [ $brightness = 100 ]; then
+    step=10
+  fi
+
   case "$1" in
-      L) notify ;; # 仅通知
-      U) xrandr --output $m --brightness `awk -v x=$brightness 'BEGIN{printf "%.2f",x+0.01}'` ; notify ;; # 亮度加
-      D) xrandr --output $m --brightness `awk -v x=$brightness 'BEGIN{printf "%.2f",x-0.01}'` ; notify ;; # 亮度减
+    UP)   xrandr --output $m --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x+y)/100}'` ;;
+    DOWN) xrandr --output $m --brightness `awk -v x=$brightness -v y=$step 'BEGIN{printf "%.2f",(x-y)/100}'` ;;
   esac
 }
 
+click() {
+  case "$1" in
+      L) adjust _     ; notify ;; # 仅通知
+      U) adjust UP    ; notify ;; # 亮度加
+      D) adjust DOWN  ; notify ;; # 亮度减
+  esac
+}
 
 case "$1" in
     click) click $2 ;;
