@@ -23,7 +23,7 @@ update() {
 
 notify() {
     update
-    notify-send -r 9527 -h int:value:$brightness -h string:hlcolor:#dddddd "$icon Brightness"
+    notify-send -r 9527 -h int:value:$brightness -h string:hlcolor:#dddddd "$icon $monitor Brightness"
 }
 
 adjust() {
