@@ -8,6 +8,9 @@ icon_color="^c#3B001B^^b#4865660x88^"
 text_color="^c#3B001B^^b#4865660x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
+# check
+[ ! "$(command -v acpi)" ] && echo command not found: acpi && exit
+
 update() {
     bat_text=$(acpi -b | sed 2d | awk '{print $4}' | grep -Eo "[0-9]+")
     [ ! "$bat_text" ] && bat_text=$(acpi -b | sed 2d | awk '{print $5}' | grep -Eo "[0-9]+")

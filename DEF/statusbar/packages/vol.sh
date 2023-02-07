@@ -21,6 +21,9 @@ icon_color="^c#442266^^b#7879560x88^"
 text_color="^c#442266^^b#7879560x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
+# check
+[ ! "$(command -v pactl)" ] && echo command not found: pactl && exit
+
 update() {
     sink=$(pactl info | grep 'Default Sink' | awk '{print $3}')
     [ "$sink" = "" ] && $(pactl info | grep '默认音频入口' | awk '{print $2}')
