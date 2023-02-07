@@ -53,17 +53,32 @@ static const char scratchpadname[] = "scratchpad";
 /* 自定义tag名称 */
 /* 自定义特定实例的显示状态 */
 //            ﮸  ﭮ 切
-// 对应的tag序号以及快捷键:   0:1  1:2  2:3  3:4  4:5  5:9  6:c  7:m  8:0  9:w 10:l
-static const char *tags[] = { "", "", "", "", "", "", "", "", "ﬄ", "﬐", "" };
+static const char *tags[] = { 
+    "", // tag:0  key:1  desc:terminal1
+    "", // tag:1  key:2  desc:terminal2
+    "", // tag:2  key:3  desc:terminal3
+    "󰉋", // tag:3  key:F1 desc:pcmanfm file manager
+    "󰕧", // tag:4  key:9  desc:obs
+    "", // tag:5  key:c  desc:chrome
+    "", // tag:6  key:m  desc:music
+    "ﬄ", // tag:7  key:0  desc:qq
+    "﬐", // tag:8  key:w  desc:wechat
+    "", // tag:9  key:l  desc:wxwork
+};
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor */
-    {"obs",                  NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
-    {"chrome",               NULL,                 NULL,             1 << 6,       0,          0,          0,        -1 },
-    {"Chromium",             NULL,                 NULL,             1 << 6,       0,          0,          0,        -1 },
-    {"music",                NULL,                 NULL,             1 << 7,       1,          0,          1,        -1 },
-    { NULL,                 "qq",                  NULL,             1 << 8,       0,          0,          1,        -1 },
-    { NULL,                 "wechat.exe",          NULL,             1 << 9,       0,          0,          0,        -1 },
-    { NULL,                 "wxwork.exe",          NULL,             1 << 10,      0,          0,          0,        -1 },
+
+    /** 部分需要固定tag的规则 */
+    {"pcmanfm",              NULL,                 NULL,             1 << 3,       0,          0,          0,        -1 },
+    {"obs",                  NULL,                 NULL,             1 << 4,       0,          0,          0,        -1 },
+    {"chrome",               NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
+    {"Chromium",             NULL,                 NULL,             1 << 5,       0,          0,          0,        -1 },
+    {"music",                NULL,                 NULL,             1 << 6,       1,          0,          1,        -1 },
+    { NULL,                 "qq",                  NULL,             1 << 7,       0,          0,          1,        -1 },
+    { NULL,                 "wechat.exe",          NULL,             1 << 8,       0,          0,          0,        -1 },
+    { NULL,                 "wxwork.exe",          NULL,             1 << 9,       0,          0,          0,        -1 },
+
+    /** 部分特殊app的规则 */
     { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1 },
     { "图片查看",           "图片查看",           "图片查看",        0,            1,          0,          0,        -1 },
     { "图片预览",           "图片预览",           "图片预览",        0,            1,          0,          0,        -1 },
@@ -160,7 +175,6 @@ static Key keys[] = {
     { MODKEY|ShiftMask,    XK_d,      spawn, SHCMD("~/scripts/call_rofi.sh drun") },                            /* super shift d    | rofi: 执行drun         */
     { MODKEY,              XK_p,      spawn, SHCMD("~/scripts/call_rofi.sh custom") },                          /* super p          | rofi: 执行自定义脚本   */
     { MODKEY|ShiftMask,    XK_p,      spawn, SHCMD("~/scripts/call_rofi.sh window") },                          /* super shift p    | rofi: 执行window       */
-    { MODKEY,              XK_F1,     spawn, SHCMD("pcmanfm") },                                                /* super F1         | 文件管理器             */
     { MODKEY,              XK_k,      spawn, SHCMD("~/scripts/blurlock.sh") },                                  /* super k          | 锁定屏幕               */
     { MODKEY|ShiftMask,    XK_Up,     spawn, SHCMD("~/scripts/set_vol.sh up") },                                /* super shift up   | 音量加                 */
     { MODKEY|ShiftMask,    XK_Down,   spawn, SHCMD("~/scripts/set_vol.sh down") },                              /* super shift down | 音量减                 */
@@ -172,17 +186,16 @@ static Key keys[] = {
     /* super key : 跳转到对应tag (可附加一条命令 若目标目录无窗口，则执行该命令) */
     /* super shift key : 将聚焦窗口移动到对应tag */
     /* key tag cmd */
-    TAGKEYS(XK_1, 0,  0)
-    TAGKEYS(XK_2, 1,  0)
-    TAGKEYS(XK_3, 2,  0)
-    TAGKEYS(XK_4, 3,  0)
-    TAGKEYS(XK_5, 4,  0)
-    TAGKEYS(XK_9, 5,  "obs")
-    TAGKEYS(XK_c, 6,  "google-chrome-stable")
-    TAGKEYS(XK_m, 7,  "~/scripts/music_player.sh")
-    TAGKEYS(XK_0, 8,  "linuxqq")
-    TAGKEYS(XK_w, 9,  "/opt/apps/com.qq.weixin.deepin/files/run.sh")
-    TAGKEYS(XK_l, 10, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh")
+    TAGKEYS(XK_1, 0, 0)
+    TAGKEYS(XK_2, 1, 0)
+    TAGKEYS(XK_3, 2, 0)
+    TAGKEYS(XK_F1,3, "pcmanfm")
+    TAGKEYS(XK_9, 4, "obs")
+    TAGKEYS(XK_c, 5, "google-chrome-stable")
+    TAGKEYS(XK_m, 6, "~/scripts/music_player.sh")
+    TAGKEYS(XK_0, 7, "linuxqq")
+    TAGKEYS(XK_w, 8, "/opt/apps/com.qq.weixin.deepin/files/run.sh")
+    TAGKEYS(XK_l, 9, "/opt/apps/com.qq.weixin.work.deepin/files/run.sh")
 };
 static Button buttons[] = {
     /* click               event mask       button            function       argument  */
