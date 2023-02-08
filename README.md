@@ -153,6 +153,10 @@ yay -S wqy-microhei
     { MODKEY,              XK_space,  spawn, SHCMD("tabbed -n st -C float -c -r 2 st -w ''") },                 /* super space      | 打开浮动st终端         */
 ```
 
+6. 为什么我的st各种奇怪问题
+
+可以考虑先用我的 [yaocccc/st](https://github.com/yaocccc/st)
+
 ## 贡献者 THX
 
 - [yaocccc](https://github.com/yaocccc)
