@@ -90,7 +90,7 @@ static const Rule rules[] = {
     {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1 }, // 浮动
     {"global",               NULL,                 NULL,             TAGMASK,      0,          1,          0,        -1 }, // 全局
     {"noborder",             NULL,                 NULL,             0,            0,          0,          1,        -1 }, // 无边框
-    {"FG",                   NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1 }, // 浮动 + 全局
+    {"FG",                   NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1 }, // 浮动 + 全局
     {"FN",                   NULL,                 NULL,             0,            1,          0,          1,        -1 }, // 浮动 + 无边框
     {"GN",                   NULL,                 NULL,             TAGMASK,      0,          1,          1,        -1 }, // 全局 + 无边框
     {"FGN",                  NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1 }, // 浮动 + 全局 + 无边框
