@@ -138,6 +138,21 @@ yay -S ttf-joypixels
 yay -S wqy-microhei
 ```
 
+5. 如果想使用tabbed管理st
+
+推荐以下按键配置
+
+关联链接  
+[极简终端: https://github.com/yaocccc/st](https://github.com/yaocccc/st)  
+[多tab管理: https://github.com/yaocccc/st](https://github.com/yaocccc/tabbed)  
+
+```c
+    { MODKEY,              XK_s,      togglescratch, SHCMD("tabbed -n scratchpad -c -r 2 st -w ''") },          /* super s          | 打开st scratchpad      */
+    { MODKEY,              XK_Return, spawn, SHCMD("tabbed -n st -C tabbed -c -r 2 st -w ''") },                /* super enter      | 打开st                 */
+    { MODKEY,              XK_minus,  spawn, SHCMD("tabbed -n st -C FG -c -r 2 st -w ''") },                    /* super +          | 打开全局st终端         */
+    { MODKEY,              XK_space,  spawn, SHCMD("tabbed -n st -C float -c -r 2 st -w ''") },                 /* super space      | 打开浮动st终端         */
+```
+
 ## 贡献者 THX
 
 - [yaocccc](https://github.com/yaocccc)
