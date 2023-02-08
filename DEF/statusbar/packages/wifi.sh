@@ -22,7 +22,7 @@ fi
 
 update() {
     wifi_icon="褐"
-    wifi_text=$(nmcli | grep "$wifi_grep_keyword" | sed "s/$wifi_grep_keyword//" | awk '{print $2}')
+    wifi_text=$(nmcli | grep "$wifi_grep_keyword" | sed "s/$wifi_grep_keyword//" | awk '{print $2}' | paste -d " " -s)
     [ "$wifi_text" = "" ] && wifi_text=$wifi_disconnected
 
     icon=" $wifi_icon "
