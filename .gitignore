@@ -7,4 +7,5 @@ dwm
 .ccls-cache/
 compile_commands.json
 .cache
+statusbar/temp
 DEF/statusbar/temp
