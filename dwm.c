@@ -452,8 +452,9 @@ applyrules(Client *c)
                 c->mon = m;
         }
     }
-    if (!strcmp(c->name, scratchpadname)) {
+    if (!strcmp(c->name, scratchpadname) || !strcmp(class, scratchpadname) || !strcmp(instance, scratchpadname)) {
         c->isscratchpad = 1;
+        c->isfloating = 1;
         c->isglobal = 1; // scratchpad is default global
     } 
     if (ch.res_class)
