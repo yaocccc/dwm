@@ -247,8 +247,6 @@ static void hidewin(const Arg *arg);
 static void hideotherwins(const Arg *arg);
 static void showonlyorall(const Arg *arg);
 static int issinglewin(const Arg *arg);
-static void togglewin(const Arg *arg);
-static void toggleglobal(const Arg *arg);
 static void restorewin(const Arg *arg);
 
 static void incnmaster(const Arg *arg);
@@ -307,6 +305,11 @@ static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void toggleallfloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
+static void toggleview(const Arg *arg);
+static void toggleoverview(const Arg *arg);
+static void togglewin(const Arg *arg);
+static void toggleglobal(const Arg *arg);
+static void toggleborder(const Arg *arg);
 
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
@@ -331,8 +334,6 @@ static void setgap(const Arg *arg);
 static void view(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
-static void toggleview(const Arg *arg);
-static void toggleoverview(const Arg *arg);
 
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -445,8 +446,7 @@ applyrules(Client *c)
             c->isglobal = r->isglobal;
             c->isnoborder = r->isnoborder;
             c->tags |= r->tags;
-            if (r->isnoborder)
-                c->bw = 0;
+            c->bw = c->isnoborder ? 0 : borderpx;
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
@@ -2827,6 +2827,27 @@ toggleglobal(const Arg *arg)
         return;
     selmon->sel->isglobal ^= 1;
     selmon->sel->tags = selmon->sel->isglobal ? TAGMASK : selmon->tagset[selmon->seltags];
+    focus(NULL);
+}
+
+void
+toggleborder(const Arg *arg)
+{
+    if (!selmon->sel)
+        return;
+    if (!selmon->sel->isfloating)
+        return;
+    selmon->sel->isnoborder ^= 1;
+    selmon->sel->bw = selmon->sel->isnoborder ? 0 : borderpx;
+    int diff = (selmon->sel->isnoborder ? -1 : 1) * borderpx;
+    // TODO: 当有动画效果时 会有闪烁问题
+    resizeclient(
+        selmon->sel,
+        selmon->sel->x - diff,
+        selmon->sel->y - diff,
+        selmon->sel->w,
+        selmon->sel->h
+    );
     focus(NULL);
 }
 
