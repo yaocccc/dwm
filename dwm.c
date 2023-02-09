@@ -2854,8 +2854,6 @@ toggleborder(const Arg *arg)
 {
     if (!selmon->sel)
         return;
-    if (!selmon->sel->isfloating)
-        return;
     selmon->sel->isnoborder ^= 1;
     selmon->sel->bw = selmon->sel->isnoborder ? 0 : borderpx;
     int diff = (selmon->sel->isnoborder ? -1 : 1) * borderpx;
