@@ -180,6 +180,7 @@ typedef struct {
     int isglobal;
 	int isnoborder;
 	int monitor;
+    uint floatposition;
 } Rule;
 
 typedef struct Systray   Systray;
@@ -450,6 +451,22 @@ applyrules(Client *c)
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
+            // 如果设定了floatposition 且未指定xy，设定窗口位置
+            if (r->isfloating && c->x == 0 && c->y == 0) {
+                switch (r->floatposition) {
+                    case 1: c->x = selmon->wx + gappo; c->y = selmon->wy + gappo; break; // 左上
+                    case 2: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2 - gappo; c->y = selmon->wy + gappo; break; // 中上
+                    case 3: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + gappo; break; // 右上
+                    case 4: c->x = selmon->wx + gappo; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 左中
+                    case 0: // 默认0，居中
+                    case 5: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 中中
+                    case 6: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 右中
+                    case 7: c->x = selmon->wx + gappo; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 左下
+                    case 8: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 中下
+                    case 9: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 右下
+                }
+            }
+            break; // 有且只会匹配一个第一个符合的rule
         }
     }
     if (!strcmp(c->name, scratchpadname) || !strcmp(class, scratchpadname) || !strcmp(instance, scratchpadname)) {
@@ -1730,7 +1747,7 @@ manage(Window w, XWindowAttributes *wa)
                 && (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 
     if (c->isfloating) {
-        if (wa->x==0 && wa->y==0) {
+        if (c->x==0 && c->y==0) {
             c->x = selmon->wx + (selmon->ww - c->w) / 2;
             c->y = selmon->wy + (selmon->wh - c->h) / 2;
         }
