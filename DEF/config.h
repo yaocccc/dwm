@@ -91,6 +91,7 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1,      0},
     {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1,      0},
     {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
+    {"scratchpad",          "scratchpad",         "scratchpad",      TAGMASK,      1,          1,          1,        -1,      2}, // scratchpad 全局、浮动、无边框 位置在屏幕顶部
     {"Pcmanfm",              NULL,                 NULL,             0,            1,          0,          1,        -1,      3}, // pcmanfm 默认浮动无边框且位于右上角落
 
     /** 部分特殊class的规则 */
