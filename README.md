@@ -66,6 +66,32 @@ exec dwm
 ```sh
 nix run github:yaocccc/dwm
 ```
+下面是在 nixos configuration中使用它的示例
+```nix
+{
+  description = "My configuration";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    dwm.url = "./dwm";
+  };
+
+  outputs = { nixpkgs, dwm, ... }:
+    {
+      nixosConfigurations = {
+        hostname = nixpkgs.lib.nixosSystem
+          {
+            system = "x86_64-linux";
+            modules = [
+              {
+                nixpkgs.overlays = [ dwm.overlays.default ];
+              }
+            ];
+          };
+      };
+    };
+}
+```
 
 ## 状态栏
 
