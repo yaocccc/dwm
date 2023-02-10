@@ -73,7 +73,7 @@ nix run github:yaocccc/dwm
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    dwm.url = "./dwm";
+    dwm.url = "github:yaocccc/dwm";
   };
 
   outputs = { nixpkgs, dwm, ... }:
