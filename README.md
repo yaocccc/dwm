@@ -190,6 +190,8 @@ yay -S wqy-microhei
   - [PR#4 添加 Nix Flake 支持](https://github.com/yaocccc/dwm/pull/4)
 - [gxt-kt](https://github.com/gxt-kt)
   - [PR#7 修复hide/show窗口栈索引带来的无法恢复窗口的bug](https://github.com/yaocccc/dwm/pull/7)
+- [Ruixi-rebirth](https://github.com/Ruixi-rebirth)
+  - [PR#12 优化flake](https://github.com/yaocccc/dwm/pull/12)
 
 ## ENJOY IT 😃
 
