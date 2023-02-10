@@ -75,33 +75,36 @@ static const char *tags[] = {
 /* floatposition 定义符合该规则的窗口显示的位置 0 中间，1到9分别为9宫格位置，例如1左上，9右下，3右上 */
 static const Rule rules[] = {
     /* class                 instance              title             tags mask     isfloating  isglobal    isnoborder monitor floatposition */
-    /** 部分需要固定tag的规则 */
-    {"obs",                  NULL,                 NULL,             1 << 3,       0,          0,          0,        -1,      0},
-    {"chrome",               NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0},
-    {"Chromium",             NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0},
-    {"music",                NULL,                 NULL,             1 << 5,       1,          0,          1,        -1,      0},
-    { NULL,                 "qq",                  NULL,             1 << 6,       0,          0,          1,        -1,      0},
-    { NULL,                 "wechat.exe",          NULL,             1 << 7,       0,          0,          0,        -1,      0},
-    { NULL,                 "wxwork.exe",          NULL,             1 << 8,       0,          0,          0,        -1,      0},
+    /** 优先级高 越在上面优先度越高 */
+    { NULL,                  NULL,                "图片查看器",      0,            1,          0,          0,        -1,      0}, // qq图片查看器        浮动
+    { NULL,                  NULL,                "图片查看",        0,            1,          0,          0,        -1,      0}, // 微信图片查看器      浮动
 
-    /** 部分特殊app的规则 */
-    { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1,      0},
-    { "图片查看",           "图片查看",           "图片查看",        0,            1,          0,          0,        -1,      0},
-    { "图片预览",           "图片预览",           "图片预览",        0,            1,          0,          0,        -1,      0},
-    { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1,      0},
-    {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1,      0},
-    {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // 腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
-    {"scratchpad",          "scratchpad",         "scratchpad",      TAGMASK,      1,          1,          1,        -1,      2}, // scratchpad 全局、浮动、无边框 位置在屏幕顶部
-    {"Pcmanfm",              NULL,                 NULL,             0,            1,          0,          1,        -1,      3}, // pcmanfm 默认浮动无边框且位于右上角落
+    /** 普通优先度 */
+    {"obs",                  NULL,                 NULL,             1 << 3,       0,          0,          0,        -1,      0}, // obs        tag -> 󰕧
+    {"chrome",               NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0}, // chrome     tag -> 
+    {"Chromium",             NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0}, // Chromium   tag -> 
+    {"music",                NULL,                 NULL,             1 << 5,       1,          0,          1,        -1,      0}, // music      tag ->  浮动、无边框
+    { NULL,                 "qq",                  NULL,             1 << 6,       0,          0,          1,        -1,      0}, // qq         tag -> ﬄ 无边框
+    { NULL,                 "wechat.exe",          NULL,             1 << 7,       0,          0,          1,        -1,      0}, // wechat     tag -> ﬐ 无边框
+    { NULL,                 "wxwork.exe",          NULL,             1 << 8,       0,          0,          1,        -1,      0}, // workwechat tag ->  无边框
+    {"Vncviewer",            NULL,                 NULL,             0,            1,          0,          1,        -1,      2}, // Vncviewer           浮动、无边框 屏幕顶部
+    {"flameshot",            NULL,                 NULL,             0,            1,          0,          0,        -1,      0}, // 火焰截图            浮动
+    {"scratchpad",          "scratchpad",         "scratchpad",      TAGMASK,      1,          1,          1,        -1,      2}, // scratchpad          浮动、全局、无边框 屏幕顶部
+    {"Pcmanfm",              NULL,                 NULL,             0,            1,          0,          1,        -1,      3}, // pcmanfm             浮动、无边框 右上角
+    {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // !!!腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
 
     /** 部分特殊class的规则 */
-    {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1,      0}, // 浮动
-    {"global",               NULL,                 NULL,             TAGMASK,      0,          1,          0,        -1,      0}, // 全局
-    {"noborder",             NULL,                 NULL,             0,            0,          0,          1,        -1,      0}, // 无边框
-    {"FGN",                  NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1,      0}, // 浮动 + 全局 + 无边框
-    {"FG",                   NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // 浮动 + 全局
-    {"FN",                   NULL,                 NULL,             0,            1,          0,          1,        -1,      0}, // 浮动 + 无边框
-    {"GN",                   NULL,                 NULL,             TAGMASK,      0,          1,          1,        -1,      0}, // 全局 + 无边框
+    {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1,      0}, // class = float       浮动
+    {"global",               NULL,                 NULL,             TAGMASK,      0,          1,          0,        -1,      0}, // class = gloabl      全局
+    {"noborder",             NULL,                 NULL,             0,            0,          0,          1,        -1,      0}, // class = noborder    无边框
+    {"FGN",                  NULL,                 NULL,             TAGMASK,      1,          1,          1,        -1,      0}, // class = FGN         浮动、全局、无边框
+    {"FG",                   NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // class = FG          浮动、全局
+    {"FN",                   NULL,                 NULL,             0,            1,          0,          1,        -1,      0}, // class = FN          浮动、无边框
+    {"GN",                   NULL,                 NULL,             TAGMASK,      0,          1,          1,        -1,      0}, // CLASS = GN          全局、无边框
+
+    /** 优先度低 越在上面优先度越低 */
+    { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1,      0}, // 错误载入时 会有crx_ 浮动
+    { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1,      0}, // 错误载入时 会有broken 浮动
 };
 static const char *overviewtag = "OVERVIEW";
 static const Layout overviewlayout = { "舘",  overview };
