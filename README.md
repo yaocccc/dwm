@@ -66,7 +66,7 @@ exec dwm
 ```sh
 nix run github:yaocccc/dwm
 ```
-下面是在 nixos configuration中使用它的示例
+下面是在 nixos configuration 中使用它的示例
 ```nix
 {
   description = "My configuration";
