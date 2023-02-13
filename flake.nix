@@ -35,14 +35,7 @@
           };
         in
         rec {
-          # apps = {
-          #   dwm = {
-          #     type = "app";
-          #     program = "${packages.default}/bin/st";
-          #   };
-          # };
           packages.dwm = pkgs.dwm;
-          # apps.default = apps.dwm;
           packages.default = pkgs.dwm;
           devShells.default = pkgs.mkShell {
             buildInputs = with pkgs; [ xorg.libX11 xorg.libXft xorg.libXinerama gcc ];
