@@ -220,6 +220,7 @@ yay -S wqy-microhei
   - [PR#7 修复hide/show窗口栈索引带来的无法恢复窗口的bug](https://github.com/yaocccc/dwm/pull/7)
 - [Ruixi-rebirth](https://github.com/Ruixi-rebirth)
   - [PR#12 优化flake](https://github.com/yaocccc/dwm/pull/12)
+  - [PR#16 优化flake](https://github.com/yaocccc/dwm/pull/16)
 
 ## ENJOY IT 😃
 
