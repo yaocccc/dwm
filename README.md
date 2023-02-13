@@ -64,37 +64,6 @@ exec dwm
 ### Nix Flake
 
 下面是在 nixos configuration 中使用它的示例
-
-```nix
-{
-  description = "My configuration";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    dwm.url = "github:yaocccc/dwm";
-  };
-
-  outputs = { nixpkgs, dwm, ... }:
-    {
-      nixosConfigurations = {
-        hostname = nixpkgs.lib.nixosSystem
-          {
-            system = "x86_64-linux";
-            modules = [
-              {
-                nixpkgs.overlays = [ dwm.overlays.default ];
-                services.xserver = {
-                  enable = true;
-                  windowManager.dwm.enable = true;
-                };
-              }
-            ];
-          };
-      };
-    };
-}
-```
-下面是在 nixos configuration 中使用它的示例
 ```nix
 {
   description = "My configuration";
