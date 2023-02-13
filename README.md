@@ -94,6 +94,32 @@ exec dwm
     };
 }
 ```
+下面是在 nixos configuration 中使用它的示例
+```nix
+{
+  description = "My configuration";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    dwm.url = "github:yaocccc/dwm";
+  };
+
+  outputs = { nixpkgs, dwm, ... }:
+    {
+      nixosConfigurations = {
+        hostname = nixpkgs.lib.nixosSystem
+          {
+            system = "x86_64-linux";
+            modules = [
+              {
+                nixpkgs.overlays = [ dwm.overlays.default ];
+              }
+            ];
+          };
+      };
+    };
+}
+```
 
 ## 状态栏
 
@@ -192,6 +218,8 @@ yay -S wqy-microhei
   - [PR#4 添加 Nix Flake 支持](https://github.com/yaocccc/dwm/pull/4)
 - [gxt-kt](https://github.com/gxt-kt)
   - [PR#7 修复hide/show窗口栈索引带来的无法恢复窗口的bug](https://github.com/yaocccc/dwm/pull/7)
+- [Ruixi-rebirth](https://github.com/Ruixi-rebirth)
+  - [PR#12 优化flake](https://github.com/yaocccc/dwm/pull/12)
 
 ## ENJOY IT 😃
 
