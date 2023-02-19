@@ -27,6 +27,7 @@ refresh() {
 
 # 启动定时更新状态栏 不同的模块有不同的刷新周期 注意不要重复启动该func
 cron() {
+    echo > $tempfile                                                    # 清空 temp 文件
     let i=0
     while true; do
         to=()                                                            # 存放本次需要更新的模块
