@@ -3,7 +3,7 @@
 # 本脚本需要你自行修改音量获取命令
 # 例如我使用的是 pipewire
 #
-# $ pactl lisk sinks | grep RUNNING -A 8
+# $ pactl list sinks | grep RUNNING -A 8
 #         State: RUNNING
 #         Name: bluez_output.88_C9_E8_14_2A_72.1
 #         Description: WH-1000XM4
