@@ -3,7 +3,7 @@
 # 搭配 https://github.com/yaocccc/scripts 仓库使用 目录位置 ~/scripts
 # 部分配置文件在 ~/scripts/config 目录下
 
-source ~/.profile
+_thisdir=$(cd $(dirname $0);pwd)
 
 settings() {
     [ $1 ] && sleep $1
@@ -14,7 +14,7 @@ settings() {
 
 daemons() {
     [ $1 ] && sleep $1
-    $DWM/statusbar/statusbar.sh cron &        # 开启状态栏定时更新
+    $_thisdir/statusbar/statusbar.sh cron &   # 开启状态栏定时更新
     xss-lock -- ~/scripts/blurlock.sh &       # 开启自动锁屏程序
     fcitx5 &                                  # 开启输入法
     lemonade server &                         # 开启lemonade 远程剪切板支持

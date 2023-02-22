@@ -1,19 +1,20 @@
 #! /bin/bash
 
-tempfile=$(cd $(dirname $0);pwd)/temp
+_thisdir=$(cd $(dirname $0);pwd)
+tempfile=$_thisdir/temp
 touch $tempfile
 
 # 设置某个模块的状态 update cpu mem ...
 update() {
     [ ! "$1" ] && refresh && return                                      # 当指定模块为空时 结束
-    bash $DWM/statusbar/packages/$1.sh                                   # 执行指定模块脚本
+    bash $_thisdir/packages/$1.sh                                        # 执行指定模块脚本
     shift 1; update $*                                                   # 递归调用
 }
 
 # 处理状态栏点击
 click() {
     [ ! "$1" ] && return                                                 # 未传递参数时 结束
-    bash $DWM/statusbar/packages/$1.sh click $2                          # 执行指定模块脚本
+    bash $_thisdir/packages/$1.sh click $2                               # 执行指定模块脚本
     update $1                                                            # 更新指定模块
     refresh                                                              # 刷新状态栏
 }
