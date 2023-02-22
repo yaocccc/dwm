@@ -180,6 +180,10 @@ yay -S wqy-microhei
 
 可以考虑先用我的 [yaocccc/st](https://github.com/yaocccc/st)
 
+7. 自启动脚本没启动
+
+请检查DWM变量是否正确设置，如果实在不行了，可以直接强制改config.h 里的 autostartscript 和 statusbarscript 变量
+
 ## 贡献者 THX
 
 - [yaocccc](https://github.com/yaocccc)
