@@ -40,4 +40,8 @@ install: all
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz
 
-.PHONY: all check options clean install
+uninstall:
+	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
+		${DESTDIR}${MANPREFIX}/man1/dwm.1
+
+.PHONY: all check options clean install uninstall
