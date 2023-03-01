@@ -12,8 +12,8 @@ signal=$(echo "^s$this^" | sed 's/_//')
 [ ! "$(command -v acpi)" ] && echo command not found: acpi && exit
 
 update() {
-    bat_text=$(acpi -b | sed '2,$d' | awk '{print $4}' | grep -Eo "[0-9]+")
-    [ ! "$bat_text" ] && bat_text=$(acpi -b | sed '2,$d' | awk '{print $5}' | grep -Eo "[0-9]+")
+    bat_text=$(acpi -b | sed '2,$d' | awk -F'[ %]' '{print $4}')
+    [ ! "$bat_text" ] && bat_text=$(acpi -b | sed '2,$d' | awk -F'[ %]' '{print $5}' | grep -Eo "[0-9]+")
     [ ! "$(acpi -b | grep 'Battery 0' | grep Discharging)" ] && charge_icon=" "
     if   [ "$bat_text" -ge 95 ]; then bat_icon=""; charge_icon="";
     elif [ "$bat_text" -ge 90 ]; then bat_icon="";
