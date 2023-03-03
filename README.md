@@ -184,9 +184,10 @@ yay -S wqy-microhei
 
 请检查DWM变量是否正确设置，如果实在不行了，可以直接强制改config.h 里的 autostartscript 和 statusbarscript 变量
 
-## 贡献者 THX
+## 贡献者 THX 🌻
 
 - [yaocccc](https://github.com/yaocccc)
+  - [MASTER](#TOP)
 - [p3psi-boo](https://github.com/p3psi-boo)
   - [PR#4 添加 Nix Flake 支持](https://github.com/yaocccc/dwm/pull/4)
 - [gxt-kt](https://github.com/gxt-kt)
@@ -195,6 +196,8 @@ yay -S wqy-microhei
 - [Ruixi-rebirth](https://github.com/Ruixi-rebirth)
   - [PR#12 优化flake](https://github.com/yaocccc/dwm/pull/12)
   - [PR#16 优化flake](https://github.com/yaocccc/dwm/pull/16)
+- [Int-0X7FFFFFFF](https://github.com/Int-0X7FFFFFFF)
+  - [PR20 修复了音量在中文环境下一直显示静音的错误](https://github.com/yaocccc/dwm/pull/20)
 
 ## ENJOY IT 😃
 
