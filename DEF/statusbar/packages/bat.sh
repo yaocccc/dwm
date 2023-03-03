@@ -12,9 +12,14 @@ signal=$(echo "^s$this^" | sed 's/_//')
 [ ! "$(command -v acpi)" ] && echo command not found: acpi && exit
 
 update() {
-    bat_text=$(acpi -b | sed '2,$d' | awk '{print $4}' | grep -Eo "[0-9]+")
-    [ ! "$bat_text" ] && bat_text=$(acpi -b | sed '2,$d' | awk -F'[ %]' '{print $5}' | grep -Eo "[0-9]+")
-    [ ! "$(acpi -b | grep 'Battery 0' | grep Discharging)" ] && charge_icon=" "
+    # 有人是 /org/freedesktop/UPower/devices/battery_BAT1 也有人最后是 battery_BAT0 , 为了兼容性先这么写
+    # 可以自己执行一下然后写死，这个一般不会变动
+    bat=$(upower -e | grep BAT)
+    bat_text=$(upower -i $bat | awk '/percentage/ {print $2}' | grep -Eo '[0-9]+')
+    charge_icon=" "
+    # [ -z "$(acpi -a | grep on-line)" ] && charge_icon=" " 也可以
+    [ -z "$(upower -i $bat | grep 'state:.*fully-charged')" ] && charge_icon=" "
+
     if   [ "$bat_text" -ge 95 ]; then bat_icon=""; charge_icon="";
     elif [ "$bat_text" -ge 90 ]; then bat_icon="";
     elif [ "$bat_text" -ge 80 ]; then bat_icon="";
