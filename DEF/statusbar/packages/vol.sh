@@ -26,9 +26,13 @@ signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
     sink=$(pactl info | grep 'Default Sink' | awk '{print $3}')
-    [ "$sink" = "" ] && $(pactl info | grep '默认音频入口' | awk '{print $2}')
-    volunmuted=$(pactl list sinks | grep $sink -A 6 | sed -n '7p' | grep 'Mute: no')
-    vol_text=$(pactl list sinks | grep $sink -A 7 | sed -n '8p' | awk '{printf int($5)}')
+    if [ "$sink" = "" ]; then sink=$(pactl info | grep '默认音频入口' | awk -F'：' '{print $2}');fi
+    volunmuted=$(pactl list sinks | grep $sink -A 6 | sed -n '7p' | grep '静音：否')
+    vol_text=$(pactl list sinks | grep $sink -A 7 | sed -n '8p' | awk '{printf int($4)}')
+    if [ "$LANG" != "zh_CN.UTF-8" ]; then
+        volunmuted=$(pactl list sinks | grep $sink -A 6 | sed -n '7p' | grep 'Mute: no')
+        vol_text=$(pactl list sinks | grep $sink -A 7 | sed -n '8p' | awk '{printf int($5)}')
+    fi
     if [ ! "$volunmuted" ];      then vol_text="--"; vol_icon="ﱝ";
     elif [ "$vol_text" -eq 0 ];  then vol_text="00"; vol_icon="婢";
     elif [ "$vol_text" -lt 10 ]; then vol_icon="奔"; vol_text=0$vol_text;
