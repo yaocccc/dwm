@@ -127,7 +127,7 @@ exec dwm
 
 dwm启动时会去调用 $DWM/autostart.sh 脚本
 
-可参考 [autostart脚本](https://github.com/yaocccc/dwm/blob/master/autostart.sh)
+可参考 [autostart脚本](https://github.com/yaocccc/dwm/blob/master/DEF/autostart.sh)
 
 ## Q & A
 
