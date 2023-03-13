@@ -1,20 +1,20 @@
 #! /bin/bash
 
-_thisdir=$(cd $(dirname $0);pwd)
-tempfile=$_thisdir/temp
+thisdir=$(cd $(dirname $0);pwd)
+tempfile=$thisdir/temp
 touch $tempfile
 
 # 设置某个模块的状态 update cpu mem ...
 update() {
     [ ! "$1" ] && refresh && return                                      # 当指定模块为空时 结束
-    bash $_thisdir/packages/$1.sh                                        # 执行指定模块脚本
+    bash $thisdir/statusbar/packages/$1.sh                               # 执行指定模块脚本
     shift 1; update $*                                                   # 递归调用
 }
 
 # 处理状态栏点击
 click() {
     [ ! "$1" ] && return                                                 # 未传递参数时 结束
-    bash $_thisdir/packages/$1.sh click $2                               # 执行指定模块脚本
+    bash $thisdir/statusbar/packages/$1.sh click $2                      # 执行指定模块脚本
     update $1                                                            # 更新指定模块
     refresh                                                              # 刷新状态栏
 }
@@ -28,7 +28,7 @@ refresh() {
 
 # 启动定时更新状态栏 不同的模块有不同的刷新周期 注意不要重复启动该func
 cron() {
-    echo > $tempfile                                                    # 清空 temp 文件
+    echo > $tempfile                                                     # 清空 temp 文件
     let i=0
     while true; do
         to=()                                                            # 存放本次需要更新的模块
