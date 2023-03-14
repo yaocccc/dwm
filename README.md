@@ -26,18 +26,21 @@ dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
   sudo make clean install
 ```
 
-## 运行 dwm
+## !!!运行 dwm!!!
 
-将你的dwm源代码目录写入 ~/.profile, 例如  
+请确保你已配置 ~/.xinitrc 文件, DWM指向你的dwm仓库所在路径
 
 ```plaintext
 export DWM=~/workspace/dwm
+exec dwm
 ```
 
-将以下行添加到 .xinitrc 中来通过 `startx` 启动 dwm:  
+tty中执行 `startx` 启动
+
+如果想在tty1中自动执行startx可在你的bash或zsh配置中添加
 
 ```plaintext
-exec dwm
+  [ $(tty) = "/dev/tty1" ] && cd ~ && startx
 ```
 
 ## !!!关于fork配置!!!
