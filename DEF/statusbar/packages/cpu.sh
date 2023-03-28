@@ -13,7 +13,7 @@ with_temp() {
     [ ! "$(command -v sensors)" ] && echo command not found: sensors && return
 
     temp_text=$(sensors | grep Tctl | awk '{printf "%d°C", $2}')  
-    text="$cpu_text $temp_text "
+    text=" $cpu_text $temp_text "
 } 
 
 update() {
