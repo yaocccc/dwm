@@ -20,7 +20,7 @@ with_bluetooth() {
 update() {
     icons=("")
     with_v2raya
-    with_bluetooth
+    # with_bluetooth
 
     text=" ${icons[@]} "
 

@@ -21,13 +21,9 @@ update() {
     printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
-notify() {
-    notify-send "♫ Now Playing" "$(mpc current)" -r 9527
-}
-
 click() {
     case "$1" in
-        L) mpc toggle; notify ;;
+        L) mpc toggle ;;
         R) mpc toggle ;;
         U) mpc prev ;;
         D) mpc next ;;
