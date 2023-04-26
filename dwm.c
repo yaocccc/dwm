@@ -1395,8 +1395,6 @@ focusstack(const Arg *arg)
     Client *c = NULL, *tc = selmon->sel;
     int last = -1, cur = 0, issingle = issinglewin(NULL);
 
-    if (tc && tc->isfullscreen) /* no support for focusstack with fullscreen windows */
-        return;
     if (!tc)
         tc = selmon->clients;
     if (!tc)
