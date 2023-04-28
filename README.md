@@ -200,7 +200,9 @@ yay -S wqy-microhei
   - [PR#12 优化flake](https://github.com/yaocccc/dwm/pull/12)
   - [PR#16 优化flake](https://github.com/yaocccc/dwm/pull/16)
 - [Int-0X7FFFFFFF](https://github.com/Int-0X7FFFFFFF)
-  - [PR20 修复了音量在中文环境下一直显示静音的错误](https://github.com/yaocccc/dwm/pull/20)
+  - [PR#20 修复了音量在中文环境下一直显示静音的错误](https://github.com/yaocccc/dwm/pull/20)
+- [zainmiku](https://github.com/zainmiku)
+  - [PR#25 音乐标题包含"'时的处理](https://github.com/yaocccc/dwm/pull/25) 
 
 ## ENJOY IT 😃
 
