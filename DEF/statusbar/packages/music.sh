@@ -13,12 +13,16 @@ signal=$(echo "^s$this^" | sed 's/_//')
 update() {
     music_text="$(mpc current)"
     icon=" 󰝚 "
-    text=" $music_text "
+    if $music_text=~"\""; then
+        text=$(echo $music_text | sed -e "s/\"\\\\\"/g")
+    else
+        text=" $music_text "
+    fi
     [ "$(mpc status | grep "paused")" ] && icon=" 󰐎 "
 
     sed -i '/^export '$this'=.*$/d' $tempfile
     [ ! "$music_text" ] && return
-    printf "export %s='%s%s%s%s%s'\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
+    printf "export %s=\"%s%s%s%s%s\"\n" $this "$signal" "$icon_color" "$icon" "$text_color" "$text" >> $tempfile
 }
 
 click() {
