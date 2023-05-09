@@ -8,7 +8,7 @@ icon_color="^c#3B102B^^b#6873790x88^"
 text_color="^c#3B102B^^b#6873790x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
-[ ! "$(command -v playerctl)" ] && echo command not found: mpc && return
+[ ! "$(command -v playerctl)" ] && echo command not found: playerctl && return
 
 update() {
     music_text="$(playerctl metadata title)"
