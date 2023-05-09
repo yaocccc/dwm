@@ -12,6 +12,9 @@ signal=$(echo "^s$this^" | sed 's/_//')
 
 update() {
     music_text="$(playerctl metadata title)"
+    if [ $? -ne 0 ];then
+      music_text="$(playerctl metadata xesam:url)"
+    fi
     icon=" 󰝚 "
     if $music_text=~"\""; then
         text=$(echo $music_text | sed -e "s/\"\\\\\"/g")
