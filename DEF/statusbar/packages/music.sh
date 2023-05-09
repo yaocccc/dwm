@@ -8,17 +8,17 @@ icon_color="^c#3B102B^^b#6873790x88^"
 text_color="^c#3B102B^^b#6873790x99^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
-[ ! "$(command -v mpc)" ] && echo command not found: mpc && return
+[ ! "$(command -v playerctl)" ] && echo command not found: mpc && return
 
 update() {
-    music_text="$(mpc current)"
+    music_text="$(playerctl metadata title)"
     icon=" 󰝚 "
     if $music_text=~"\""; then
         text=$(echo $music_text | sed -e "s/\"\\\\\"/g")
     else
         text=" $music_text "
     fi
-    [ "$(mpc status | grep "paused")" ] && icon=" 󰐎 "
+    [ "$(playerctl status | grep "Paused")" ] && icon=" 󰐎 "
 
     sed -i '/^export '$this'=.*$/d' $tempfile
     [ ! "$music_text" ] && return
@@ -27,10 +27,10 @@ update() {
 
 click() {
     case "$1" in
-        L) mpc toggle ;;
-        R) mpc toggle ;;
-        U) mpc prev ;;
-        D) mpc next ;;
+        L) playerctl play-pause ;;
+        R) playerctl play-pause ;;
+        U) playerctl previous ;;
+        D) playerctl next ;;
     esac
 }
 
