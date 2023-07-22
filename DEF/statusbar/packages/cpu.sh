@@ -1,5 +1,6 @@
 #! /bin/bash
 # CPU 获取CPU使用率和温度的脚本
+# 需要安装sysstat包
 
 tempfile=$(cd $(dirname $0);cd ..;pwd)/temp
 
@@ -18,7 +19,7 @@ with_temp() {
 
 update() {
     cpu_icon="閭"
-    cpu_text=$(top -n 1 -b | sed -n '3p' | awk '{printf "%02d%", 100 - $8}')
+    cpu_text=$(mpstat 1 1 | awk '$12 ~ /[0-9.]+/ {print 100 - $12"%"}' | sort -u)
 
     icon=" $cpu_icon "
     text=" $cpu_text "
