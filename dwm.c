@@ -444,8 +444,8 @@ applyrules(Client *c)
         r = &rules[i];
         // 当rule中定义了一个或多个属性时，只要有一个属性匹配，就认为匹配成功
         if ((r->title && strstr(c->name, r->title))
-                || (r->class && strstr(class, r->class))
-                || (r->instance && strstr(instance, r->instance)))
+                || (r->class && !strcmp(class, r->class))
+                || (r->instance && !strcmp(instance, r->instance)))
         {
             c->isfloating = r->isfloating;
             c->isglobal = r->isglobal;
