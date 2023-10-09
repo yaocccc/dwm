@@ -2439,13 +2439,19 @@ setfullscreen(Client *c, int fullscreen)
 void
 fullscreen(const Arg *arg)
 {
-    if (selmon->sel) {
-        if (selmon->showbar)
-            setfullscreen(selmon->sel, 1);
-        else
-            setfullscreen(selmon->sel, 0);
+    if (!selmon->sel) {
+        togglebar(arg);
+        return;
     }
-    togglebar(arg);
+    if (selmon->sel->isfullscreen) {
+        setfullscreen(selmon->sel, 0);
+        if (!selmon->showbar)
+            togglebar(arg);
+    } else {
+        setfullscreen(selmon->sel, 1);
+        if (selmon->showbar)
+            togglebar(arg);
+    }
 }
 
 void
