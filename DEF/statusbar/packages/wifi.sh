@@ -48,7 +48,7 @@ call_nm() {
 click() {
     case "$1" in
         L) notify ;;
-        R) call_nm ;;
+        R) setsid call_nm ;;
     esac
 }
 

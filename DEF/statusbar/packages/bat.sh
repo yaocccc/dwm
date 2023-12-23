@@ -72,7 +72,7 @@ notify() {
 click() {
     case "$1" in
         L) notify ;;
-        R) killall xfce4-power-manager-settings || xfce4-power-manager-settings & ;;
+        R) killall xfce4-power-manager-settings || setsid xfce4-power-manager-settings ;;
     esac
 }
 
