@@ -204,11 +204,7 @@ yay -S wqy-microhei
 - [zainmiku](https://github.com/zainmiku)
   - [PR#25 音乐标题包含"'时的处理](https://github.com/yaocccc/dwm/pull/25)
   - [PR#29 音乐标题包含空格时的处理](https://github.com/yaocccc/dwm/pull/29)
+- [roukaixin](https://github.com/roukaixin)
+  - [PR#42 修复仅有一个tile窗口时的边框切换逻辑](https://github.com/yaocccc/dwm/pull/42)
 
 ## ENJOY IT 😃
-
-## Support: buy me a coffee
-
-<a href="https://www.buymeacoffee.com/yaocccc" target="_blank">
-  <img src="https://github.com/yaocccc/yaocccc/raw/master/qr.png">
-</a>
