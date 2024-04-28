@@ -1730,7 +1730,8 @@ manage(Window w, XWindowAttributes *wa)
     c->bw = borderpx;
 
     updatetitle(c);
-    if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
+    // managetransientwin 管理transient window，此时transient window也会调用applyrules
+    if (!managetransientwin && XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
         c->mon = t->mon;
         c->tags = t->tags;
     } else {
