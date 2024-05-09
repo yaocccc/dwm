@@ -86,8 +86,8 @@ static const Rule rules[] = {
     /** 普通优先度 */
     {"obs",                  NULL,                 NULL,             1 << 3,       0,          0,          0,        -1,      0}, // obs
     {"firefox",              NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0}, // firefox
-    //{"Chromium",             NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0}, // Chromium
-    //{"music",                NULL,                 NULL,             1 << 5,       1,          0,          1,        -1,      0}, // music     浮动、无边框
+    {"Chromium",             NULL,                 NULL,             1 << 4,       0,          0,          0,        -1,      0}, // Chromium
+    {"music",                NULL,                 NULL,             1 << 5,       1,          0,          1,        -1,      0}, // music     浮动、无边框
     { NULL,                 "linuxqq",             NULL,             1 << 6,       0,          0,          1,        -1,      0}, // qq          无边框
     { NULL,                 "wechat.exe",          NULL,             1 << 7,       0,          0,          1,        -1,      0}, // wechat      无边框
     { NULL,                 "wxwork.exe",          NULL,             1 << 8,       0,          0,          1,        -1,      0}, // workwechat  无边框
