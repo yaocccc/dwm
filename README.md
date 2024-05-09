@@ -1,3 +1,4 @@
+https://github.com/yaocccc/dwm
 # DWM YES
 
 dwm 是一个非常快速, 小巧并使用动态管理窗口的窗口管理器
@@ -169,8 +170,8 @@ yay -S wqy-microhei
 推荐以下按键配置
 
 关联链接  
-[极简终端: https://github.com/yaocccc/st](https://github.com/yaocccc/st)  
-[多tab管理: https://github.com/yaocccc/st](https://github.com/yaocccc/tabbed)  
+[极简终端](https://github.com/yaocccc/st)  
+[多tab管理](https://github.com/yaocccc/tabbed)  
 
 ```c
     { MODKEY,              XK_s,      togglescratch, SHCMD("tabbed -n scratchpad -c -r 2 st -w ''") },          /* super s          | 打开st scratchpad      */
