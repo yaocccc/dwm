@@ -55,15 +55,15 @@ static const char scratchpadname[] = "scratchpad";
 /* 自定义特定实例的显示状态 */
 //图标与下面TAGKEYS对应
 static const char *tags[] = { 
-    "", // tag:0    desc:terminal1
-    "󰎧", // tag:1    desc:terminal2
-    "󰎪", // tag:2    desc:terminal3
-    "", // tag:4    desc:obs
-    "", // tag:5    desc:chrome
-    "", // tag:6    desc:tg
-    "", // tag:7    desc:qq
-    "", // tag:8    desc:wechat
-    "󰬱", // tag:9    desc:wxwork
+    "", // tag:0
+    "󰎧", // tag:1
+    "󰎪", // tag:2
+    "", // tag:4
+    "", // tag:5
+    "", // tag:6
+    "", // tag:7
+    "", // tag:8
+    "󰬱", // tag:9 
 };
 
 /* 自定义窗口显示规则 */
