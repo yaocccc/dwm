@@ -18,7 +18,7 @@ daemons() {
     lemonade server &                         # 开启lemonade 远程剪切板支持
     flameshot &                               # 截图要跑一个程序在后台 不然无法将截图保存到剪贴板
     dunst -conf $DWM/dunst.conf & # 开启通知server
-    picom --experimental-backends --config $DWM/picom.conf >> /dev/null 2>&1 & # 开启picom
+    picom --experimental-backends --config $DWM/picom.conf >> /dev/null 2>&1 &  # 开启picom
 }
 
 cron() {
