@@ -198,10 +198,10 @@ static Key keys[] = {
     { MODKEY,              XK_space,  spawn, SHCMD("st -c float") },                                            /* super space      | 打开浮动st终端         */
     { MODKEY,              XK_e,      spawn, SHCMD("killall thunar || thunar") },                               /* super e          | 打开/关闭thunar        */
     { MODKEY,              XK_d,      spawn, SHCMD("rofi -show run") },                                         /* super d          | rofi: 执行run          */
-    { MODKEY,              XK_p,      spawn, SHCMD("$DWM/DEF/rofi.sh") },                                       /* super p          | rofi: 执行自定义脚本   */
-    { MODKEY,              XK_n,      spawn, SHCMD("$DWM/DEF/blurlock.sh") },                                   /* super n          | 锁定屏幕               */
-    { MODKEY|ShiftMask,    XK_Up,     spawn, SHCMD("$DWM/DEF/set_vol.sh up") },                                 /* super shift up   | 音量加                 */
-    { MODKEY|ShiftMask,    XK_Down,   spawn, SHCMD("$DWM/DEF/set_vol.sh down") },                               /* super shift down | 音量减                 */
+    { MODKEY,              XK_p,      spawn, SHCMD("$DWM/rofi.sh") },                                       /* super p          | rofi: 执行自定义脚本   */
+    { MODKEY,              XK_n,      spawn, SHCMD("$DWM/blurlock.sh") },                                   /* super n          | 锁定屏幕               */
+    { MODKEY|ShiftMask,    XK_Up,     spawn, SHCMD("$DWM/set_vol.sh up") },                                 /* super shift up   | 音量加                 */
+    { MODKEY|ShiftMask,    XK_Down,   spawn, SHCMD("$DWM/set_vol.sh down") },                               /* super shift down | 音量减                 */
     { MODKEY,              XK_F1,     spawn, SHCMD("flameshot gui -c -p ~/Pictures/screenshots") },             /* super F1         | 截图                   */ 
     { MODKEY|ShiftMask,    XK_q,      spawn, SHCMD("kill -9 $(xprop | grep _NET_WM_PID | awk '{print $3}')") }, /* super shift q    | 选中某个窗口并强制kill */
 
@@ -213,8 +213,8 @@ static Key keys[] = {
     TAGKEYS(XK_3, 2, 0)
     TAGKEYS(XK_5, 3, "obs")
     TAGKEYS(XK_b, 4, "firefox")
-    TAGKEYS(XK_0, 5, "telegram-desktop")
-    TAGKEYS(XK_8, 6, "linuxqq")
+    TAGKEYS(XK_t, 5, "telegram-desktop")
+    TAGKEYS(XK_0, 6, "linuxqq")
     TAGKEYS(XK_9, 7, "wechat-universal") 
 };
 
