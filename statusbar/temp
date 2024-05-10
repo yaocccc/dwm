@@ -1,8 +1,0 @@
-
-export _bat='^sbat^^c#3B001B^^b#4865660x88^ 󰢟 ^c#3B001B^^b#4865660x99^ 0% '
-export _cpu='^scpu^^c#3E206F^^b#6E51760x88^  ^c#3E206F^^b#6E51760x99^ 100% 38°C '
-export _mem='^smem^^c#3B001B^^b#6873790x88^  ^c#3B001B^^b#6873790x99^ 23% '
-export _vol='^svol^^c#442266^^b#7879560x88^  ^c#442266^^b#7879560x99^ --% '
-export _icons='^sicons^^c#2D1B46^^b#5555660x66^ 󰘵 '
-export _wifi='^swifi^^c#000080^^b#3870560x88^ 󰖩 ^c#000080^^b#3870560x99^ Wired connection 1 '
-export _date='^sdate^^c#4B005B^^b#7E51680x88^  ^c#4B005B^^b#7E51680x99^ 05/10 13:27 '
