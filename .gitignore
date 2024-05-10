@@ -10,3 +10,4 @@ compile_commands.json
 statusbar/temp
 lib/
 bin/
+.vscode/settings.json

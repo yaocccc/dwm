@@ -406,6 +406,7 @@ struct Pertag {
 };
 
 /* function implementations */
+__attribute__((unused))
 void
 logtofile(const char *fmt, ...)
 {
@@ -572,7 +573,7 @@ arrangemon(Monitor *m)
         strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol);
         overviewlayout.arrange(m);
     } else {
-        strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+        strcpy(m->ltsymbol, m->lt[m->sellt]->symbol);
         m->lt[m->sellt]->arrange(m);
     }
 }
@@ -3700,7 +3701,7 @@ main(int argc, char *argv[])
 Client *direction_select(const Arg *arg) {
     Client *tempClients[100];
     Client *c = NULL, *tc = selmon->sel;
-    int last = -1, cur = 0, issingle = issinglewin(NULL);
+    int last = -1, cur __attribute__((unused)) = 0, issingle = issinglewin(NULL);
 
     if (tc && tc->isfullscreen) /* no support for focusstack with fullscreen windows */
         return NULL;
@@ -3721,7 +3722,7 @@ Client *direction_select(const Arg *arg) {
     int sel_x=tc->x;
     int sel_y=tc->y;
     long long int distance=LLONG_MAX;
-    int temp_focus=0;
+    int temp_focus __attribute__((unused)) = 0;
     Client *tempFocusClients=NULL;
 
     switch (arg->i) {
