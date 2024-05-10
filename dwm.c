@@ -406,7 +406,6 @@ struct Pertag {
 };
 
 /* function implementations */
-__attribute__((unused))
 void
 logtofile(const char *fmt, ...)
 {
@@ -570,11 +569,11 @@ void
 arrangemon(Monitor *m)
 {
     if (m->isoverview) {
-        strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof(m->ltsymbol) - 1);
-m->ltsymbol[sizeof(m->ltsymbol) - 1] = '\0'; // 手动添加终止符
+        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol);
         overviewlayout.arrange(m);
     } else {
-        strlcpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof(m->ltsymbol));
+        strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+        m->lt[m->sellt]->arrange(m);
     }
 }
 
@@ -3701,7 +3700,7 @@ main(int argc, char *argv[])
 Client *direction_select(const Arg *arg) {
     Client *tempClients[100];
     Client *c = NULL, *tc = selmon->sel;
-    int last = -1, issingle = issinglewin(NULL);
+    int last = -1, cur = 0, issingle = issinglewin(NULL);
 
     if (tc && tc->isfullscreen) /* no support for focusstack with fullscreen windows */
         return NULL;
@@ -3709,21 +3708,20 @@ Client *direction_select(const Arg *arg) {
         tc = selmon->clients;
     if (!tc)
         return NULL;
-           
-for (c = selmon->clients; c; c = c->next) {
-    if (ISVISIBLE(c) && (issingle || !HIDDEN(c))) {
-        last ++;
-        tempClients[last] = c;
-        if (c == tc) { 
-            // 处理特定客户端 tc
+
+    for (c = selmon->clients; c; c = c->next) {
+        if (ISVISIBLE(c) && (issingle || !HIDDEN(c))) {
+            last ++;
+            tempClients[last] = c;
+            if (c == tc) cur = last;
         }
     }
-}
 
     if (last < 0) return NULL;
     int sel_x=tc->x;
     int sel_y=tc->y;
     long long int distance=LLONG_MAX;
+    int temp_focus=0;
     Client *tempFocusClients=NULL;
 
     switch (arg->i) {
