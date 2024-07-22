@@ -40,8 +40,8 @@ static const unsigned int alphas[][3]    = {          /* 透明度设置 ColFg, 
     [SchemeSelGlobal] = { OPAQUE, baralpha, borderalpha },
     [SchemeNormTag] = { OPAQUE, baralpha, borderalpha }, 
     [SchemeSelTag] = { OPAQUE, baralpha, borderalpha },
-    [SchemeBarEmpty] = { NULL, 0x11, NULL },
-    [SchemeStatusText] = { OPAQUE, 0x88, NULL },
+    [SchemeBarEmpty] = { 0, 0x11, 0 },
+    [SchemeStatusText] = { OPAQUE, 0x88, 0 },
 };
 
 /* 自定义脚本位置 */
