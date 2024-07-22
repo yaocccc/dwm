@@ -110,6 +110,11 @@ static const Rule rules[] = {
     { NULL,                  NULL,                "crx_",            0,            1,          0,          0,        -1,      0}, // 错误载入时 会有crx_ 浮动
     { NULL,                  NULL,                "broken",          0,            1,          0,          0,        -1,      0}, // 错误载入时 会有broken 浮动
 };
+
+static const TransientRule transientRules[] = {
+        {"Google-chrome", "google-chrome", "保存文件", 0}
+};
+
 static const char *overviewtag = "OVERVIEW";
 static const Layout overviewlayout = { "舘",  overview };
 

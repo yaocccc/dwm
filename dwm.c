@@ -183,6 +183,17 @@ typedef struct {
     uint floatposition;
 } Rule;
 
+/**
+ * 瞬态窗口规则
+ */
+typedef struct {
+    const char *class;
+    const char *instance;
+    const char *title;
+    // 窗口位置
+    unsigned int position;
+} TransientRule;
+
 typedef struct Systray   Systray;
 struct Systray {
 	Window win;
@@ -266,6 +277,7 @@ static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
+static void set_position(unsigned int rule_position, Client *c);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void sigchld(int unused);
@@ -457,18 +469,7 @@ applyrules(Client *c)
                 c->mon = m;
             // 如果设定了floatposition 且未指定xy，设定窗口位置
             if (r->isfloating && c->x == 0 && c->y == 0) {
-                switch (r->floatposition) {
-                    case 1: c->x = selmon->wx + gappo; c->y = selmon->wy + gappo; break; // 左上
-                    case 2: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2 - gappo; c->y = selmon->wy + gappo; break; // 中上
-                    case 3: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + gappo; break; // 右上
-                    case 4: c->x = selmon->wx + gappo; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 左中
-                    case 0: // 默认0，居中
-                    case 5: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 中中
-                    case 6: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2; break; // 右中
-                    case 7: c->x = selmon->wx + gappo; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 左下
-                    case 8: c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 中下
-                    case 9: c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo; c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo; break; // 右下
-                }
+                set_position(r->floatposition, c);
             }
             break; // 有且只会匹配一个第一个符合的rule
         }
@@ -863,6 +864,9 @@ configurerequest(XEvent *e)
     Monitor *m;
     XConfigureRequestEvent *ev = &e->xconfigurerequest;
     XWindowChanges wc;
+    const char *class, *instance;
+    const TransientRule *transientRule;
+    XClassHint ch = { NULL, NULL };
 
     if ((c = wintoclient(ev->window))) {
         if (ev->value_mask & CWBorderWidth)
@@ -891,8 +895,24 @@ configurerequest(XEvent *e)
                 c->y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
             if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight)))
                 configure(c);
-            if (ISVISIBLE(c))
+            if (ISVISIBLE(c)) {
+                // 获取 client 的 class 和 instance
+                XGetClassHint(dpy, c->win, &ch);
+                class    = ch.res_class ? ch.res_class : broken;
+                instance = ch.res_name  ? ch.res_name  : broken;
+                for (int i = 0; i < LENGTH(transientRules); ++i) {
+                    unsigned int null_count = 0;
+                    unsigned int match_count = 0;
+                    transientRule = &transientRules[i];
+                    transientRule->class ? strstr(class, transientRule->class) ? match_count ++ : 0 : null_count ++;
+                    transientRule->instance ? strstr(instance, transientRule->instance) ? match_count ++ : 0 : null_count ++;
+                    transientRule->title ? strstr(c->name, transientRule->title) ? match_count ++ : 0 : null_count ++;
+                    if (3 - null_count == match_count) {
+                        set_position(transientRule->position, c);
+                    }
+                }
                 XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+            }
         } else
             configure(c);
     } else {
@@ -1718,6 +1738,7 @@ manage(Window w, XWindowAttributes *wa)
     Client *c, *t = NULL;
     Window trans = None;
     XWindowChanges wc;
+    const TransientRule *transientRule;
 
     c = ecalloc(1, sizeof(Client));
     c->win = w;
@@ -1778,6 +1799,12 @@ manage(Window w, XWindowAttributes *wa)
     attachstack(c);
     XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
             (unsigned char *) &(c->win), 1);
+    for (int i = 0; i < LENGTH(transientRules); ++i) {
+        transientRule = &transientRules[i];
+        if (strstr(c->name, transientRule->title)) {
+            set_position(transientRule->position, c);
+        }
+    }
     XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
     if (!HIDDEN(c))
         setclientstate(c, NormalState);
@@ -2117,6 +2144,49 @@ void
 quit(const Arg *arg)
 {
     running = 0;
+}
+
+void
+set_position(unsigned int rule_position, Client *c) {
+    switch (rule_position) {
+        case 1:
+            c->x = selmon->wx + gappo;
+            c->y = selmon->wy + gappo;
+            break;
+        case 2:
+            c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2 - gappo;
+            c->y = selmon->wy + gappo;
+            break;
+        case 3:
+            c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo;
+            c->y = selmon->wy + gappo;
+            break;
+        case 4:
+            c->x = selmon->wx + gappo;
+            c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2;
+            break;
+        case 6:
+            c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo;
+            c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2;
+            break;
+        case 7:
+            c->x = selmon->wx + gappo;
+            c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo;
+            break;
+        case 8:
+            c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2;
+            c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo;
+            break;
+        case 9:
+            c->x = selmon->wx + selmon->ww - WIDTH(c) - gappo;
+            c->y = selmon->wy + selmon->wh - HEIGHT(c) - gappo;
+            break;
+        default:
+            // （屏幕宽度 - 客户端宽度） / 2
+            c->x = selmon->wx + (selmon->ww - WIDTH(c)) / 2;
+            c->y = selmon->wy + (selmon->wh - HEIGHT(c)) / 2;
+            break;
+    }
 }
 
 Monitor *
