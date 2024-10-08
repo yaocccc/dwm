@@ -206,5 +206,7 @@ yay -S wqy-microhei
   - [PR#29 音乐标题包含空格时的处理](https://github.com/yaocccc/dwm/pull/29)
 - [roukaixin](https://github.com/roukaixin)
   - [PR#42 修复仅有一个tile窗口时的边框切换逻辑](https://github.com/yaocccc/dwm/pull/42)
+- [luo216](https://github.com/luo216)
+  - [diff:preview-all-win 预览窗口补丁](https://github.com/luo216/preview-all-win)
 
 ## ENJOY IT 😃
