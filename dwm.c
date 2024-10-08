@@ -3719,8 +3719,8 @@ previewallwin() {
     }
 
     arrange(m);
-    focus(focus_c);
     pointerclient(focus_c);
+    focus(focus_c);
 }
 
 void
