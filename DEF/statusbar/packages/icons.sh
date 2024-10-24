@@ -7,8 +7,8 @@ this=_icons
 color="^c#2D1B46^^b#5555660x66^"
 signal=$(echo "^s$this^" | sed 's/_//')
 
-with_v2raya() {
-    [ "$(ps aux | grep -v grep | grep 'v2raya')" ] && icons=(${icons[@]} "")
+with_daed() {
+    [ "$(ps aux | grep -v grep | grep 'daed')" ] && icons=(${icons[@]} "")
 }
 
 with_bluetooth() {
@@ -19,7 +19,7 @@ with_bluetooth() {
 
 update() {
     icons=("")
-    with_v2raya
+    with_daed
     # with_bluetooth
 
     text=" ${icons[@]} "
