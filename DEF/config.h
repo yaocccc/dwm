@@ -94,6 +94,7 @@ static const Rule rules[] = {
     {"scratchpad",          "scratchpad",         "scratchpad",      TAGMASK,      1,          1,          1,        -1,      2}, // scratchpad          浮动、全局、无边框 屏幕顶部
     {"Pcmanfm",              NULL,                 NULL,             0,            1,          0,          1,        -1,      3}, // pcmanfm             浮动、无边框 右上角
     {"wemeetapp",            NULL,                 NULL,             TAGMASK,      1,          1,          0,        -1,      0}, // !!!腾讯会议在切换tag时有诡异bug导致退出 变成global来规避该问题
+    { NULL,                  NULL,                "wechat",          TAGMASK,      0,          0,          1,        -1,      0}, // wechat相关的子窗口，去掉边框
 
     /** 部分特殊class的规则 */
     {"float",                NULL,                 NULL,             0,            1,          0,          0,        -1,      0}, // class = float       浮动
