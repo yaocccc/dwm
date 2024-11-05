@@ -240,4 +240,16 @@ static Button buttons[] = {
     /* 点击bar空白处 */
     { ClkBarEmpty,         0,               Button1,          spawn, SHCMD("~/scripts/call_rofi.sh window") },        // 左键        |  bar空白处    |  rofi 执行 window
     { ClkBarEmpty,         0,               Button3,          spawn, SHCMD("~/scripts/call_rofi.sh drun") },          // 右键        |  bar空白处    |  rofi 执行 drun
+                                                                                                                      //
+    /* 鼠标在空白处或任意窗口上 上下滚动 切换tag */
+    { ClkRootWin,          MODKEY,          Button4,          viewtoleft,    {0} },                                   // super+滚轮上  |  Any          |  向前切换tag
+    { ClkRootWin,          MODKEY,          Button5,          viewtoright,   {0} },                                   // super+滚轮下  |  Any          |  向后切换tag
+    { ClkWinTitle,         MODKEY,          Button4,          viewtoleft,    {0} },                                   // super+滚轮上  |  Any          |  向前切换tag
+    { ClkWinTitle,         MODKEY,          Button5,          viewtoright,   {0} },                                   // super+滚轮下  |  Any          |  向后切换tag
+    { ClkClientWin,        MODKEY,          Button4,          viewtoleft,    {0} },                                   // super+滚轮上  |  Any          |  向前切换tag
+    { ClkClientWin,        MODKEY,          Button5,          viewtoright,   {0} },                                   // super+滚轮下  |  Any          |  向后切换tag
+    { ClkTagBar,           MODKEY,          Button4,          viewtoleft,    {0} },                                   // super+滚轮上  |  Any          |  向前切换tag
+    { ClkTagBar,           MODKEY,          Button5,          viewtoright,   {0} },                                   // super+滚轮下  |  Any          |  向后切换tag
+    { ClkStatusText,       MODKEY,          Button4,          viewtoleft,    {0} },                                   // super+滚轮上  |  Any          |  向前切换tag
+    { ClkStatusText,       MODKEY,          Button5,          viewtoright,   {0} },                                   // super+滚轮下  |  Any          |  向后切换tag
 };
