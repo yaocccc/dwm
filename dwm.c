@@ -2606,33 +2606,37 @@ showtag(Client *c)
         showtag(c->snext);
 
         // 获取mon数量
-        int mons_count = 0;
+        int monitor_count = 0;
         int maxmx = 0;
+        int maxmb = 0; // 最大的bottom
         for (Monitor *m = mons; m; m = m->next) {
-            mons_count++;
+            monitor_count++;
+            if (m->my + m->mh > maxmb) maxmb = m->my + m->mh;
             if (m->mx > maxmx) maxmx = m->mx;
         };
 
-        if (mons_count == 1) {
+        if (monitor_count == 1) {
             // 仅单个mon时，按tag大小觉得从左边或右边显示
             unsigned int only_tag = (c->tags & (c->tags - 1)) == 0;
             if (only_tag && (TAGMASK & c->tags) >= 1 << c->mon->pertag->curtag) XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw, c->y);
             else XMoveWindow(dpy, c->win, WIDTH(c) * -1, c->y);
-        } else if (mons_count == 2) {
+        } else if (monitor_count == 2) {
             // 两个mon时，左边窗口的mon藏在左边，右边窗口的mon藏在右边
             if (c->mon->mx == 0) {
                 XMoveWindow(dpy, c->win, c->mon->mw * -1, c->y);
             } else {
                 XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw, c->y);
             }
-        } else if (mons_count > 2) {
+        } else if (monitor_count > 2) {
             // 超过2个时（假定为3个），左边窗口的mon藏在左边，右边窗口的mon藏在右边，中间窗口的mon藏在下边
             if (c->mon->mx == 0) {
                 XMoveWindow(dpy, c->win, c->mon->mw * -1, c->y);
             } else if (c->mon->mx == maxmx) {
                 XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw, c->y);
             } else {
-                XMoveWindow(dpy, c->win, c->x, c->mon->my + c->mon->mh);
+                // 中间窗口 将窗口藏到monitor下面
+                // 如果client超过了边界，藏到所有monitor的下面，避免有一半出现在其他屏幕上
+                XMoveWindow(dpy, c->win, c->x, c->x < c->mon->mx || c->x + c->x+c->w > c->mon->mx + c->mon->mw ? maxmb : c->mon->my + c->mon->mh);
             }
         }
     }
