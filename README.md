@@ -158,7 +158,8 @@ dwm启动时会去调用 $DWM/autostart.sh 脚本
 请自行安装字体 仅以archlinux举例
 
 ```shell
-yay -S nerd-fonts-jetbrains-mono
+yay -S ttf-jetbrains-mono-nerd
+yay -S nerd-fonts-complete-mono-glyphs
 yay -S ttf-material-design-icons
 yay -S ttf-joypixels
 yay -S wqy-microhei
