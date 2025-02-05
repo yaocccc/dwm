@@ -2618,8 +2618,11 @@ showtag(Client *c)
         if (monitor_count == 1) {
             // 仅单个mon时，按tag大小觉得从左边或右边显示
             unsigned int only_tag = (c->tags & (c->tags - 1)) == 0;
-            if (only_tag && (TAGMASK & c->tags) >= 1 << c->mon->pertag->curtag) XMoveWindow(dpy, c->win, c->mon->mx + c->mon->mw, c->y);
-            else XMoveWindow(dpy, c->win, WIDTH(c) * -1, c->y);
+            if (only_tag && (TAGMASK & c->tags) >= 1 << c->mon->pertag->curtag) XMoveWindow(dpy, c->win, c->x + c->mon->mx + c->mon->mw, c->y);
+            else {
+                if (c->x + c->w > c->mon->mx + c->mon->mw) XMoveWindow(dpy, c->win, -1 * WIDTH(c), c->y);
+                else XMoveWindow(dpy, c->win, c->x + c->mon->mx - c->mon->mw, c->y);
+            }
         } else if (monitor_count == 2) {
             // 两个mon时，左边窗口的mon藏在左边，右边窗口的mon藏在右边
             if (c->mon->mx == 0) {

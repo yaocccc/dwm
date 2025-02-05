@@ -30,7 +30,20 @@ update() {
 }
 
 notify() {
-    notify-send "閭 CPU tops" "\n$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)\\n\\n(100% per core)" -r 9527
+    tops=$(
+        ps axch -o cmd:15,%cpu --sort=-%cpu | awk '
+        {
+            cmd = gensub(/.*\//, "", "g", $1);
+            cpu[cmd] += $2;
+        }
+        END {
+            printf "%-15s %s\n", "COMMAND", "CPU (%)";
+            for (cmd in cpu) {
+                printf "%-15s %.2f\n", cmd, cpu[cmd];
+            }
+        }' | sort -k2 -nr | head
+    )
+    notify-send "󰘚 CPU tops" "\n$tops\\n\\n(100% per core)" -r 9527
 }
 
 call_btop() {
